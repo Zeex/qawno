@@ -26,10 +26,10 @@ private slots:
 	// File menu
 	void newFile();
 	void openFile();
-	bool closeFile();
-	bool saveFile();
-	bool saveFileAs();
-	bool exit();
+	void closeFile();
+	void saveFile();
+	void saveFileAs();
+	void exit();
 
 	// Options menu
 	void selectEditorFont();
@@ -47,8 +47,11 @@ private slots:
 	void updateWindowTitle();
 
 private:
-	void loadSettings();
-	void saveSettings();
+	bool isSafeToClose();
+	void readFile(QString fileName);
+	void writeFile(QString fileName);
+	void readSettings();
+	void writeSettings();
 
 private:
 	// Code editor

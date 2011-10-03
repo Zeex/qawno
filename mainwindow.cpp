@@ -61,17 +61,10 @@ MainWindow::MainWindow(QWidget *parent)
 	m_compilerProcess = new QProcess(this);
 	connect(m_compilerProcess, SIGNAL(finished(int)), this, SLOT(compiled(int)));
 
-	loadSettings();
-}
+	readSettings();
 
-void MainWindow::closeEvent(QCloseEvent *closeEvent)
-{
-	if (exit()) {
-		saveSettings();
-		closeEvent->accept();
-	} else {
-		// Exit cancelled by the user
-		closeEvent->ignore();
+	if (QApplication::instance()->argc() > 1) {
+		readFile(QApplication::instance()->argv()[1]);
 	}
 }
 
@@ -82,32 +75,20 @@ void MainWindow::newFile()
 
 void MainWindow::openFile()
 {
-	if (!closeFile()) {
+	if (!isSafeToClose()) {
 		return;
 	}
 
+	m_fileName.clear();
+
 	QFileDialog openDialog(this);
-	m_fileName = openDialog.getOpenFileName(this,
+	QString fileName = openDialog.getOpenFileName(this,
 		tr("Open file"), "", tr("Pawn scripts (*.pwn *.inc)"));
 
-	if (!m_fileName.isEmpty()) {
-		QFile file(m_fileName);
-		if (!file.open(QIODevice::ReadOnly)) {
-			QMessageBox::critical(this, QCoreApplication::applicationName(),
-				tr("Could not open %1: %2.")
-					.arg(m_fileName)
-					.arg(file.errorString()),
-				QMessageBox::Ok);
-			m_fileName.clear();
-		} else {
-			m_codeEdit->setPlainText(file.readAll());
-			m_codeEdit->document()->setModified(false);
-			updateWindowTitle();
-		}
-	}
+	readFile(fileName);
 }
 
-bool MainWindow::closeFile()
+bool MainWindow::isSafeToClose()
 {
 	if (m_codeEdit->document()->isModified()
 		&& !m_codeEdit->document()->isEmpty())
@@ -125,10 +106,12 @@ bool MainWindow::closeFile()
 
 		switch (button) {
 		case QMessageBox::Yes:
-			if (!saveFile()) {
+			saveFile();
+			if (m_codeEdit->document()->isModified()) {
+				// Save file failed or cancelled
 				return false;
 			}
-			break;
+			return true;
 		case QMessageBox::No:
 			break;
 		case QMessageBox::Cancel:
@@ -136,43 +119,35 @@ bool MainWindow::closeFile()
 		}
 	}
 
-	m_codeEdit->clear();
-	m_fileName.clear();
-
 	return true;
 }
 
-bool MainWindow::saveFile()
+void MainWindow::closeFile()
+{
+	if (isSafeToClose()) {
+		m_codeEdit->clear();
+		m_fileName.clear();
+	}
+}
+
+void MainWindow::saveFile()
 {
 	if (m_codeEdit->document()->isEmpty()) {
-		return false;
+		return;
 	}
 
 	if (m_fileName.isEmpty()) {
-		return saveFileAs();
+		saveFileAs();
+		return;
 	}
 
-	QFile file(m_fileName);
-	if (!file.open(QIODevice::WriteOnly)) {
-		QMessageBox::critical(this, QCoreApplication::applicationName(),
-			tr("Could not save to %1: %2.")
-				.arg(m_fileName)
-				.arg(file.errorString()),
-			QMessageBox::Ok);
-		return false;
-	}
-
-	file.write(m_codeEdit->toPlainText().toAscii());
-	m_codeEdit->document()->setModified(false);
-	updateWindowTitle();
-
-	return true;
+	writeFile(m_fileName);
 }
 
-bool MainWindow::saveFileAs()
+void MainWindow::saveFileAs()
 {
 	if (m_codeEdit->document()->isEmpty()) {
-		return false;
+		return;
 	}
 
 	QFileDialog saveDialog;
@@ -181,19 +156,16 @@ bool MainWindow::saveFileAs()
 
 	if (!fileName.isEmpty()) {
 		m_fileName = fileName;
-		return saveFile();
+		saveFile();
+		return;
 	}
-
-	return false;
 }
 
-bool MainWindow::exit()
+void MainWindow::exit()
 {
-	if (closeFile()) {
+	if (isSafeToClose()) {
 		close();
-		return true;
 	}
-	return false;
 }
 
 void MainWindow::selectEditorFont()
@@ -295,7 +267,53 @@ void MainWindow::updateWindowTitle()
 	setWindowTitle(title);
 }
 
-void MainWindow::loadSettings()
+void MainWindow::closeEvent(QCloseEvent *closeEvent)
+{
+	if (isSafeToClose()) {
+		writeSettings();
+		closeEvent->accept();
+	} else {
+		closeEvent->ignore();
+	}
+}
+
+void MainWindow::readFile(QString fileName)
+{
+	if (!fileName.isEmpty()) {
+		QFile file(fileName);
+		if (!file.open(QIODevice::ReadOnly)) {
+			QMessageBox::critical(this, QCoreApplication::applicationName(),
+				tr("Could not open %1: %2.")
+					.arg(fileName)
+					.arg(file.errorString()),
+				QMessageBox::Ok);
+		} else {
+			m_fileName = fileName;
+			m_codeEdit->setPlainText(file.readAll());
+			m_codeEdit->document()->setModified(false);
+			updateWindowTitle();
+		}
+	}
+}
+
+void MainWindow::writeFile(QString fileName)
+{
+	QFile file(fileName);
+	if (!file.open(QIODevice::WriteOnly)) {
+		QMessageBox::critical(this, QCoreApplication::applicationName(),
+			tr("Could not save to %1: %2.")
+				.arg(fileName)
+				.arg(file.errorString()),
+			QMessageBox::Ok);
+		return;
+	}
+
+	file.write(m_codeEdit->toPlainText().toAscii());
+	m_codeEdit->document()->setModified(false);
+	updateWindowTitle();
+}
+
+void MainWindow::readSettings()
 {
 	QSettings settings;
 
@@ -334,7 +352,7 @@ void MainWindow::loadSettings()
 	settings.endGroup();
 }
 
-void MainWindow::saveSettings()
+void MainWindow::writeSettings()
 {
 	QSettings settings;
 
