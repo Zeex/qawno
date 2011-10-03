@@ -104,12 +104,16 @@ void PawnHighlighter::highlightBlock(const QString &text)
 			} else if (text[i] == '*') {
 				setFormat(i - 1, 2, m_colorScheme.cComment);
 				state = Comment;
+			} else {
+				state = Unknown;
 			}
 			break;
 		case CommentEnd:
 			setFormat(i, 1, m_colorScheme.cComment);
 			if (text[i] == '/') {
 				state = Unknown;
+			} else {
+				state = Comment;
 			}
 			break;
 		case Identifier:
