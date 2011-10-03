@@ -37,6 +37,13 @@ private:
 		QTextCharFormat format;
 	};
 
+	bool isIdentifierFirstChar(QChar c);
+	bool isIdentifierChar(QChar c);
+	bool isHexDigit(QChar c);
+	bool isKeyword(const QString &s);
+
+	QStringList m_keywords;
+
 	ColorScheme m_colorScheme;
 };
 

@@ -1,3 +1,5 @@
+// TODO: more robust parser
+
 #include "pawnhighlighter.h"
 
 static PawnHighlighter::ColorScheme defaultColorScheme = {
@@ -16,56 +18,8 @@ PawnHighlighter::PawnHighlighter(QObject *parent) :
 	QSyntaxHighlighter(parent)
 {
 	m_colorScheme = defaultColorScheme;
-}
 
-const PawnHighlighter::ColorScheme &PawnHighlighter::colorScheme() const {
-	return m_colorScheme;
-}
-
-void PawnHighlighter::setColorScheme(const ColorScheme &scheme) {
-	m_colorScheme = scheme;
-}
-
-static bool isIdentifierFirstChar(QChar c)
-{
-	return c.isLetter() || c == '_' || c == '@';
-}
-
-static bool isIdentifierChar(QChar c)
-{
-	return isIdentifierFirstChar(c) || c.isDigit();
-}
-
-static bool isHexDigit(QChar c)
-{
-	if (c.isDigit()) {
-		return true;
-	}
-	char cc = c.toLatin1();
-	return (cc >= 'a' && cc <= 'f') || (cc >= 'A' && cc <= 'F') || cc == 'x';
-}
-
-// Simple hand-written highlighter with no regexps
-void PawnHighlighter::highlightBlock(const QString &text)
-{
-	setFormat(0, text.length(), defaultColorScheme.defaultColor);
-
-	enum State {
-		Unknown = -1,
-		CommentBegin,
-		Comment,
-		CommentEnd,
-		Identifier,
-		IdentifierEnd,
-		NumericLiteral,
-		CharacterLiteral,
-		StringLiteral,
-		Preprocessor,
-		PreprocessorNextLine
-	};
-
-	QStringList keywords;
-	keywords
+	m_keywords
 		<< "const"
 		<< "defined"
 		<< "do"
@@ -85,6 +39,63 @@ void PawnHighlighter::highlightBlock(const QString &text)
 		<< "tagof"
 		<< "true"
 		<< "while";
+}
+
+const PawnHighlighter::ColorScheme &PawnHighlighter::colorScheme() const {
+	return m_colorScheme;
+}
+
+void PawnHighlighter::setColorScheme(const ColorScheme &scheme) {
+	m_colorScheme = scheme;
+}
+
+bool PawnHighlighter::isIdentifierFirstChar(QChar c)
+{
+	return c.isLetter() || c == '_' || c == '@';
+}
+
+bool PawnHighlighter::isIdentifierChar(QChar c)
+{
+	return isIdentifierFirstChar(c) || c.isDigit();
+}
+
+bool PawnHighlighter::isHexDigit(QChar c)
+{
+	if (c.isDigit()) {
+		return true;
+	}
+	char cc = c.toLatin1();
+	return (cc >= 'a' && cc <= 'f') || (cc >= 'A' && cc <= 'F') || cc == 'x';
+}
+
+bool PawnHighlighter::isKeyword(const QString &s)
+{
+	foreach (const QString &keyword, m_keywords) {
+		if (s == keyword) {
+			return true;
+		}
+	}
+	return false;
+}
+
+// Simple hand-written highlighter (with no regexps!)
+void PawnHighlighter::highlightBlock(const QString &text)
+{
+	setFormat(0, text.length(), defaultColorScheme.defaultColor);
+
+	enum State {
+		Unknown = -1,
+		CommentBegin,
+		Comment,
+		CommentEnd,
+		Identifier,
+		IdentifierEnd,
+		NumericLiteral,
+		CharacterLiteral,
+		StringLiteral,
+		Preprocessor,
+		PreprocessorNextLine
+	};
 
 	State state = (State)previousBlockState();
 
@@ -125,15 +136,13 @@ void PawnHighlighter::highlightBlock(const QString &text)
 			}
 			break;
 		case IdentifierEnd: {
-			QString name;
+			QString ident;
 			int start = i - 1;
 			while (start >= 0 && isIdentifierChar(text[start])) {
-				name.prepend(text[start--]);
+				ident.prepend(text[start--]);
 			}
-			foreach (const QString &keyword, keywords) {
-				if (name == keyword) {
-					setFormat(start + 1, name.length(), m_colorScheme.keyword);
-				}
+			if (isKeyword(ident)) {
+				setFormat(start + 1, ident.length(), m_colorScheme.keyword);
 			}
 			state = Unknown;
 			break;
