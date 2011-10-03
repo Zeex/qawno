@@ -67,6 +67,7 @@ void PawnHighlighter::highlightBlock(const QString &text)
 	QStringList keywords;
 	keywords
 		<< "const"
+		<< "defined"
 		<< "do"
 		<< "else"
 		<< "enum"
