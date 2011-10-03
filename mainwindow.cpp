@@ -1,15 +1,17 @@
 #include <QtGui>
 
 #include "codeedit.h"
-#include "highlighter.h"
 #include "mainwindow.h"
+#include "pawnhighlighter.h"
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
 {
 	m_codeEdit = new CodeEdit(this);
-	m_highlighter = new Highlighter(m_codeEdit->document());
 	connect(m_codeEdit, SIGNAL(textChanged()), SLOT(updateWindowTitle()));
+
+	m_highlighter = new PawnHighlighter(m_codeEdit);
+	m_highlighter->setDocument(m_codeEdit->document());
 
 	setMenuBar(new QMenuBar(this));
 

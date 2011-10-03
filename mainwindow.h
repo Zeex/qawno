@@ -11,7 +11,7 @@ class QSplitter;
 class QTextEdit;
 
 class CodeEdit;
-class Highlighter;
+class PawnHighlighter;
 
 class MainWindow : public QMainWindow
 {
@@ -53,7 +53,7 @@ private:
 private:
 	// Code editor
 	CodeEdit *m_codeEdit;
-	Highlighter *m_highlighter;
+	PawnHighlighter *m_highlighter;
 
 	// Currently edited file
 	QString  m_fileName;

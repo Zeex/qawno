@@ -25,7 +25,7 @@ CodeEdit::CodeEdit(QWidget *parent) : QPlainTextEdit(parent)
 
 	m_lineNumberArea = new LineNumberArea(this);
 
-	connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth()));
+	connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
 	connect(this, SIGNAL(updateRequest(QRect, int)), this, SLOT(updateLineNumberArea(QRect, int)));
 	connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
 
@@ -113,7 +113,7 @@ void CodeEdit::highlightCurrentLine()
 	if (!isReadOnly()) {
 		QTextEdit::ExtraSelection selection;
 
-		QColor lineColor = QColor(Qt::yellow).lighter(170);
+		QColor lineColor = QColor(Qt::lightGray).lighter(120);
 
 		selection.format.setBackground(lineColor);
 		selection.format.setProperty(QTextFormat::FullWidthSelection, true);
