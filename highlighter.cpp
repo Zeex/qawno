@@ -1,8 +1,8 @@
 // TODO: more robust parser
 
-#include "pawnhighlighter.h"
+#include "highlighter.h"
 
-static PawnHighlighter::ColorScheme defaultColorScheme = {
+static Highlighter::ColorScheme defaultColorScheme = {
 	Qt::darkBlue,
 	Qt::blue,
 	Qt::darkGreen,
@@ -14,7 +14,7 @@ static PawnHighlighter::ColorScheme defaultColorScheme = {
 	Qt::blue
 };
 
-PawnHighlighter::PawnHighlighter(QObject *parent) :
+Highlighter::Highlighter(QObject *parent) :
 	QSyntaxHighlighter(parent)
 {
 	m_colorScheme = defaultColorScheme;
@@ -41,25 +41,25 @@ PawnHighlighter::PawnHighlighter(QObject *parent) :
 		<< "while";
 }
 
-const PawnHighlighter::ColorScheme &PawnHighlighter::colorScheme() const {
+const Highlighter::ColorScheme &Highlighter::colorScheme() const {
 	return m_colorScheme;
 }
 
-void PawnHighlighter::setColorScheme(const ColorScheme &scheme) {
+void Highlighter::setColorScheme(const ColorScheme &scheme) {
 	m_colorScheme = scheme;
 }
 
-bool PawnHighlighter::isIdentifierFirstChar(QChar c)
+bool Highlighter::isIdentifierFirstChar(QChar c)
 {
 	return c.isLetter() || c == '_' || c == '@';
 }
 
-bool PawnHighlighter::isIdentifierChar(QChar c)
+bool Highlighter::isIdentifierChar(QChar c)
 {
 	return isIdentifierFirstChar(c) || c.isDigit();
 }
 
-bool PawnHighlighter::isHexDigit(QChar c)
+bool Highlighter::isHexDigit(QChar c)
 {
 	if (c.isDigit()) {
 		return true;
@@ -68,7 +68,7 @@ bool PawnHighlighter::isHexDigit(QChar c)
 	return (cc >= 'a' && cc <= 'f') || (cc >= 'A' && cc <= 'F') || cc == 'x';
 }
 
-bool PawnHighlighter::isKeyword(const QString &s)
+bool Highlighter::isKeyword(const QString &s)
 {
 	foreach (const QString &keyword, m_keywords) {
 		if (s == keyword) {
@@ -79,7 +79,7 @@ bool PawnHighlighter::isKeyword(const QString &s)
 }
 
 // Simple hand-written highlighter (with no regexps!)
-void PawnHighlighter::highlightBlock(const QString &text)
+void Highlighter::highlightBlock(const QString &text)
 {
 	setFormat(0, text.length(), defaultColorScheme.defaultColor);
 

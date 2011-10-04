@@ -3,13 +3,14 @@
 
 #include <QPlainTextEdit>
 
-class CodeEdit;
+class Editor;
+class Highlighter;
 
 class LineNumberArea : public QWidget
 {
 	Q_OBJECT
 public:
-	LineNumberArea(CodeEdit *editor);
+	LineNumberArea(Editor *editor);
 
 	QSize sizeHint() const;
 
@@ -17,16 +18,18 @@ protected:
 	void paintEvent(QPaintEvent *paintEvent);
 
 private:
-	CodeEdit *m_codeEdit;
+	Editor *m_editor;
 };
 
-class CodeEdit : public QPlainTextEdit
+class Editor : public QPlainTextEdit
 {
 	Q_OBJECT
 	friend class LineNumberArea;
 
 public:
-	explicit CodeEdit(QWidget *parent = 0);
+	explicit Editor(QWidget *parent = 0);
+
+	void setFont(const QFont &font);
 
 protected:
 	void resizeEvent(QResizeEvent *e);
@@ -42,6 +45,7 @@ private slots:
 
 private:
 	LineNumberArea *m_lineNumberArea;
+	Highlighter *m_highlighter;
 };
 
 #endif // CODEEDIT_H

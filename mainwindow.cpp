@@ -1,68 +1,68 @@
-#include <QtGui>
+#include <QApplication>
+#include <QDockWidget>
+#include <QFile>
+#include <QFileDialog>
+#include <QFont>
+#include <QFontDialog>
+#include <QMessageBox>
+#include <QSettings>
 
-#include "codeedit.h"
+#include "compiler.h"
+#include "editor.h"
+#include "issuelist.h"
 #include "mainwindow.h"
-#include "pawnhighlighter.h"
+#include "menubar.h"
+#include "outputwidget.h"
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
 {
-	m_codeEdit = new CodeEdit(this);
-	connect(m_codeEdit, SIGNAL(textChanged()), SLOT(updateWindowTitle()));
+	m_editor = new Editor(this);
 
-	m_highlighter = new PawnHighlighter(m_codeEdit);
-	m_highlighter->setDocument(m_codeEdit->document());
+	setCentralWidget(m_editor);
+	connect(m_editor, SIGNAL(textChanged()), SLOT(updateWindowTitle()));
 
-	setMenuBar(new QMenuBar(this));
+	MenuBar *menuBar = new MenuBar(this);
+	setMenuBar(menuBar);
+	connect(menuBar->actions().fileNew, SIGNAL(triggered()), this, SLOT(newFile()));
+	connect(menuBar->actions().fileOpen, SIGNAL(triggered()), this, SLOT(openFile()));
+	connect(menuBar->actions().fileClose, SIGNAL(triggered()), this, SLOT(closeFile()));
+	connect(menuBar->actions().fileSave, SIGNAL(triggered()), this, SLOT(saveFile()));
+	connect(menuBar->actions().fileSaveAs, SIGNAL(triggered()), this, SLOT(saveFileAs()));
+	connect(menuBar->actions().fileExit, SIGNAL(triggered()), this, SLOT(newFile()));
+	connect(menuBar->actions().editUndo, SIGNAL(triggered()), m_editor, SLOT(undo()));
+	connect(menuBar->actions().editUndo, SIGNAL(triggered()), m_editor, SLOT(redo()));
+	connect(menuBar->actions().editCut, SIGNAL(triggered()), m_editor, SLOT(cut()));
+	connect(menuBar->actions().editCopy, SIGNAL(triggered()), m_editor, SLOT(copy()));
+	connect(menuBar->actions().editPaste, SIGNAL(triggered()), m_editor, SLOT(paste()));
+	connect(menuBar->actions().buildCompile, SIGNAL(triggered()), this, SLOT(compile()));
+	connect(menuBar->actions().optionsFontEditor, SIGNAL(triggered()), SLOT(selectEditorFont()));
+	connect(menuBar->actions().optionsFontOutput, SIGNAL(triggered()), SLOT(selectOutputFont()));
+	connect(menuBar->actions().helpAboutQt, SIGNAL(triggered()), SLOT(aboutQt()));
 
-	QMenu *fileMenu = new QMenu(tr("&File"), this);
-	fileMenu->addAction(tr("New"), this, SLOT(newFile()), QKeySequence("Ctrl+N"));
-	fileMenu->addAction(tr("Open"), this, SLOT(openFile()), QKeySequence("Ctrl+O"));
-	fileMenu->addAction(tr("Close"), this, SLOT(closeFile()), QKeySequence("Ctrl+X"));
-	fileMenu->addSeparator();
-	fileMenu->addAction(tr("Save"), this, SLOT(saveFile()), QKeySequence("Ctrl+S"));
-	fileMenu->addAction(tr("Save as..."), this, SLOT(saveFileAs()), QKeySequence("Ctrl+Shift+S"));
-	fileMenu->addSeparator();
-	fileMenu->addAction(tr("Exit"), this, SLOT(exit()), QKeySequence("Ctrl+Q"));
-	menuBar()->addMenu(fileMenu);
+	//QDockWidget *issuesDock = new QDockWidget(tr("Issues"), this);
+	//issuesDock->setAllowedAreas(Qt::BottomDockWidgetArea);
+	//m_issueList = new IssueList(this);
+	//issuesDock->setWidget(m_issueList);
+	//addDockWidget(Qt::BottomDockWidgetArea, issuesDock);
 
-	QMenu *editMenu = new QMenu(tr("&Edit"), this);
-	editMenu->addAction(tr("Undo"), m_codeEdit, SLOT(undo()), QKeySequence("Ctrl+Z"));
-	editMenu->addAction(tr("Redo"), m_codeEdit, SLOT(undo()), QKeySequence("Ctrl+R"));
-	editMenu->addSeparator();
-	editMenu->addAction(tr("Cut"), m_codeEdit, SLOT(cut()), QKeySequence("Ctrl+X"));
-	editMenu->addAction(tr("Copy"), m_codeEdit, SLOT(copy()), QKeySequence("Ctrl+C"));
-	editMenu->addAction(tr("Paste"), m_codeEdit, SLOT(paste()), QKeySequence("Ctrl+V"));
-	menuBar()->addMenu(editMenu);
+	QDockWidget *outputDock = new QDockWidget(tr("Output"), this);
+	outputDock->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
+	m_outputWidget = new OutputWidget(this);
+	m_outputWidget->setReadOnly(true);
+	outputDock->setWidget(m_outputWidget);
+	addDockWidget(Qt::BottomDockWidgetArea, outputDock);
 
-	QMenu *buildMenu = new QMenu(tr("&Build"), this);
-	buildMenu->addAction(tr("Compile"), this, SLOT(compile()), QKeySequence("F5"));
-	menuBar()->addMenu(buildMenu);
+	//tabifyDockWidget(issuesDock, outputDock);
 
-	QMenu *optionsMenu = new QMenu(tr("&Options"), this);
-	QMenu *fontMenu = optionsMenu->addMenu(tr("Font"));
-	fontMenu->addAction(tr("Editor"), this, SLOT(selectEditorFont()));
-	fontMenu->addAction(tr("Output Pane"), this, SLOT(selectOutputFont()));
-	optionsMenu->addAction(tr("Compiler"), this, SLOT(setupCompiler()));
-	menuBar()->addMenu(optionsMenu);
+	m_compiler = new Compiler(this);
+	m_compiler->setPath("pawncc.exe"); // it may be in current dir or in PATH
+	connect(m_compiler, SIGNAL(finished(int)), this, SLOT(compiled(int)));
 
-	QMenu *helpMenu = new QMenu(tr("&Help"), this);
-	helpMenu->addAction(tr("About Qt"), this, SLOT(aboutQt()));
-	menuBar()->addMenu(helpMenu);
-
-	m_outputPane = new QPlainTextEdit(this);
-	m_outputPane->setReadOnly(true);
-
-	m_splitter = new QSplitter(Qt::Vertical, this);
-	m_splitter->addWidget(m_codeEdit);
-	m_splitter->addWidget(m_outputPane);
-	setCentralWidget(m_splitter);
-
-	m_compilerProcess = new QProcess(this);
-	connect(m_compilerProcess, SIGNAL(finished(int)), this, SLOT(compiled(int)));
-
+	// Restore window settings
 	readSettings();
 
+	// Open specified file, if any
 	if (QApplication::instance()->argc() > 1) {
 		readFile(QApplication::instance()->argv()[1]);
 	}
@@ -90,8 +90,8 @@ void MainWindow::openFile()
 
 bool MainWindow::isSafeToClose()
 {
-	if (m_codeEdit->document()->isModified()
-		&& !m_codeEdit->document()->isEmpty())
+	if (m_editor->document()->isModified()
+		&& !m_editor->document()->isEmpty())
 	{
 		QString message;
 
@@ -107,7 +107,7 @@ bool MainWindow::isSafeToClose()
 		switch (button) {
 		case QMessageBox::Yes:
 			saveFile();
-			if (m_codeEdit->document()->isModified()) {
+			if (m_editor->document()->isModified()) {
 				// Save file failed or cancelled
 				return false;
 			}
@@ -125,14 +125,14 @@ bool MainWindow::isSafeToClose()
 void MainWindow::closeFile()
 {
 	if (isSafeToClose()) {
-		m_codeEdit->clear();
+		m_editor->clear();
 		m_fileName.clear();
 	}
 }
 
 void MainWindow::saveFile()
 {
-	if (m_codeEdit->document()->isEmpty()) {
+	if (m_editor->document()->isEmpty()) {
 		return;
 	}
 
@@ -146,7 +146,7 @@ void MainWindow::saveFile()
 
 void MainWindow::saveFileAs()
 {
-	if (m_codeEdit->document()->isEmpty()) {
+	if (m_editor->document()->isEmpty()) {
 		return;
 	}
 
@@ -173,11 +173,11 @@ void MainWindow::selectEditorFont()
 	QFontDialog fontDialog(this);
 
 	bool ok = false;
-	QFont newFont = fontDialog.getFont(&ok, m_codeEdit->font(), this,
+	QFont newFont = fontDialog.getFont(&ok, m_editor->font(), this,
 		tr("Select editor font"));
 
 	if (ok) {
-		m_codeEdit->setFont(newFont);
+		m_editor->setFont(newFont);
 	}
 }
 
@@ -186,18 +186,18 @@ void MainWindow::selectOutputFont()
 	QFontDialog fontDialog(this);
 
 	bool ok = false;
-	QFont newFont = fontDialog.getFont(&ok, m_outputPane->font(), this,
+	QFont newFont = fontDialog.getFont(&ok, m_outputWidget->font(), this,
 		tr("Select output font"));
 
 	if (ok) {
-		m_outputPane->setFont(newFont);
+		m_outputWidget->setFont(newFont);
 	}
 }
 
 void MainWindow::compile()
 {
-	if (m_codeEdit->toPlainText().isEmpty()) {
-		m_outputPane->appendPlainText(tr("Nothing to compile!"));
+	if (m_editor->toPlainText().isEmpty()) {
+		m_outputWidget->appendPlainText(tr("Nothing to compile!"));
 		return;
 	}
 
@@ -206,7 +206,7 @@ void MainWindow::compile()
 		return;
 	}
 
-	if (!QFile::exists(m_compilerPath)) {
+	if (!QFile::exists(m_compiler->path())) {
 		int button = QMessageBox::warning(this, QCoreApplication::applicationName(),
 			tr("Compiler is not set or missing. \n\n"
 				"You now will be asked to specify its location. "
@@ -220,20 +220,40 @@ void MainWindow::compile()
 		return;
 	}
 
-	m_outputPane->clear();
-
-	//QStringList arguments;
-	//arguments << m_fileName;
-	m_compilerProcess->start(QString("%1 %2").arg(m_compilerPath).arg(m_fileName),
-		QProcess::ReadOnly);;
+	m_compiler->run(m_fileName, "");
 }
 
 void MainWindow::compiled(int exitCode)
 {
-	if (exitCode != 0) {
-		m_outputPane->appendPlainText(m_compilerProcess->readAllStandardError());
-	}
-	m_outputPane->appendPlainText(m_compilerProcess->readAllStandardOutput());
+	QString output = m_compiler->output();
+	m_outputWidget->setPlainText(output);
+
+	// Remove old items
+//	while (m_issueList->rowCount() != 0) {
+//		m_issueList->removeRow(0);
+//	}
+
+//	QStringList lines = output.split('\n');
+//	for (int i = 0; i < lines.size(); ++i) {
+//		CompilerMessage item(lines.at(i));
+//		if (item.isOk()) {
+//			m_outputWidget->appendPlainText(" file: " + item.file() + '\n');
+//			m_outputWidget->appendPlainText(" line: " + item.line() + '\n');
+//			m_outputWidget->appendPlainText(" text: " + item.text() + '\n');
+			//int row = m_problemList->rowCount();
+//			m_issueList->insertRow(i);
+//			m_issueList->setItem(i, 0, new QTableWidgetItem(item.file()));
+//			m_issueList->setItem(i, 1, new QTableWidgetItem(item.line()));
+//			m_issueList->setItem(i, 2, new QTableWidgetItem(item.text()));
+//			if (item.type() == "fatal error") {
+				//
+//			} else if (item.type() == "error") {
+				//
+//			} else if (item.type() == "warning") {
+				//
+//			}
+//		}
+//	}
 }
 
 void MainWindow::setupCompiler()
@@ -244,7 +264,7 @@ void MainWindow::setupCompiler()
 		tr("Specify Pawn compiler location"), "pawncc.exe",
 		tr("Executable programs (*.exe)"));
 	if (!path.isEmpty()) {
-		m_compilerPath = path;
+		m_compiler->setPath(path);
 	}
 }
 
@@ -258,7 +278,7 @@ void MainWindow::updateWindowTitle()
 	QString title;
 	if (!m_fileName.isEmpty()) {
 		title.append(QFileInfo(m_fileName).fileName());
-		if (m_codeEdit->document()->isModified()) {
+		if (m_editor->document()->isModified()) {
 			title.append("*");
 		}
 		title.append(" - ");
@@ -289,8 +309,8 @@ void MainWindow::readFile(QString fileName)
 				QMessageBox::Ok);
 		} else {
 			m_fileName = fileName;
-			m_codeEdit->setPlainText(file.readAll());
-			m_codeEdit->document()->setModified(false);
+			m_editor->setPlainText(file.readAll());
+			m_editor->document()->setModified(false);
 			updateWindowTitle();
 		}
 	}
@@ -308,8 +328,8 @@ void MainWindow::writeFile(QString fileName)
 		return;
 	}
 
-	file.write(m_codeEdit->toPlainText().toAscii());
-	m_codeEdit->document()->setModified(false);
+	file.write(m_editor->toPlainText().toAscii());
+	m_editor->document()->setModified(false);
 	updateWindowTitle();
 }
 
@@ -323,32 +343,10 @@ void MainWindow::readSettings()
 		if (settings.value("Maximized", false).toBool()) {
 			setWindowState(Qt::WindowMaximized);
 		}
-		QList<int> sizes;
-		sizes.push_back(settings.value("EditorHeight", height() * 0.75).toInt());
-		sizes.push_back(settings.value("OutputHeight", height() * 0.25).toInt());
-		m_splitter->setSizes(sizes);
-	settings.endGroup();
-
-	settings.beginGroup("Font");
-		QFont font;
-		settings.beginGroup("Editor");
-			font.setFamily(settings.value("Family", "Courier New").toString());
-			font.setPointSize(settings.value("PointSize", 10).toInt());
-			font.setBold(settings.value("Bold", false).toBool());
-			font.setBold(settings.value("Italic", false).toBool());
-			m_codeEdit->setFont(font);
-		settings.endGroup();
-		settings.beginGroup("OutputPane");
-			font.setFamily(settings.value("Family", "Courier New").toString());
-			font.setPointSize(settings.value("PointSize", 10).toInt());
-			font.setBold(settings.value("Bold", false).toBool());
-			font.setBold(settings.value("Italic", false).toBool());
-			m_outputPane->setFont(font);
-		settings.endGroup();
 	settings.endGroup();
 
 	settings.beginGroup("Compiler");
-		m_compilerPath = settings.value("Path").toString();
+		m_compiler->setPath(settings.value("Path").toString());
 	settings.endGroup();
 }
 
@@ -362,26 +360,9 @@ void MainWindow::writeSettings()
 			settings.setValue("Size", size());
 			settings.setValue("Pos", pos());
 		}
-		settings.setValue("EditorHeight", m_splitter->widget(0)->height());
-		settings.setValue("OutputHeight", m_splitter->widget(1)->height());
-	settings.endGroup();
-
-	settings.beginGroup("Font");
-		settings.beginGroup("Editor");
-			settings.setValue("Family", m_codeEdit->font().family());
-			settings.setValue("PointSize", m_codeEdit->font().pointSize());
-			settings.setValue("Bold", m_codeEdit->font().bold());
-			settings.setValue("Italic", m_codeEdit->font().italic());
-		settings.endGroup();
-		settings.beginGroup("OutputPane");
-			settings.setValue("Family", m_outputPane->font().family());
-			settings.setValue("PointSize", m_outputPane->font().pointSize());
-			settings.setValue("Bold", m_outputPane->font().bold());
-			settings.setValue("Italic", m_outputPane->font().italic());
-		settings.endGroup();
 	settings.endGroup();
 
 	settings.beginGroup("Compiler");
-		settings.setValue("Path", m_compilerPath);
+		settings.setValue("Path", m_compiler->path());
 	settings.endGroup();
 }

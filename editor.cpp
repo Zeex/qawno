@@ -1,25 +1,26 @@
 #include <QtGui>
 
-#include "codeedit.h"
+#include "editor.h"
+#include "highlighter.h"
 
-LineNumberArea::LineNumberArea(CodeEdit *edit)
+LineNumberArea::LineNumberArea(Editor *edit)
 	: QWidget(edit)
-	, m_codeEdit(edit)
+	, m_editor(edit)
 {
 }
 
 QSize LineNumberArea::sizeHint() const
 {
-	int width = m_codeEdit->lineNumberAreaWidth();
+	int width = m_editor->lineNumberAreaWidth();
 	return QSize(width, 0);
 }
 
 void LineNumberArea::paintEvent(QPaintEvent *paintEvent)
 {
-	m_codeEdit->lineNumberAreaPaintEvent(paintEvent);
+	m_editor->lineNumberAreaPaintEvent(paintEvent);
 }
 
-CodeEdit::CodeEdit(QWidget *parent) : QPlainTextEdit(parent)
+Editor::Editor(QWidget *parent) : QPlainTextEdit(parent)
 {
 	setLineWrapMode(NoWrap);
 
@@ -31,9 +32,39 @@ CodeEdit::CodeEdit(QWidget *parent) : QPlainTextEdit(parent)
 
 	highlightCurrentLine();
 	updateLineNumberAreaWidth(0);
+
+	m_highlighter = new Highlighter(this);
+	m_highlighter->setDocument(document());
+
+	QSettings settings;
+	settings.beginGroup("Font");
+		QFont font;
+		settings.beginGroup("Editor");
+			font.setFamily(settings.value("Family", "Courier New").toString());
+			font.setPointSize(settings.value("PointSize", 10).toInt());
+			font.setBold(settings.value("Bold", false).toBool());
+			font.setBold(settings.value("Italic", false).toBool());
+			QPlainTextEdit::setFont(font);
+		settings.endGroup();
+	settings.endGroup();
 }
 
-void CodeEdit::lineNumberAreaPaintEvent(QPaintEvent *paintEvent)
+void Editor::setFont(const QFont &font)
+{
+	QSettings settings;
+	settings.beginGroup("Font");
+		settings.beginGroup("Editor");
+			settings.setValue("Family", font.family());
+			settings.setValue("PointSize", font.pointSize());
+			settings.setValue("Bold", font.bold());
+			settings.setValue("Italic", font.italic());
+		settings.endGroup();
+	settings.endGroup();
+
+	QPlainTextEdit::setFont(font);
+}
+
+void Editor::lineNumberAreaPaintEvent(QPaintEvent *paintEvent)
 {
 	QPainter painter(m_lineNumberArea);
 	painter.fillRect(paintEvent->rect(), Qt::lightGray);
@@ -59,7 +90,7 @@ void CodeEdit::lineNumberAreaPaintEvent(QPaintEvent *paintEvent)
 	}
 }
 
-int CodeEdit::lineNumberAreaWidth() const
+int Editor::lineNumberAreaWidth() const
 {
 	int numDigits = 1;
 	int max = qMax(1, blockCount());
@@ -79,7 +110,7 @@ int CodeEdit::lineNumberAreaWidth() const
 	return actualSpace;
 }
 
-void CodeEdit::resizeEvent(QResizeEvent *resizeEvent)
+void Editor::resizeEvent(QResizeEvent *resizeEvent)
 {
 	QPlainTextEdit::resizeEvent(resizeEvent);
 
@@ -88,7 +119,7 @@ void CodeEdit::resizeEvent(QResizeEvent *resizeEvent)
 		lineNumberAreaWidth(), cr.height()));
 }
 
-void CodeEdit::updateLineNumberArea(const QRect &rect, int dy)
+void Editor::updateLineNumberArea(const QRect &rect, int dy)
 {
 	if (dy) {
 		m_lineNumberArea->scroll(0, dy);
@@ -101,12 +132,12 @@ void CodeEdit::updateLineNumberArea(const QRect &rect, int dy)
 	}
 }
 
-void CodeEdit::updateLineNumberAreaWidth(int)
+void Editor::updateLineNumberAreaWidth(int)
 {
 	setViewportMargins(lineNumberAreaWidth(), 0, 0, 0);
 }
 
-void CodeEdit::highlightCurrentLine()
+void Editor::highlightCurrentLine()
 {
 	QList<QTextEdit::ExtraSelection> extraSelections;
 

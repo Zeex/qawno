@@ -8,10 +8,13 @@ class QMenuBar;
 class QPlainTextEdit;
 class QProcess;
 class QSplitter;
+class QTableWidget;
 class QTextEdit;
 
-class CodeEdit;
-class PawnHighlighter;
+class Compiler;
+class Editor;
+class IssueList;
+class OutputWidget;
 
 class MainWindow : public QMainWindow
 {
@@ -23,25 +26,16 @@ protected:
 	void closeEvent(QCloseEvent *closeEvent);
 
 private slots:
-	// File menu
 	void newFile();
 	void openFile();
 	void closeFile();
 	void saveFile();
 	void saveFileAs();
 	void exit();
-
-	// Options menu
 	void selectEditorFont();
 	void selectOutputFont();
-
-	// Build menu
 	void compile();
-
-	// Help menu
 	void aboutQt();
-
-	// Other
 	void compiled(int);
 	void setupCompiler();
 	void updateWindowTitle();
@@ -54,22 +48,13 @@ private:
 	void writeSettings();
 
 private:
-	// Code editor
-	CodeEdit *m_codeEdit;
-	PawnHighlighter *m_highlighter;
+	Editor *m_editor;
+	QString  m_fileName; // Currently edited file
 
-	// Currently edited file
-	QString  m_fileName;
+	Compiler *m_compiler;
 
-	// Compiler
-	QString m_compilerPath;
-	QProcess *m_compilerProcess;
-
-	// Compiler output
-	QPlainTextEdit *m_outputPane;
-
-	// Splits editor and output area
-	QSplitter *m_splitter;
+	IssueList *m_issueList;
+	OutputWidget *m_outputWidget;
 };
 
 #endif // MAINWINDOW_H

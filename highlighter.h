@@ -7,7 +7,7 @@
 #include <QSyntaxHighlighter>
 #include <QVector>
 
-class PawnHighlighter : public QSyntaxHighlighter
+class Highlighter : public QSyntaxHighlighter
 {
 	Q_OBJECT
 
@@ -24,7 +24,7 @@ public:
 		QColor preprocessor;
 	};
 
-	explicit PawnHighlighter(QObject *parent = 0);
+	explicit Highlighter(QObject *parent = 0);
 
 	void highlightBlock(const QString &text);
 

@@ -1,15 +1,45 @@
 SOURCES += \
 	main.cpp \
 	mainwindow.cpp \
-	codeedit.cpp \
-    pawnhighlighter.cpp
+    compiler.cpp \
+    menubar.cpp \
+    outputwidget.cpp \
+    highlighter.cpp \
+    editor.cpp \
+    issuelist.cpp
 
 HEADERS += \
 	mainwindow.h \
-	codeedit.h \
-    pawnhighlighter.h
+    compiler.h \
+    menubar.h \
+    outputwidget.h \
+    highlighter.h \
+    editor.h \
+    issuelist.h
 
 RC_FILE = qawno.rc
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
