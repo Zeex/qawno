@@ -1,6 +1,6 @@
 SOURCES += \
-	main.cpp \
-	mainwindow.cpp \
+    main.cpp \
+    mainwindow.cpp \
     compiler.cpp \
     menubar.cpp \
     outputwidget.cpp \
@@ -9,7 +9,7 @@ SOURCES += \
     issuelist.cpp
 
 HEADERS += \
-	mainwindow.h \
+    mainwindow.h \
     compiler.h \
     menubar.h \
     outputwidget.h \
@@ -18,6 +18,8 @@ HEADERS += \
     issuelist.h
 
 RC_FILE = qawno.rc
+
+win32:QMAKE_LFLAGS_RELEASE += -static-libgcc
 
 
 
