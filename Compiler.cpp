@@ -42,7 +42,8 @@ bool Compiler::test() const
 {
 	QProcess pawncc;
 	pawncc.setProcessChannelMode(QProcess::SeparateChannels);
-	pawncc.execute(m_path);
+	pawncc.start(m_path);
+	pawncc.waitForFinished();
 	return pawncc.error() != QProcess::FailedToStart;
 }
 
