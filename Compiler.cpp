@@ -42,6 +42,7 @@ bool Compiler::test() const
 {
 	m_process->start(m_path);
 	m_process->waitForFinished();
+	m_process->readAll();
 	return m_process->error() != QProcess::FailedToStart;
 }
 
