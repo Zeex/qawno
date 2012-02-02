@@ -4,22 +4,22 @@ SOURCES += \
     MenuBar.cpp \
     MainWindow.cpp \
     IssueList.cpp \
-    Highlighter.cpp \
     EditorWidget.cpp \
     Compiler.cpp \
     Issue.cpp \
-    CompilerOptionsDialog.cpp
+    CompilerOptionsDialog.cpp \
+    SyntaxHighlighter.cpp
 
 HEADERS += \
     OutputWidget.h \
     MenuBar.h \
     MainWindow.h \
     IssueList.h \
-    Highlighter.h \
     EditorWidget.h \
     Compiler.h \
     Issue.h \
-    CompilerOptionsDialog.h
+    CompilerOptionsDialog.h \
+    SyntaxHighlighter.h
 
 RC_FILE = qawno.rc
 

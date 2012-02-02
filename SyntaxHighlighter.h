@@ -7,7 +7,7 @@
 #include <QSyntaxHighlighter>
 #include <QVector>
 
-class Highlighter : public QSyntaxHighlighter
+class SyntaxHighlighter : public QSyntaxHighlighter
 {
 	Q_OBJECT
 
@@ -24,7 +24,7 @@ public:
 		QColor preprocessor;
 	};
 
-	explicit Highlighter(QObject *parent = 0);
+	explicit SyntaxHighlighter(QObject *parent = 0);
 
 	void highlightBlock(const QString &text);
 

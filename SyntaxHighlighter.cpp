@@ -1,8 +1,8 @@
 // TODO: more robust parser
 
-#include "Highlighter.h"
+#include "SyntaxHighlighter.h"
 
-static Highlighter::ColorScheme defaultColorScheme = {
+static SyntaxHighlighter::ColorScheme defaultColorScheme = {
 	Qt::darkBlue,
 	Qt::blue,
 	Qt::darkGreen,
@@ -14,7 +14,7 @@ static Highlighter::ColorScheme defaultColorScheme = {
 	Qt::blue
 };
 
-Highlighter::Highlighter(QObject *parent) :
+SyntaxHighlighter::SyntaxHighlighter(QObject *parent) :
 	QSyntaxHighlighter(parent)
 {
 	m_colorScheme = defaultColorScheme;
@@ -41,25 +41,25 @@ Highlighter::Highlighter(QObject *parent) :
 		<< "while";
 }
 
-const Highlighter::ColorScheme &Highlighter::colorScheme() const {
+const SyntaxHighlighter::ColorScheme &SyntaxHighlighter::colorScheme() const {
 	return m_colorScheme;
 }
 
-void Highlighter::setColorScheme(const ColorScheme &scheme) {
+void SyntaxHighlighter::setColorScheme(const ColorScheme &scheme) {
 	m_colorScheme = scheme;
 }
 
-bool Highlighter::isIdentifierFirstChar(QChar c)
+bool SyntaxHighlighter::isIdentifierFirstChar(QChar c)
 {
 	return c.isLetter() || c == '_' || c == '@';
 }
 
-bool Highlighter::isIdentifierChar(QChar c)
+bool SyntaxHighlighter::isIdentifierChar(QChar c)
 {
 	return isIdentifierFirstChar(c) || c.isDigit();
 }
 
-bool Highlighter::isHexDigit(QChar c)
+bool SyntaxHighlighter::isHexDigit(QChar c)
 {
 	if (c.isDigit()) {
 		return true;
@@ -68,7 +68,7 @@ bool Highlighter::isHexDigit(QChar c)
 	return (cc >= 'a' && cc <= 'f') || (cc >= 'A' && cc <= 'F') || cc == 'x';
 }
 
-bool Highlighter::isKeyword(const QString &s)
+bool SyntaxHighlighter::isKeyword(const QString &s)
 {
 	foreach (const QString &keyword, m_keywords) {
 		if (s == keyword) {
@@ -79,7 +79,7 @@ bool Highlighter::isKeyword(const QString &s)
 }
 
 // Simple hand-written highlighter (with no regexps!)
-void Highlighter::highlightBlock(const QString &text)
+void SyntaxHighlighter::highlightBlock(const QString &text)
 {
 	setFormat(0, text.length(), defaultColorScheme.defaultColor);
 

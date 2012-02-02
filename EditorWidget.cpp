@@ -1,7 +1,7 @@
 #include <QtGui>
 
 #include "EditorWidget.h"
-#include "Highlighter.h"
+#include "SyntaxHighlighter.h"
 
 LineNumberArea::LineNumberArea(EditorWidget *edit)
 	: QWidget(edit)
@@ -33,7 +33,7 @@ EditorWidget::EditorWidget(QWidget *parent) : QPlainTextEdit(parent)
 	highlightCurrentLine();
 	updateLineNumberAreaWidth(0);
 
-	m_highlighter = new Highlighter(this);
+	m_highlighter = new SyntaxHighlighter(this);
 	m_highlighter->setDocument(document());
 
 	QSettings settings;
