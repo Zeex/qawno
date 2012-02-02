@@ -40,7 +40,7 @@ void Compiler::setOptions(const QStringList &options)
 
 bool Compiler::test() const
 {
-	m_process->start(QString("%1").arg(m_path));
+	m_process->start(m_path);
 	m_process->waitForFinished();
 	return m_process->error() != QProcess::FailedToStart;
 }
@@ -52,7 +52,7 @@ void Compiler::run(const QString &inputFile)
 
 QString Compiler::getCommandLine(const QString &inputFile) const
 {
-	return QString("%1 %2 %3").arg(m_path).arg(m_options.join(" ")).arg(inputFile);
+	return QString("%1 %2 \"%3\"").arg(m_path).arg(m_options.join(" ")).arg(inputFile);
 }
 
 QString Compiler::getOutput() const
