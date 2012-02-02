@@ -25,12 +25,12 @@ protected:
 	void closeEvent(QCloseEvent *closeEvent);
 
 private slots:
-	void newFile();
-	void openFile();
-	void closeFile();
-	void saveFile();
-	void saveFileAs();
-	void exit();
+	bool newFile();
+	bool openFile();
+	bool closeFile();
+	bool saveFile();
+	bool saveFileAs();
+	bool exit();
 	void find();
 	void findReplace();
 	void findNext();

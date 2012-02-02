@@ -33,7 +33,7 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(menuBar->actions().fileClose, SIGNAL(triggered()), this, SLOT(closeFile()));
 	connect(menuBar->actions().fileSave, SIGNAL(triggered()), this, SLOT(saveFile()));
 	connect(menuBar->actions().fileSaveAs, SIGNAL(triggered()), this, SLOT(saveFileAs()));
-	connect(menuBar->actions().fileExit, SIGNAL(triggered()), this, SLOT(newFile()));
+	connect(menuBar->actions().fileExit, SIGNAL(triggered()), this, SLOT(exit()));
 	connect(menuBar->actions().editUndo, SIGNAL(triggered()), m_editor, SLOT(undo()));
 	connect(menuBar->actions().editRedo, SIGNAL(triggered()), m_editor, SLOT(redo()));
 	connect(menuBar->actions().editCut, SIGNAL(triggered()), m_editor, SLOT(cut()));
@@ -69,24 +69,21 @@ MainWindow::MainWindow(QWidget *parent)
 	}
 }
 
-void MainWindow::newFile()
+bool MainWindow::newFile()
 {
-	closeFile();
+	return closeFile();
 }
 
-void MainWindow::openFile()
+bool MainWindow::openFile()
 {
-	if (!isSafeToClose()) {
-		return;
+	if (closeFile()) {
+		QFileDialog openDialog(this);
+		QString fileName = openDialog.getOpenFileName(this,
+			tr("Open file"), "", tr("Pawn scripts (*.pwn *.inc)"));
+		readFile(fileName);
+		return true;
 	}
-
-	m_fileName.clear();
-
-	QFileDialog openDialog(this);
-	QString fileName = openDialog.getOpenFileName(this,
-		tr("Open file"), "", tr("Pawn scripts (*.pwn *.inc)"));
-
-	readFile(fileName);
+	return false;
 }
 
 bool MainWindow::isSafeToClose()
@@ -123,32 +120,35 @@ bool MainWindow::isSafeToClose()
 	return true;
 }
 
-void MainWindow::closeFile()
+bool MainWindow::closeFile()
 {
 	if (isSafeToClose()) {
 		m_editor->clear();
 		m_fileName.clear();
+		return true;
 	}
+	return false;
 }
 
-void MainWindow::saveFile()
+bool MainWindow::saveFile()
 {
 	if (m_editor->document()->isEmpty()) {
-		return;
+		return false;
 	}
 
 	if (m_fileName.isEmpty()) {
 		saveFileAs();
-		return;
+		return false;
 	}
 
 	writeFile(m_fileName);
+	return true;
 }
 
-void MainWindow::saveFileAs()
+bool MainWindow::saveFileAs()
 {
 	if (m_editor->document()->isEmpty()) {
-		return;
+		return false;
 	}
 
 	QFileDialog saveDialog;
@@ -157,15 +157,16 @@ void MainWindow::saveFileAs()
 
 	if (!fileName.isEmpty()) {
 		m_fileName = fileName;
-		saveFile();
-		return;
+		return saveFile();
 	}
+
+	return false;
 }
 
-void MainWindow::exit()
+bool MainWindow::exit()
 {
-	if (isSafeToClose()) {
-		close();
+	if (closeFile()) {
+		QApplication::exit();
 	}
 }
 
