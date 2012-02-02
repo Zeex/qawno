@@ -12,8 +12,8 @@ class QTableWidget;
 class QTextEdit;
 
 class Compiler;
-class Editor;
-class IssueList;
+class EditorWidget;
+//class IssueList;
 class OutputWidget;
 
 class MainWindow : public QMainWindow
@@ -50,14 +50,14 @@ private:
 
 	void setupCompiler();
 
-private:
-	Editor *m_editor;
+private:	
 	QString  m_fileName; // Currently edited file
 
 	Compiler *m_compiler;
 
-	IssueList *m_issueList;
+	EditorWidget *m_editor;
 	OutputWidget *m_outputWidget;
+	//IssueList *m_issueList;
 };
 
 #endif // MAINWINDOW_H

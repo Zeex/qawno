@@ -1,6 +1,6 @@
 // TODO: more robust parser
 
-#include "highlighter.h"
+#include "Highlighter.h"
 
 static Highlighter::ColorScheme defaultColorScheme = {
 	Qt::darkBlue,

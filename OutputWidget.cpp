@@ -1,6 +1,6 @@
 #include <QSettings>
 
-#include "outputwidget.h"
+#include "OutputWidget.h"
 
 OutputWidget::OutputWidget(QWidget *parent) : QPlainTextEdit(parent)
 {

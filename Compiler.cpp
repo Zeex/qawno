@@ -2,7 +2,7 @@
 #include <QProcess>
 #include <QStringList>
 
-#include "compiler.h"
+#include "Compiler.h"
 
 CompilerMessage::CompilerMessage(const QString &message, QObject *parent)
 	: QObject(parent)

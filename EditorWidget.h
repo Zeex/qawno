@@ -3,14 +3,14 @@
 
 #include <QPlainTextEdit>
 
-class Editor;
+class EditorWidget;
 class Highlighter;
 
 class LineNumberArea : public QWidget
 {
 	Q_OBJECT
 public:
-	LineNumberArea(Editor *editor);
+	LineNumberArea(EditorWidget *editor);
 
 	QSize sizeHint() const;
 
@@ -18,16 +18,16 @@ protected:
 	void paintEvent(QPaintEvent *paintEvent);
 
 private:
-	Editor *m_editor;
+	EditorWidget *m_editor;
 };
 
-class Editor : public QPlainTextEdit
+class EditorWidget : public QPlainTextEdit
 {
 	Q_OBJECT
 	friend class LineNumberArea;
 
 public:
-	explicit Editor(QWidget *parent = 0);
+	explicit EditorWidget(QWidget *parent = 0);
 
 	void setFont(const QFont &font);
 

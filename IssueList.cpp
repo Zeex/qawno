@@ -1,6 +1,6 @@
 #include <QHeaderView>
 
-#include "issuelist.h"
+#include "IssueList.h"
 
 IssueList::IssueList(QWidget *parent) :
 	QTableWidget(parent)

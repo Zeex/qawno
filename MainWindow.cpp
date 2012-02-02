@@ -7,17 +7,17 @@
 #include <QMessageBox>
 #include <QSettings>
 
-#include "compiler.h"
-#include "editor.h"
-#include "issuelist.h"
-#include "mainwindow.h"
-#include "menubar.h"
-#include "outputwidget.h"
+#include "Compiler.h"
+#include "EditorWidget.h"
+//#include "IssueList.h"
+#include "MainWindow.h"
+#include "MenuBar.h"
+#include "OutputWidget.h"
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
 {
-	m_editor = new Editor(this);
+	m_editor = new EditorWidget(this);
 
 	setCentralWidget(m_editor);
 	connect(m_editor, SIGNAL(textChanged()), SLOT(updateWindowTitle()));

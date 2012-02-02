@@ -1,9 +1,9 @@
 #include <QtGui>
 
-#include "editor.h"
-#include "highlighter.h"
+#include "EditorWidget.h"
+#include "Highlighter.h"
 
-LineNumberArea::LineNumberArea(Editor *edit)
+LineNumberArea::LineNumberArea(EditorWidget *edit)
 	: QWidget(edit)
 	, m_editor(edit)
 {
@@ -20,7 +20,7 @@ void LineNumberArea::paintEvent(QPaintEvent *paintEvent)
 	m_editor->lineNumberAreaPaintEvent(paintEvent);
 }
 
-Editor::Editor(QWidget *parent) : QPlainTextEdit(parent)
+EditorWidget::EditorWidget(QWidget *parent) : QPlainTextEdit(parent)
 {
 	setLineWrapMode(NoWrap);
 
@@ -49,7 +49,7 @@ Editor::Editor(QWidget *parent) : QPlainTextEdit(parent)
 	settings.endGroup();
 }
 
-void Editor::setFont(const QFont &font)
+void EditorWidget::setFont(const QFont &font)
 {
 	QSettings settings;
 	settings.beginGroup("Font");
@@ -64,7 +64,7 @@ void Editor::setFont(const QFont &font)
 	QPlainTextEdit::setFont(font);
 }
 
-void Editor::lineNumberAreaPaintEvent(QPaintEvent *paintEvent)
+void EditorWidget::lineNumberAreaPaintEvent(QPaintEvent *paintEvent)
 {
 	QPainter painter(m_lineNumberArea);
 	painter.fillRect(paintEvent->rect(), Qt::lightGray);
@@ -90,7 +90,7 @@ void Editor::lineNumberAreaPaintEvent(QPaintEvent *paintEvent)
 	}
 }
 
-int Editor::lineNumberAreaWidth() const
+int EditorWidget::lineNumberAreaWidth() const
 {
 	int numDigits = 1;
 	int max = qMax(1, blockCount());
@@ -110,7 +110,7 @@ int Editor::lineNumberAreaWidth() const
 	return actualSpace;
 }
 
-void Editor::resizeEvent(QResizeEvent *resizeEvent)
+void EditorWidget::resizeEvent(QResizeEvent *resizeEvent)
 {
 	QPlainTextEdit::resizeEvent(resizeEvent);
 
@@ -119,7 +119,7 @@ void Editor::resizeEvent(QResizeEvent *resizeEvent)
 		lineNumberAreaWidth(), cr.height()));
 }
 
-void Editor::updateLineNumberArea(const QRect &rect, int dy)
+void EditorWidget::updateLineNumberArea(const QRect &rect, int dy)
 {
 	if (dy) {
 		m_lineNumberArea->scroll(0, dy);
@@ -132,12 +132,12 @@ void Editor::updateLineNumberArea(const QRect &rect, int dy)
 	}
 }
 
-void Editor::updateLineNumberAreaWidth(int)
+void EditorWidget::updateLineNumberAreaWidth(int)
 {
 	setViewportMargins(lineNumberAreaWidth(), 0, 0, 0);
 }
 
-void Editor::highlightCurrentLine()
+void EditorWidget::highlightCurrentLine()
 {
 	QList<QTextEdit::ExtraSelection> extraSelections;
 
