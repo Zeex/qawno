@@ -1,3 +1,4 @@
+#include <cstdio>
 #include <QProcess>
 #include <QStringList>
 
@@ -34,6 +35,13 @@ QString Compiler::path() const
 void Compiler::setPath(const QString &path)
 {
 	m_path = path;
+}
+
+bool Compiler::test() const
+{
+	m_process->start(QString("%1").arg(m_path));
+	m_process->waitForFinished();
+	return m_process->error() != QProcess::FailedToStart;
 }
 
 void Compiler::run(const QString &inputFile, const QString &options)

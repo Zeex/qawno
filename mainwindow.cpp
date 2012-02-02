@@ -56,16 +56,15 @@ MainWindow::MainWindow(QWidget *parent)
 	//tabifyDockWidget(issuesDock, outputDock);
 
 	m_compiler = new Compiler(this);
-	m_compiler->setPath("pawncc.exe"); // it may be in current dir or in PATH
 	connect(m_compiler, SIGNAL(finished(int)), this, SLOT(compiled(int)));
 
-	// Restore window settings
+	// Restore window state
 	readSettings();
 
-	// Open specified file, if any
+	// Open file specified at command line, if any
 	if (QApplication::instance()->argc() > 1) {
 		readFile(QApplication::instance()->argv()[1]);
-	}
+	}	
 }
 
 void MainWindow::newFile()
@@ -196,6 +195,10 @@ void MainWindow::selectOutputFont()
 
 void MainWindow::compile()
 {
+	if (!m_compiler->test()) {
+		setupCompiler();
+	}
+
 	if (m_editor->toPlainText().isEmpty()) {
 		m_outputWidget->appendPlainText(tr("Nothing to compile!"));
 		return;
@@ -203,20 +206,6 @@ void MainWindow::compile()
 
 	if (m_fileName.isEmpty()) {
 		saveFileAs();
-		return;
-	}
-
-	if (!QFile::exists(m_compiler->path())) {
-		int button = QMessageBox::warning(this, QCoreApplication::applicationName(),
-			tr("Compiler is not set or missing. \n\n"
-				"You now will be asked to specify its location. "
-				"The compiler usually sits inside the \"pawno\" folder "
-				"of your SA:MP server installation.\n\n"
-				"Continue?"),
-			QMessageBox::Yes | QMessageBox::No);
-		if (button != QMessageBox::No) {
-			setupCompiler();
-		}
 		return;
 	}
 
@@ -258,11 +247,23 @@ void MainWindow::compiled(int exitCode)
 
 void MainWindow::setupCompiler()
 {
+	int button = QMessageBox::warning(this, QCoreApplication::applicationName(),
+		tr("Pawn compiler is not set or missing.\n"
+		   "Do you want to set compiler path now?"),
+		QMessageBox::Yes | QMessageBox::No);
+	if (button == QMessageBox::No) {
+		return;
+	}
+
 	QFileDialog selectDialog;
-	//selectDialog.setDefaultSuffix("pawncc.exe");
 	QString path = selectDialog.getOpenFileName(this,
-		tr("Specify Pawn compiler location"), "pawncc.exe",
+#ifdef Q_WS_WIN
+		tr("Select location of the Pawn compiler"), "pawncc.exe",
 		tr("Executable programs (*.exe)"));
+#else
+		tr("Select location of the Pawn compiler"), "pawncc",
+		tr("All files (*.*)"));
+#endif
 	if (!path.isEmpty()) {
 		m_compiler->setPath(path);
 	}
@@ -347,6 +348,9 @@ void MainWindow::readSettings()
 
 	settings.beginGroup("Compiler");
 		m_compiler->setPath(settings.value("Path").toString());
+		if (m_compiler->path().isEmpty()) {
+			m_compiler->setPath("pawncc"); // Assume compiler is in PATH
+		}
 	settings.endGroup();
 }
 

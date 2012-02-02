@@ -37,15 +37,18 @@ private slots:
 	void compile();
 	void aboutQt();
 	void compiled(int);
-	void setupCompiler();
 	void updateWindowTitle();
 
 private:
 	bool isSafeToClose();
+
 	void readFile(QString fileName);
 	void writeFile(QString fileName);
+
 	void readSettings();
 	void writeSettings();
+
+	void setupCompiler();
 
 private:
 	Editor *m_editor;

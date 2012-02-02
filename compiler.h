@@ -42,6 +42,7 @@ public:
 	QString path() const;
 	void setPath(const QString &path);
 
+	bool test() const;
 	void run(const QString &inputFile, const QString &options = "");
 
 	QString output() const;
