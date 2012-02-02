@@ -13,7 +13,6 @@ class QTextEdit;
 
 class Compiler;
 class EditorWidget;
-//class IssueList;
 class OutputWidget;
 
 class MainWindow : public QMainWindow
@@ -52,16 +51,15 @@ private:
 	void writeFile(QString fileName);
 
 	void readSettings();
-	void writeSettings();	
+	void writeSettings();
 
-private:	
+private:
 	QString  m_fileName; // Currently edited file
 
 	Compiler *m_compiler;
 
 	EditorWidget *m_editor;
 	OutputWidget *m_outputWidget;
-	//IssueList *m_issueList;
 };
 
 #endif // MAINWINDOW_H

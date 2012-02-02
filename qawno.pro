@@ -3,7 +3,6 @@ SOURCES += \
     OutputWidget.cpp \
     MenuBar.cpp \
     MainWindow.cpp \
-    IssueList.cpp \
     EditorWidget.cpp \
     Compiler.cpp \
     Issue.cpp \
@@ -41,3 +40,4 @@ FORMS += \
     GoToDialog.ui \
     FindDialog.ui \
     FindReplaceDialog.ui
+

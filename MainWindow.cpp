@@ -13,7 +13,6 @@
 #include "EditorWidget.h"
 #include "FindDialog.h"
 #include "FindReplaceDialog.h"
-//#include "IssueList.h"
 #include "GoToDialog.h"
 #include "MainWindow.h"
 #include "MenuBar.h"
@@ -51,20 +50,12 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(menuBar->actions().optionsCompiler, SIGNAL(triggered()), SLOT(setupCompiler()));
 	connect(menuBar->actions().helpAboutQt, SIGNAL(triggered()), SLOT(aboutQt()));
 
-	//QDockWidget *issuesDock = new QDockWidget(tr("Issues"), this);
-	//issuesDock->setAllowedAreas(Qt::BottomDockWidgetArea);
-	//m_issueList = new IssueList(this);
-	//issuesDock->setWidget(m_issueList);
-	//addDockWidget(Qt::BottomDockWidgetArea, issuesDock);
-
 	QDockWidget *outputDock = new QDockWidget(tr("Output"), this);
 	outputDock->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
 	m_outputWidget = new OutputWidget(this);
 	m_outputWidget->setReadOnly(true);
 	outputDock->setWidget(m_outputWidget);
 	addDockWidget(Qt::BottomDockWidgetArea, outputDock);
-
-	//tabifyDockWidget(issuesDock, outputDock);
 
 	m_compiler = new Compiler(this);
 	connect(m_compiler, SIGNAL(finished(int)), this, SLOT(compiled(int)));
@@ -75,7 +66,7 @@ MainWindow::MainWindow(QWidget *parent)
 	// Open file specified at command line, if any
 	if (QApplication::instance()->argc() > 1) {
 		readFile(QApplication::instance()->argv()[1]);
-	}	
+	}
 }
 
 void MainWindow::newFile()
@@ -289,33 +280,6 @@ void MainWindow::compiled(int exitCode)
 
 	QString output = m_compiler->getOutput();
 	m_outputWidget->appendPlainText(output);
-
-	// Remove old items
-//	while (m_issueList->rowCount() != 0) {
-//		m_issueList->removeRow(0);
-//	}
-
-//	QStringList lines = output.split('\n');
-//	for (int i = 0; i < lines.size(); ++i) {
-//		CompilerMessage item(lines.at(i));
-//		if (item.isOk()) {
-//			m_outputWidget->appendPlainText(" file: " + item.file() + '\n');
-//			m_outputWidget->appendPlainText(" line: " + item.line() + '\n');
-//			m_outputWidget->appendPlainText(" text: " + item.text() + '\n');
-			//int row = m_problemList->rowCount();
-//			m_issueList->insertRow(i);
-//			m_issueList->setItem(i, 0, new QTableWidgetItem(item.file()));
-//			m_issueList->setItem(i, 1, new QTableWidgetItem(item.line()));
-//			m_issueList->setItem(i, 2, new QTableWidgetItem(item.text()));
-//			if (item.type() == "fatal error") {
-				//
-//			} else if (item.type() == "error") {
-				//
-//			} else if (item.type() == "warning") {
-				//
-//			}
-//		}
-//	}
 }
 
 void MainWindow::setupCompiler()
