@@ -40,10 +40,10 @@ void Compiler::setOptions(const QStringList &options)
 
 bool Compiler::test() const
 {
-	m_process->start(m_path);
-	m_process->waitForFinished();
-	m_process->readAll();
-	return m_process->error() != QProcess::FailedToStart;
+	QProcess pawncc;
+	pawncc.setProcessChannelMode(QProcess::SeparateChannels);
+	pawncc.execute(m_path);
+	return pawncc.error() != QProcess::FailedToStart;
 }
 
 void Compiler::run(const QString &inputFile)
