@@ -1,7 +1,8 @@
-qawno sucks at the moment, I'm working on this
+It turned out that writing a text editor is even more boring than I thought...
 
-FEATURES:
-- Basic editing like open/save a file, cut/copy/paste code, etc
+qawno has:
+
+- Basic editing like open/save a file, cut/copy/paste code, etc (Find is broken)
 - Pawn syntax highlighting
 - In-place compiling (just press F5)
 - Shows compiler output in a docked window (unlike pawno)
