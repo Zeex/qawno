@@ -22,6 +22,8 @@ public:
 		QAction *editCut;
 		QAction *editCopy;
 		QAction *editPaste;
+		QAction *editFind;
+		QAction *editFindReplace;
 		QAction *editGoToLine;
 		QAction *optionsFontEditor;
 		QAction *optionsFontOutput;

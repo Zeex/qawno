@@ -10,6 +10,8 @@
 #include "Compiler.h"
 #include "CompilerOptionsDialog.h"
 #include "EditorWidget.h"
+#include "FindDialog.h"
+#include "FindReplaceDialog.h"
 //#include "IssueList.h"
 #include "GoToDialog.h"
 #include "MainWindow.h"
@@ -37,6 +39,8 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(menuBar->actions().editCut, SIGNAL(triggered()), m_editor, SLOT(cut()));
 	connect(menuBar->actions().editCopy, SIGNAL(triggered()), m_editor, SLOT(copy()));
 	connect(menuBar->actions().editPaste, SIGNAL(triggered()), m_editor, SLOT(paste()));
+	connect(menuBar->actions().editFind, SIGNAL(triggered()), this, SLOT(find()));
+	connect(menuBar->actions().editFindReplace, SIGNAL(triggered()), this, SLOT(findReplace()));
 	connect(menuBar->actions().editGoToLine, SIGNAL(triggered()), this, SLOT(goToLine()));
 	connect(menuBar->actions().buildCompile, SIGNAL(triggered()), this, SLOT(compile()));
 	connect(menuBar->actions().optionsFontEditor, SIGNAL(triggered()), SLOT(selectEditorFont()));
@@ -169,6 +173,18 @@ void MainWindow::exit()
 	if (isSafeToClose()) {
 		close();
 	}
+}
+
+void MainWindow::find()
+{
+	FindDialog dialog;
+	dialog.exec();
+}
+
+void MainWindow::findReplace()
+{
+	FindReplaceDialog dialog;
+	dialog.exec();
 }
 
 void MainWindow::goToLine()

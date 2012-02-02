@@ -33,6 +33,10 @@ MenuBar::MenuBar(QWidget *parent) :
 	m_actions.editPaste = editMenu->addAction(tr("Paste"));
 	m_actions.editPaste->setShortcut(QKeySequence("Ctrl+V"));
 	editMenu->addSeparator();
+	m_actions.editFind = editMenu->addAction(tr("Find..."));
+	m_actions.editFind->setShortcut(QKeySequence("Ctrl+F"));
+	m_actions.editFindReplace = editMenu->addAction(tr("Find and replace..."));
+	m_actions.editFindReplace->setShortcut(QKeySequence("Ctrl+H"));
 	m_actions.editGoToLine = editMenu->addAction(tr("Go to line..."));
 	m_actions.editGoToLine->setShortcut(QKeySequence("Ctrl+G"));
 	addMenu(editMenu);

@@ -9,7 +9,9 @@ SOURCES += \
     Issue.cpp \
     CompilerOptionsDialog.cpp \
     SyntaxHighlighter.cpp \
-    GoToDialog.cpp
+    GoToDialog.cpp \
+    FindDialog.cpp \
+    FindReplaceDialog.cpp
 
 HEADERS += \
     OutputWidget.h \
@@ -21,7 +23,9 @@ HEADERS += \
     Issue.h \
     CompilerOptionsDialog.h \
     SyntaxHighlighter.h \
-    GoToDialog.h
+    GoToDialog.h \
+    FindDialog.h \
+    FindReplaceDialog.h
 
 RC_FILE = qawno.rc
 
@@ -34,4 +38,6 @@ OTHER_FILES += \
 
 FORMS += \
     CompilerOptionsDialog.ui \
-    GoToDialog.ui
+    GoToDialog.ui \
+    FindDialog.ui \
+    FindReplaceDialog.ui

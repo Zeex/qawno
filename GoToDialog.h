@@ -10,7 +10,6 @@ namespace Ui {
 class GoToDialog : public QDialog
 {
 	Q_OBJECT
-
 public:
 	explicit GoToDialog(QWidget *parent = 0);
 	~GoToDialog();
