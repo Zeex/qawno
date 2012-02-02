@@ -254,10 +254,8 @@ void MainWindow::compile()
 			QMessageBox::Yes | QMessageBox::No);
 		if (button != QMessageBox::No) {
 			setupCompiler();
-			compile();
-		} else {
-			return;
 		}
+		return;
 	}
 
 	if (m_editor->toPlainText().isEmpty()) {
