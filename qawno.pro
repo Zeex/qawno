@@ -6,7 +6,8 @@ SOURCES += \
     IssueList.cpp \
     Highlighter.cpp \
     EditorWidget.cpp \
-    Compiler.cpp
+    Compiler.cpp \
+    Issue.cpp
 
 HEADERS += \
     OutputWidget.h \
@@ -15,7 +16,8 @@ HEADERS += \
     IssueList.h \
     Highlighter.h \
     EditorWidget.h \
-    Compiler.h
+    Compiler.h \
+    Issue.h
 
 RC_FILE = qawno.rc
 
