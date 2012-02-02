@@ -30,9 +30,9 @@ class EditorWidget : public QPlainTextEdit
 
 public:
 	explicit EditorWidget(QWidget *parent = 0);
+	~EditorWidget();
 
 	void setCurrentLine(long line);
-	void setFont(const QFont &font);
 
 protected:
 	void resizeEvent(QResizeEvent *e);

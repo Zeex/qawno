@@ -12,9 +12,9 @@ class QVariant;
 class Compiler : public QObject
 {
 	Q_OBJECT
-
 public:
 	explicit Compiler(QObject *parent = 0);
+	~Compiler();
 
 	QString path() const;
 	void setPath(const QString &path);

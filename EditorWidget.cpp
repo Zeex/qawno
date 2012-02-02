@@ -42,14 +42,31 @@ EditorWidget::EditorWidget(QWidget *parent) : QPlainTextEdit(parent)
 	m_highlighter->setDocument(document());
 
 	QSettings settings;
-	settings.beginGroup("Font");
-		QFont font;
+	settings.beginGroup("Widgets");
 		settings.beginGroup("Editor");
-			font.setFamily(settings.value("Family", "Courier New").toString());
-			font.setPointSize(settings.value("PointSize", 10).toInt());
-			font.setBold(settings.value("Bold", false).toBool());
-			font.setBold(settings.value("Italic", false).toBool());
-			QPlainTextEdit::setFont(font);
+			settings.beginGroup("Font");
+				QFont font;
+				font.setFamily(settings.value("Family", "Courier New").toString());
+				font.setPointSize(settings.value("PointSize", 10).toInt());
+				font.setBold(settings.value("Bold", false).toBool());
+				font.setBold(settings.value("Italic", false).toBool());
+				QPlainTextEdit::setFont(font);
+			settings.beginGroup("Font");
+		settings.endGroup();
+	settings.endGroup();
+}
+
+EditorWidget::~EditorWidget()
+{
+	QSettings settings;
+	settings.beginGroup("Widgets");
+		settings.beginGroup("Editor");
+			settings.beginGroup("Font");
+				settings.setValue("Family", font().family());
+				settings.setValue("PointSize", font().pointSize());
+				settings.setValue("Bold", font().bold());
+				settings.setValue("Italic", font().italic());
+			settings.endGroup();
 		settings.endGroup();
 	settings.endGroup();
 }
@@ -62,21 +79,6 @@ void EditorWidget::setCurrentLine(long line)
 		cur.setPosition(pos);
 		setTextCursor(cur);
 	}
-}
-
-void EditorWidget::setFont(const QFont &font)
-{
-	QSettings settings;
-	settings.beginGroup("Font");
-		settings.beginGroup("Editor");
-			settings.setValue("Family", font.family());
-			settings.setValue("PointSize", font.pointSize());
-			settings.setValue("Bold", font.bold());
-			settings.setValue("Italic", font.italic());
-		settings.endGroup();
-	settings.endGroup();
-
-	QPlainTextEdit::setFont(font);
 }
 
 void EditorWidget::lineNumberAreaPaintEvent(QPaintEvent *paintEvent)

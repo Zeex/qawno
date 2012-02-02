@@ -1,3 +1,5 @@
+#include <QSettings>
+
 #include "FindDialog.h"
 #include "ui_FindDialog.h"
 
@@ -7,10 +9,40 @@ FindDialog::FindDialog(QWidget *parent) :
 {
 	ui->setupUi(this);
 	ui->findWhatEdit->setFocus();
+
+	// Load last state
+	QSettings settings;
+	settings.beginGroup("Widgets");
+		settings.beginGroup("FindDialog");
+			ui->matchCase->setCheckState(settings.value("MatchCase").toBool()
+				? Qt::Checked
+				: Qt::Unchecked);
+			ui->matchWholeWords->setCheckState(settings.value("MatchWholeWords").toBool()
+				? Qt::Checked
+				: Qt::Unchecked);
+			ui->searchBackwards->setCheckState(settings.value("SearchBackwards").toBool()
+				? Qt::Checked
+				: Qt::Unchecked);
+			ui->useRegexp->setCheckState(settings.value("UseRegexp").toBool()
+				? Qt::Checked
+				: Qt::Unchecked);
+		settings.endGroup();
+	settings.endGroup();
 }
 
 FindDialog::~FindDialog()
 {
+	// Save current state
+	QSettings settings;
+	settings.beginGroup("Widgets");
+		settings.beginGroup("FindDialog");
+			settings.setValue("MatchCase", ui->matchCase->checkState() == Qt::Checked);
+			settings.setValue("MatchWholeWords", ui->matchWholeWords->checkState() == Qt::Checked);
+			settings.setValue("SearchBackwards", ui->searchBackwards->checkState() == Qt::Checked);
+			settings.setValue("UseRegexp", ui->useRegexp->checkState() == Qt::Checked);
+		settings.endGroup();
+	settings.endGroup();
+
 	delete ui;
 }
 

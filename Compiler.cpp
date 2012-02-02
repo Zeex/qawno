@@ -1,5 +1,6 @@
 #include <QObject>
 #include <QProcess>
+#include <QSettings>
 #include <QString>
 #include <QStringList>
 
@@ -11,6 +12,24 @@ Compiler::Compiler(QObject *parent)
 	m_process = new QProcess(this);
 	m_process->setProcessChannelMode(QProcess::MergedChannels);
 	connect(m_process, SIGNAL(finished(int)), SIGNAL(finished(int)));
+
+	QSettings settings;
+	settings.beginGroup("Compiler");
+		m_path = settings.value("Path").toString();
+		if (path().isEmpty()) {
+			m_path = "pawncc"; // Assume compiler is in PATH
+		}
+		m_options = settings.value("Options").toString().split("\\s*");
+	settings.endGroup();
+}
+
+Compiler::~Compiler()
+{
+	QSettings settings;
+	settings.beginGroup("Compiler");
+		settings.setValue("Path", m_path);
+		settings.setValue("Options", m_options.join(" "));
+	settings.endGroup();
 }
 
 QString Compiler::path() const

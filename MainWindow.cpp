@@ -167,7 +167,9 @@ bool MainWindow::exit()
 {
 	if (closeFile()) {
 		QApplication::exit();
+		return true;
 	}
+	return false;
 }
 
 void MainWindow::find()
@@ -367,20 +369,14 @@ void MainWindow::readSettings()
 {
 	QSettings settings;
 
-	settings.beginGroup("Window");
-		resize(settings.value("Size", QSize(640, 480)).toSize());
-		move(settings.value("Pos").toPoint());
-		if (settings.value("Maximized", false).toBool()) {
-			setWindowState(Qt::WindowMaximized);
-		}
-	settings.endGroup();
-
-	settings.beginGroup("Compiler");
-		m_compiler->setPath(settings.value("Path").toString());
-		if (m_compiler->path().isEmpty()) {
-			m_compiler->setPath("pawncc"); // Assume compiler is in PATH
-		}
-		m_compiler->setOptions(settings.value("Options").toString());
+	settings.beginGroup("Widgets");
+		settings.beginGroup("MainWindow");
+			resize(settings.value("Size", QSize(640, 480)).toSize());
+			move(settings.value("Pos").toPoint());
+			if (settings.value("Maximized", false).toBool()) {
+				setWindowState(Qt::WindowMaximized);
+			}
+		settings.endGroup();
 	settings.endGroup();
 }
 
@@ -388,16 +384,13 @@ void MainWindow::writeSettings()
 {
 	QSettings settings;
 
-	settings.beginGroup("Window");
-		settings.setValue("Maximized", isMaximized());
-		if (!isMaximized()) {
-			settings.setValue("Size", size());
-			settings.setValue("Pos", pos());
-		}
-	settings.endGroup();
-
-	settings.beginGroup("Compiler");
-		settings.setValue("Path", m_compiler->path());
-		settings.setValue("Options", m_compiler->options());
+	settings.beginGroup("Widgets");
+		settings.beginGroup("MainWindow");
+			settings.setValue("Maximized", isMaximized());
+			if (!isMaximized()) {
+				settings.setValue("Size", size());
+				settings.setValue("Pos", pos());
+			}
+		settings.endGroup();
 	settings.endGroup();
 }

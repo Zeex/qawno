@@ -1,3 +1,5 @@
+#include <QSettings>
+
 #include "FindReplaceDialog.h"
 #include "ui_FindReplaceDialog.h"
 
@@ -7,10 +9,40 @@ FindReplaceDialog::FindReplaceDialog(QWidget *parent) :
 {
 	ui->setupUi(this);
 	ui->findWhatEdit->setFocus();
+
+	// Load last state
+	QSettings settings;
+	settings.beginGroup("Widgets");
+		settings.beginGroup("FindReplaceDialog");
+			ui->matchCase->setCheckState(settings.value("MatchCase").toBool()
+				? Qt::Checked
+				: Qt::Unchecked);
+			ui->matchWholeWords->setCheckState(settings.value("MatchWholeWords").toBool()
+				? Qt::Checked
+				: Qt::Unchecked);
+			ui->searchBackwards->setCheckState(settings.value("SearchBackwards").toBool()
+				? Qt::Checked
+				: Qt::Unchecked);
+			ui->useRegexp->setCheckState(settings.value("UseRegexp").toBool()
+				? Qt::Checked
+				: Qt::Unchecked);
+		settings.endGroup();
+	settings.endGroup();
 }
 
 FindReplaceDialog::~FindReplaceDialog()
 {
+	// Save current state
+	QSettings settings;
+	settings.beginGroup("Widgets");
+		settings.beginGroup("FindReplaceDialog");
+			settings.setValue("MatchCase", ui->matchCase->checkState() == Qt::Checked);
+			settings.setValue("MatchWholeWords", ui->matchWholeWords->checkState() == Qt::Checked);
+			settings.setValue("SearchBackwards", ui->searchBackwards->checkState() == Qt::Checked);
+			settings.setValue("UseRegexp", ui->useRegexp->checkState() == Qt::Checked);
+		settings.endGroup();
+	settings.endGroup();
+
 	delete ui;
 }
 
