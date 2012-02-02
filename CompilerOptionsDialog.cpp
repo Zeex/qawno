@@ -10,6 +10,11 @@ CompilerOptionsDialog::CompilerOptionsDialog(QWidget *parent)
 	ui->setupUi(this);
 }
 
+CompilerOptionsDialog::~CompilerOptionsDialog()
+{
+	delete ui;
+}
+
 QString CompilerOptionsDialog::getCompilerPath() const
 {
 	return ui->compilerExecutableEdit->text();
