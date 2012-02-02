@@ -28,6 +28,11 @@ bool FindDialog::matchWholeWords() const
 	return ui->matchWholeWords->checkState() == Qt::Checked;
 }
 
+bool FindDialog::searchBackwards() const
+{
+	return ui->searchBackwards->checkState() == Qt::Checked;
+}
+
 bool FindDialog::useRegexp() const
 {
 	return ui->useRegexp->checkState() == Qt::Checked;

@@ -5,6 +5,7 @@
 #include <QFont>
 #include <QFontDialog>
 #include <QMessageBox>
+#include <QRegExp>
 #include <QSettings>
 
 #include "Compiler.h"
@@ -41,6 +42,8 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(menuBar->actions().editPaste, SIGNAL(triggered()), m_editor, SLOT(paste()));
 	connect(menuBar->actions().editFind, SIGNAL(triggered()), this, SLOT(find()));
 	connect(menuBar->actions().editFindReplace, SIGNAL(triggered()), this, SLOT(findReplace()));
+	connect(menuBar->actions().editFindNext, SIGNAL(triggered()), this, SLOT(findNext()));
+	connect(menuBar->actions().editFindPrev, SIGNAL(triggered()), this, SLOT(findPrev()));
 	connect(menuBar->actions().editGoToLine, SIGNAL(triggered()), this, SLOT(goToLine()));
 	connect(menuBar->actions().buildCompile, SIGNAL(triggered()), this, SLOT(compile()));
 	connect(menuBar->actions().optionsFontEditor, SIGNAL(triggered()), SLOT(selectEditorFont()));
@@ -179,12 +182,41 @@ void MainWindow::find()
 {
 	FindDialog dialog;
 	dialog.exec();
+
+	QTextDocument::FindFlags flags;
+	if (dialog.matchCase()) {
+		flags |= QTextDocument::FindCaseSensitively;
+	}
+	if (dialog.matchWholeWords()) {
+		flags |= QTextDocument::FindWholeWords;
+	}
+	if (dialog.searchBackwards()) {
+		flags |= QTextDocument::FindBackward;
+	}
+
+	if (dialog.useRegexp()) {
+		QRegExp regexp(dialog.findWhatText(),
+			dialog.matchCase() ? Qt::CaseSensitive : Qt::CaseInsensitive);
+		QTextCursor cur = m_editor->document()->find(regexp, m_editor->textCursor(), flags);
+		m_editor->setTextCursor(cur);
+	} else {
+		QTextCursor cur = m_editor->document()->find(dialog.findWhatText(), m_editor->textCursor(), flags);
+		m_editor->setTextCursor(cur);
+	}
 }
 
 void MainWindow::findReplace()
 {
 	FindReplaceDialog dialog;
 	dialog.exec();
+}
+
+void MainWindow::findNext()
+{
+}
+
+void MainWindow::findPrev()
+{
 }
 
 void MainWindow::goToLine()

@@ -19,6 +19,7 @@ public:
 
 	bool matchCase() const;
 	bool matchWholeWords() const;
+	bool searchBackwards() const;
 	bool useRegexp() const;
 
 private:

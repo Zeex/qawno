@@ -34,6 +34,8 @@ private slots:
 	void exit();
 	void find();
 	void findReplace();
+	void findNext();
+	void findPrev();
 	void goToLine();
 	void selectEditorFont();
 	void selectOutputFont();

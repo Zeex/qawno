@@ -33,6 +33,11 @@ bool FindReplaceDialog::matchWholeWords() const
 	return ui->matchWholeWords->checkState() == Qt::Checked;
 }
 
+bool FindReplaceDialog::searchBackwards() const
+{
+	return ui->searchBackwards->checkState() == Qt::Checked;
+}
+
 bool FindReplaceDialog::useRegexp() const
 {
 	return ui->useRegexp->checkState() == Qt::Checked;

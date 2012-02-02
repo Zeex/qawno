@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>392</width>
-    <height>273</height>
+    <width>401</width>
+    <height>306</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
@@ -17,7 +23,7 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>230</y>
+     <y>260</y>
      <width>341</width>
      <height>32</height>
     </rect>
@@ -29,45 +35,12 @@
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
    </property>
   </widget>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>130</y>
-     <width>195</width>
-     <height>80</height>
-    </rect>
-   </property>
-   <layout class="QVBoxLayout" name="verticalLayout_2">
-    <item>
-     <widget class="QCheckBox" name="matchCase">
-      <property name="text">
-       <string>Match case</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QCheckBox" name="matchWholeWords">
-      <property name="text">
-       <string>Match whole words only</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QCheckBox" name="useRegexp">
-      <property name="text">
-       <string>Use regular expressions</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
   <widget class="QWidget" name="">
    <property name="geometry">
     <rect>
      <x>10</x>
      <y>11</y>
-     <width>371</width>
+     <width>381</width>
      <height>108</height>
     </rect>
    </property>
@@ -91,6 +64,52 @@
     </item>
     <item>
      <widget class="QLineEdit" name="replaceWithEdit"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>131</y>
+     <width>195</width>
+     <height>108</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <widget class="QCheckBox" name="matchCase">
+      <property name="text">
+       <string>Match case</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="matchWholeWords">
+      <property name="text">
+       <string>Match whole words only</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="searchBackwards">
+      <property name="text">
+       <string>Search backwards</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="useRegexp">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Use regular expressions</string>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>

@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>391</width>
-    <height>224</height>
+    <width>401</width>
+    <height>247</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
@@ -17,7 +23,7 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>180</y>
+     <y>200</y>
      <width>341</width>
      <height>32</height>
     </rect>
@@ -29,35 +35,13 @@
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
    </property>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget_2">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>10</y>
-     <width>371</width>
-     <height>51</height>
-    </rect>
-   </property>
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
-     <widget class="QLabel" name="findWhatLabel">
-      <property name="text">
-       <string>Find what:</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLineEdit" name="findWhatEdit"/>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QWidget" name="">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>80</y>
+     <y>70</y>
      <width>195</width>
-     <height>80</height>
+     <height>108</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -76,11 +60,40 @@
      </widget>
     </item>
     <item>
+     <widget class="QCheckBox" name="searchBackwards">
+      <property name="text">
+       <string>Search backwards</string>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="QCheckBox" name="useRegexp">
       <property name="text">
        <string>Use regular expressions</string>
       </property>
      </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>381</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QLabel" name="findWhatLabel">
+      <property name="text">
+       <string>Find what:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="findWhatEdit"/>
     </item>
    </layout>
   </widget>

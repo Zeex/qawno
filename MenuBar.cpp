@@ -37,6 +37,12 @@ MenuBar::MenuBar(QWidget *parent) :
 	m_actions.editFind->setShortcut(QKeySequence("Ctrl+F"));
 	m_actions.editFindReplace = editMenu->addAction(tr("Find and replace..."));
 	m_actions.editFindReplace->setShortcut(QKeySequence("Ctrl+H"));
+	editMenu->addSeparator();
+	m_actions.editFindNext = editMenu->addAction(tr("Find next"));
+	m_actions.editFindNext->setShortcut(QKeySequence("F3"));
+	m_actions.editFindPrev = editMenu->addAction(tr("Find previous"));
+	m_actions.editFindPrev->setShortcut(QKeySequence("Ctrl+F3"));
+	editMenu->addSeparator();
 	m_actions.editGoToLine = editMenu->addAction(tr("Go to line..."));
 	m_actions.editGoToLine->setShortcut(QKeySequence("Ctrl+G"));
 	addMenu(editMenu);
