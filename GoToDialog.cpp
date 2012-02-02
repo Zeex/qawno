@@ -2,8 +2,8 @@
 #include "ui_GoToDialog.h"
 
 GoToDialog::GoToDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::GoToDialog)
+	QDialog(parent),
+	ui(new Ui::GoToDialog)
 {
 	ui->setupUi(this);
 }

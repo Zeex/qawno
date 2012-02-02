@@ -2,15 +2,16 @@
 #include "ui_FindDialog.h"
 
 FindDialog::FindDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::FindDialog)
+	QDialog(parent),
+	ui(new Ui::FindDialog)
 {
-    ui->setupUi(this);
+	ui->setupUi(this);
+	ui->findWhatEdit->setFocus();
 }
 
 FindDialog::~FindDialog()
 {
-    delete ui;
+	delete ui;
 }
 
 QString FindDialog::findWhatText() const

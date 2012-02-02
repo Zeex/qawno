@@ -2,15 +2,16 @@
 #include "ui_FindReplaceDialog.h"
 
 FindReplaceDialog::FindReplaceDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::FindReplaceDialog)
+	QDialog(parent),
+	ui(new Ui::FindReplaceDialog)
 {
-    ui->setupUi(this);
+	ui->setupUi(this);
+	ui->findWhatEdit->setFocus();
 }
 
 FindReplaceDialog::~FindReplaceDialog()
 {
-    delete ui;
+	delete ui;
 }
 
 QString FindReplaceDialog::findWhatText() const
