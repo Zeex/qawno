@@ -27,6 +27,7 @@ void LineNumberArea::paintEvent(QPaintEvent *paintEvent)
 EditorWidget::EditorWidget(QWidget *parent) : QPlainTextEdit(parent)
 {
 	setLineWrapMode(NoWrap);
+	setUndoRedoEnabled(true);
 
 	m_lineNumberArea = new LineNumberArea(this);
 

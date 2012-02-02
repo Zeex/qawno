@@ -33,7 +33,7 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(menuBar->actions().fileSaveAs, SIGNAL(triggered()), this, SLOT(saveFileAs()));
 	connect(menuBar->actions().fileExit, SIGNAL(triggered()), this, SLOT(newFile()));
 	connect(menuBar->actions().editUndo, SIGNAL(triggered()), m_editor, SLOT(undo()));
-	connect(menuBar->actions().editUndo, SIGNAL(triggered()), m_editor, SLOT(redo()));
+	connect(menuBar->actions().editRedo, SIGNAL(triggered()), m_editor, SLOT(redo()));
 	connect(menuBar->actions().editCut, SIGNAL(triggered()), m_editor, SLOT(cut()));
 	connect(menuBar->actions().editCopy, SIGNAL(triggered()), m_editor, SLOT(copy()));
 	connect(menuBar->actions().editPaste, SIGNAL(triggered()), m_editor, SLOT(paste()));

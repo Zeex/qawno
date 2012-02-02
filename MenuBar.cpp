@@ -22,11 +22,16 @@ MenuBar::MenuBar(QWidget *parent) :
 
 	QMenu *editMenu = new QMenu(tr("&Edit"), this);
 	m_actions.editUndo = editMenu->addAction(tr("Undo"));
+	m_actions.editUndo->setShortcut(QKeySequence("Ctrl+Z"));
 	m_actions.editRedo = editMenu->addAction(tr("Redo"));
+	m_actions.editRedo->setShortcut(QKeySequence("Ctrl+Y"));
 	editMenu->addSeparator();
 	m_actions.editCut = editMenu->addAction(tr("Cut"));
+	m_actions.editCut->setShortcut(QKeySequence("Ctrl+X"));
 	m_actions.editCopy = editMenu->addAction(tr("Copy"));
+	m_actions.editCopy->setShortcut(QKeySequence("Ctrl+C"));
 	m_actions.editPaste = editMenu->addAction(tr("Paste"));
+	m_actions.editPaste->setShortcut(QKeySequence("Ctrl+V"));
 	editMenu->addSeparator();
 	m_actions.editGoToLine = editMenu->addAction(tr("Go to line..."));
 	m_actions.editGoToLine->setShortcut(QKeySequence("Ctrl+G"));
