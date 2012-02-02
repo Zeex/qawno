@@ -4,6 +4,7 @@
 #include <QList>
 #include <QObject>
 #include <QString>
+#include <QStringList>
 
 class QProcess;
 class QVariant;
@@ -18,16 +19,23 @@ public:
 	QString path() const;
 	void setPath(const QString &path);
 
-	bool test() const;
-	void run(const QString &inputFile, const QString &options = "");
+	QStringList options() const;
+	void setOptions(const QString &options);
+	void setOptions(const QStringList &options);
 
-	QString output() const;
+	QString getCommandLine(const QString &inputFile) const;
+
+	bool test() const;
+	void run(const QString &inputFile);
+
+	QString getOutput() const;
 
 signals:
 	void finished(int);
 
 private:
 	QString m_path;
+	QStringList m_options;
 	QProcess *m_process;
 };
 

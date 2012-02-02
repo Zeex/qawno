@@ -7,7 +7,8 @@ SOURCES += \
     Highlighter.cpp \
     EditorWidget.cpp \
     Compiler.cpp \
-    Issue.cpp
+    Issue.cpp \
+    CompilerOptionsDialog.cpp
 
 HEADERS += \
     OutputWidget.h \
@@ -17,7 +18,8 @@ HEADERS += \
     Highlighter.h \
     EditorWidget.h \
     Compiler.h \
-    Issue.h
+    Issue.h \
+    CompilerOptionsDialog.h
 
 RC_FILE = qawno.rc
 
@@ -27,3 +29,6 @@ OTHER_FILES += \
     README \
     qawno.rc \
     pawn.ico
+
+FORMS += \
+    CompilerOptionsDialog.ui

@@ -35,6 +35,7 @@ private slots:
 	void selectEditorFont();
 	void selectOutputFont();
 	void compile();
+	void setupCompiler();
 	void aboutQt();
 	void compiled(int);
 	void updateWindowTitle();
@@ -46,9 +47,7 @@ private:
 	void writeFile(QString fileName);
 
 	void readSettings();
-	void writeSettings();
-
-	void setupCompiler();
+	void writeSettings();	
 
 private:	
 	QString  m_fileName; // Currently edited file
