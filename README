@@ -1,3 +1,7 @@
+qawno sucks at the moment, I'm working on this
+
 FEATURES:
-- Syntax highlighting!!
-- Compiler support
+- Basic editing like open/save a file, cut/copy/paste code, etc
+- Pawn syntax highlighting
+- In-place compiling (just press F5)
+- Shows compiler output in a docked window (unlike pawno)
