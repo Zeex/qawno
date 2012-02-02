@@ -8,7 +8,8 @@ SOURCES += \
     Compiler.cpp \
     Issue.cpp \
     CompilerOptionsDialog.cpp \
-    SyntaxHighlighter.cpp
+    SyntaxHighlighter.cpp \
+    GoToDialog.cpp
 
 HEADERS += \
     OutputWidget.h \
@@ -19,7 +20,8 @@ HEADERS += \
     Compiler.h \
     Issue.h \
     CompilerOptionsDialog.h \
-    SyntaxHighlighter.h
+    SyntaxHighlighter.h \
+    GoToDialog.h
 
 RC_FILE = qawno.rc
 
@@ -31,4 +33,5 @@ OTHER_FILES += \
     pawn.ico
 
 FORMS += \
-    CompilerOptionsDialog.ui
+    CompilerOptionsDialog.ui \
+    GoToDialog.ui

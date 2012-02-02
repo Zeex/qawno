@@ -11,6 +11,7 @@
 #include "CompilerOptionsDialog.h"
 #include "EditorWidget.h"
 //#include "IssueList.h"
+#include "GoToDialog.h"
 #include "MainWindow.h"
 #include "MenuBar.h"
 #include "OutputWidget.h"
@@ -36,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(menuBar->actions().editCut, SIGNAL(triggered()), m_editor, SLOT(cut()));
 	connect(menuBar->actions().editCopy, SIGNAL(triggered()), m_editor, SLOT(copy()));
 	connect(menuBar->actions().editPaste, SIGNAL(triggered()), m_editor, SLOT(paste()));
+	connect(menuBar->actions().editGoToLine, SIGNAL(triggered()), this, SLOT(goToLine()));
 	connect(menuBar->actions().buildCompile, SIGNAL(triggered()), this, SLOT(compile()));
 	connect(menuBar->actions().optionsFontEditor, SIGNAL(triggered()), SLOT(selectEditorFont()));
 	connect(menuBar->actions().optionsFontOutput, SIGNAL(triggered()), SLOT(selectOutputFont()));
@@ -169,6 +171,13 @@ void MainWindow::exit()
 	}
 }
 
+void MainWindow::goToLine()
+{
+	GoToDialog dialog;
+	dialog.exec();
+	m_editor->setCurrentLine(dialog.getEnteredNumber());
+}
+
 void MainWindow::selectEditorFont()
 {
 	QFontDialog fontDialog(this);
@@ -176,7 +185,6 @@ void MainWindow::selectEditorFont()
 	bool ok = false;
 	QFont newFont = fontDialog.getFont(&ok, m_editor->font(), this,
 		tr("Select editor font"));
-
 	if (ok) {
 		m_editor->setFont(newFont);
 	}

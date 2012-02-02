@@ -27,6 +27,9 @@ MenuBar::MenuBar(QWidget *parent) :
 	m_actions.editCut = editMenu->addAction(tr("Cut"));
 	m_actions.editCopy = editMenu->addAction(tr("Copy"));
 	m_actions.editPaste = editMenu->addAction(tr("Paste"));
+	editMenu->addSeparator();
+	m_actions.editGoToLine = editMenu->addAction(tr("Go to line..."));
+	m_actions.editGoToLine->setShortcut(QKeySequence("Ctrl+G"));
 	addMenu(editMenu);
 
 	QMenu *buildMenu = new QMenu(tr("&Build"), this);

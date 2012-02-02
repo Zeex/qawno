@@ -32,6 +32,7 @@ private slots:
 	void saveFile();
 	void saveFileAs();
 	void exit();
+	void goToLine();
 	void selectEditorFont();
 	void selectOutputFont();
 	void compile();

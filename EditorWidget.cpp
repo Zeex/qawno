@@ -1,4 +1,8 @@
-#include <QtGui>
+#include <QPainter>
+#include <QSettings>
+#include <QTextEdit>
+#include <QTextBlock>
+#include <QTextCursor>
 
 #include "EditorWidget.h"
 #include "SyntaxHighlighter.h"
@@ -47,6 +51,16 @@ EditorWidget::EditorWidget(QWidget *parent) : QPlainTextEdit(parent)
 			QPlainTextEdit::setFont(font);
 		settings.endGroup();
 	settings.endGroup();
+}
+
+void EditorWidget::setCurrentLine(long line)
+{
+	if (line > 0 && line <= document()->blockCount()) {
+		QTextCursor cur = this->textCursor();
+		int pos = document()->findBlockByLineNumber(line - 1).position();
+		cur.setPosition(pos);
+		setTextCursor(cur);
+	}
 }
 
 void EditorWidget::setFont(const QFont &font)

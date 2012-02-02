@@ -1,7 +1,9 @@
 #ifndef CODEEDIT_H
 #define CODEEDIT_H
 
+#include <QObject>
 #include <QPlainTextEdit>
+#include <QWidget>
 
 class EditorWidget;
 class SyntaxHighlighter;
@@ -29,6 +31,7 @@ class EditorWidget : public QPlainTextEdit
 public:
 	explicit EditorWidget(QWidget *parent = 0);
 
+	void setCurrentLine(long line);
 	void setFont(const QFont &font);
 
 protected:
