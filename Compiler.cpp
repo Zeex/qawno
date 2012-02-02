@@ -9,6 +9,7 @@ Compiler::Compiler(QObject *parent)
 	: QObject(parent)
 {
 	m_process = new QProcess(this);
+	m_process->setProcessChannelMode(QProcess::MergedChannels);
 	connect(m_process, SIGNAL(finished(int)), SIGNAL(finished(int)));
 }
 
@@ -56,8 +57,5 @@ QString Compiler::getCommandLine(const QString &inputFile) const
 
 QString Compiler::getOutput() const
 {
-	QString output;
-	output.append(m_process->readAllStandardError());
-	output.append(m_process->readAllStandardOutput());
-	return output;
+	return m_process->readAll();
 }

@@ -225,6 +225,8 @@ void MainWindow::compile()
 
 void MainWindow::compiled(int exitCode)
 {
+	m_outputWidget->clear();
+
 	QString command = m_compiler->getCommandLine(m_fileName);
 	m_outputWidget->appendPlainText(command);
 	m_outputWidget->appendPlainText("\n");
