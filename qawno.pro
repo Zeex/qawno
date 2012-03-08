@@ -16,7 +16,6 @@ HEADERS += \
     OutputWidget.h \
     MenuBar.h \
     MainWindow.h \
-    IssueList.h \
     EditorWidget.h \
     Compiler.h \
     Issue.h \
