@@ -1,3 +1,4 @@
+#include <QFileInfo>
 #include <QObject>
 #include <QProcess>
 #include <QSettings>
@@ -73,7 +74,9 @@ void Compiler::run(const QString &inputFile)
 
 QString Compiler::getCommandLine(const QString &inputFile) const
 {
-	return QString("%1 %2 \"%3\"").arg(m_path).arg(m_options.join(" ")).arg(inputFile);
+	QFileInfo in(inputFile);
+	QFileInfo out(in.absolutePath() + "/" + in.baseName() + ".amx");
+	return QString("%1 %2 \"%3\" -o\"%4\"").arg(m_path).arg(m_options.join(" ")).arg(inputFile).arg(out.filePath());
 }
 
 QString Compiler::getOutput() const
