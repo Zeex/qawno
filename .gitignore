@@ -1,2 +1,6 @@
-
+*.o
 *.user
+moc_*
+ui_*
+Makefile
+qawno
