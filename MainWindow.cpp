@@ -20,6 +20,8 @@
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
+	, m_lastFind(0)
+	, m_lastFindReplace(0)
 {
 	m_editor = new EditorWidget(this);
 
@@ -42,7 +44,6 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(menuBar->actions().editFind, SIGNAL(triggered()), this, SLOT(find()));
 	connect(menuBar->actions().editFindReplace, SIGNAL(triggered()), this, SLOT(findReplace()));
 	connect(menuBar->actions().editFindNext, SIGNAL(triggered()), this, SLOT(findNext()));
-	connect(menuBar->actions().editFindPrev, SIGNAL(triggered()), this, SLOT(findPrev()));
 	connect(menuBar->actions().editGoToLine, SIGNAL(triggered()), this, SLOT(goToLine()));
 	connect(menuBar->actions().buildCompile, SIGNAL(triggered()), this, SLOT(compile()));
 	connect(menuBar->actions().optionsFontEditor, SIGNAL(triggered()), SLOT(selectEditorFont()));
@@ -174,33 +175,14 @@ bool MainWindow::exit()
 
 void MainWindow::find()
 {
-	FindDialog dialog;
-	dialog.exec();
-
-	QTextDocument::FindFlags flags;
-	if (dialog.matchCase()) {
-		flags |= QTextDocument::FindCaseSensitively;
-	}
-	if (dialog.matchWholeWords()) {
-		flags |= QTextDocument::FindWholeWords;
-	}
-	if (dialog.searchBackwards()) {
-		flags |= QTextDocument::FindBackward;
+	if (m_lastFind != 0) {
+		delete m_lastFind;
 	}
 
-	QTextCursor cursor;
+	m_lastFind = new FindDialog;
+	m_lastFind->exec();
 
-	if (dialog.useRegexp()) {
-		QRegExp regexp(dialog.findWhatText(),
-			dialog.matchCase() ? Qt::CaseSensitive : Qt::CaseInsensitive);
-		cursor = m_editor->document()->find(regexp, m_editor->textCursor(), flags);
-	} else {
-		cursor = m_editor->document()->find(dialog.findWhatText(), m_editor->textCursor(), flags);
-	}
-
-	if (!cursor.isNull()) {
-		m_editor->setTextCursor(cursor);
-	}
+	emit(findNext());
 }
 
 void MainWindow::findReplace()
@@ -211,10 +193,34 @@ void MainWindow::findReplace()
 
 void MainWindow::findNext()
 {
-}
+	if (m_lastFind == 0) {
+		return;
+	}
 
-void MainWindow::findPrev()
-{
+	QTextDocument::FindFlags flags;
+	if (m_lastFind->matchCase()) {
+		flags |= QTextDocument::FindCaseSensitively;
+	}
+	if (m_lastFind->matchWholeWords()) {
+		flags |= QTextDocument::FindWholeWords;
+	}
+	if (m_lastFind->searchBackwards()) {
+		flags |= QTextDocument::FindBackward;
+	}
+
+	QTextCursor cursor;
+
+	if (m_lastFind->useRegexp()) {
+		QRegExp regexp(m_lastFind->findWhatText(),
+			m_lastFind->matchCase() ? Qt::CaseSensitive : Qt::CaseInsensitive);
+		cursor = m_editor->document()->find(regexp, m_editor->textCursor(), flags);
+	} else {
+		cursor = m_editor->document()->find(m_lastFind->findWhatText(), m_editor->textCursor(), flags);
+	}
+
+	if (!cursor.isNull()) {
+		m_editor->setTextCursor(cursor);
+	}
 }
 
 void MainWindow::goToLine()

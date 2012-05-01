@@ -14,6 +14,8 @@ class QTextEdit;
 class Compiler;
 class EditorWidget;
 class OutputWidget;
+class FindDialog;
+class FindReplaceDialog;
 
 class MainWindow : public QMainWindow
 {
@@ -34,7 +36,6 @@ private slots:
 	void find();
 	void findReplace();
 	void findNext();
-	void findPrev();
 	void goToLine();
 	void selectEditorFont();
 	void selectOutputFont();
@@ -60,6 +61,9 @@ private:
 
 	EditorWidget *m_editor;
 	OutputWidget *m_outputWidget;
+
+	FindDialog *m_lastFind;
+	FindReplaceDialog *m_lastFindReplace;
 };
 
 #endif // MAINWINDOW_H
