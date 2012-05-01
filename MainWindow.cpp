@@ -217,7 +217,10 @@ void MainWindow::goToLine()
 {
 	GoToDialog dialog;
 	dialog.exec();
-	m_editor->setCurrentLine(dialog.getEnteredNumber());
+	long line = dialog.getEnteredNumber();
+	if (line >= 0 && line < m_editor->blockCount()) {
+		m_editor->setCurrentLine(line);
+	}
 }
 
 void MainWindow::selectEditorFont()
