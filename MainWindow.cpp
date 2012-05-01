@@ -188,14 +188,18 @@ void MainWindow::find()
 		flags |= QTextDocument::FindBackward;
 	}
 
+	QTextCursor cursor;
+
 	if (dialog.useRegexp()) {
 		QRegExp regexp(dialog.findWhatText(),
 			dialog.matchCase() ? Qt::CaseSensitive : Qt::CaseInsensitive);
-		QTextCursor cur = m_editor->document()->find(regexp, m_editor->textCursor(), flags);
-		m_editor->setTextCursor(cur);
+		cursor = m_editor->document()->find(regexp, m_editor->textCursor(), flags);
 	} else {
-		QTextCursor cur = m_editor->document()->find(dialog.findWhatText(), m_editor->textCursor(), flags);
-		m_editor->setTextCursor(cur);
+		cursor = m_editor->document()->find(dialog.findWhatText(), m_editor->textCursor(), flags);
+	}
+
+	if (!cursor.isNull()) {
+		m_editor->setTextCursor(cursor);
 	}
 }
 
