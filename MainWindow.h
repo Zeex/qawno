@@ -15,7 +15,7 @@ class Compiler;
 class EditorWidget;
 class OutputWidget;
 class FindDialog;
-class FindReplaceDialog;
+class ReplaceDialog;
 
 class MainWindow : public QMainWindow
 {
@@ -34,8 +34,8 @@ private slots:
 	bool saveFileAs();
 	bool exit();
 	void find();
-	void findReplace();
 	void findNext();
+	void replace();
 	void goToLine();
 	void selectEditorFont();
 	void selectOutputFont();
@@ -63,7 +63,7 @@ private:
 	OutputWidget *m_outputWidget;
 
 	FindDialog *m_lastFind;
-	FindReplaceDialog *m_lastFindReplace;
+	ReplaceDialog *m_lastReplace;
 };
 
 #endif // MAINWINDOW_H

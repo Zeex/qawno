@@ -1,11 +1,11 @@
 #include <QSettings>
 
-#include "FindReplaceDialog.h"
-#include "ui_FindReplaceDialog.h"
+#include "ReplaceDialog.h"
+#include "ui_ReplaceDialog.h"
 
-FindReplaceDialog::FindReplaceDialog(QWidget *parent) :
+ReplaceDialog::ReplaceDialog(QWidget *parent) :
 	QDialog(parent),
-	ui(new Ui::FindReplaceDialog)
+	ui(new Ui::ReplaceDialog)
 {
 	ui->setupUi(this);
 	ui->findWhatEdit->setFocus();
@@ -13,7 +13,7 @@ FindReplaceDialog::FindReplaceDialog(QWidget *parent) :
 	// Load last state
 	QSettings settings;
 	settings.beginGroup("Widgets");
-		settings.beginGroup("FindReplaceDialog");
+		settings.beginGroup("ReplaceDialog");
 			ui->matchCase->setCheckState(settings.value("MatchCase").toBool()
 				? Qt::Checked
 				: Qt::Unchecked);
@@ -30,12 +30,12 @@ FindReplaceDialog::FindReplaceDialog(QWidget *parent) :
 	settings.endGroup();
 }
 
-FindReplaceDialog::~FindReplaceDialog()
+ReplaceDialog::~ReplaceDialog()
 {
 	// Save current state
 	QSettings settings;
 	settings.beginGroup("Widgets");
-		settings.beginGroup("FindReplaceDialog");
+		settings.beginGroup("ReplaceDialog");
 			settings.setValue("MatchCase", ui->matchCase->checkState() == Qt::Checked);
 			settings.setValue("MatchWholeWords", ui->matchWholeWords->checkState() == Qt::Checked);
 			settings.setValue("SearchBackwards", ui->searchBackwards->checkState() == Qt::Checked);
@@ -46,32 +46,32 @@ FindReplaceDialog::~FindReplaceDialog()
 	delete ui;
 }
 
-QString FindReplaceDialog::findWhatText() const
+QString ReplaceDialog::findWhatText() const
 {
 	return ui->findWhatEdit->text();
 }
 
-QString FindReplaceDialog::replaceWithText() const
+QString ReplaceDialog::replaceWithText() const
 {
 	return ui->replaceWithEdit->text();
 }
 
-bool FindReplaceDialog::matchCase() const
+bool ReplaceDialog::matchCase() const
 {
 	return ui->matchCase->checkState() == Qt::Checked;
 }
 
-bool FindReplaceDialog::matchWholeWords() const
+bool ReplaceDialog::matchWholeWords() const
 {
 	return ui->matchWholeWords->checkState() == Qt::Checked;
 }
 
-bool FindReplaceDialog::searchBackwards() const
+bool ReplaceDialog::searchBackwards() const
 {
 	return ui->searchBackwards->checkState() == Qt::Checked;
 }
 
-bool FindReplaceDialog::useRegexp() const
+bool ReplaceDialog::useRegexp() const
 {
 	return ui->useRegexp->checkState() == Qt::Checked;
 }

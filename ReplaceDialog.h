@@ -5,15 +5,15 @@
 #include <QString>
 
 namespace Ui {
-	class FindReplaceDialog;
+	class ReplaceDialog;
 }
 
-class FindReplaceDialog : public QDialog
+class ReplaceDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit FindReplaceDialog(QWidget *parent = 0);
-	~FindReplaceDialog();
+	explicit ReplaceDialog(QWidget *parent = 0);
+	~ReplaceDialog();
 
 	QString findWhatText() const;
 	QString replaceWithText() const;
@@ -24,7 +24,7 @@ public:
 	bool useRegexp() const;
 
 private:
-	Ui::FindReplaceDialog *ui;
+	Ui::ReplaceDialog *ui;
 };
 
 #endif // FINDDIALOG_H

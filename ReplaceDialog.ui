@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>FindReplaceDialog</class>
- <widget class="QDialog" name="FindReplaceDialog">
+ <class>ReplaceDialog</class>
+ <widget class="QDialog" name="ReplaceDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -35,7 +35,7 @@
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
    </property>
   </widget>
-  <widget class="QWidget">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -119,7 +119,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>FindReplaceDialog</receiver>
+   <receiver>ReplaceDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -135,7 +135,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>FindReplaceDialog</receiver>
+   <receiver>ReplaceDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

@@ -12,16 +12,16 @@
 #include "CompilerOptionsDialog.h"
 #include "EditorWidget.h"
 #include "FindDialog.h"
-#include "FindReplaceDialog.h"
 #include "GoToDialog.h"
 #include "MainWindow.h"
 #include "MenuBar.h"
 #include "OutputWidget.h"
+#include "ReplaceDialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
 	, m_lastFind(0)
-	, m_lastFindReplace(0)
+	, m_lastReplace(0)
 {
 	m_editor = new EditorWidget(this);
 
@@ -42,8 +42,8 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(menuBar->actions().editCopy, SIGNAL(triggered()), m_editor, SLOT(copy()));
 	connect(menuBar->actions().editPaste, SIGNAL(triggered()), m_editor, SLOT(paste()));
 	connect(menuBar->actions().editFind, SIGNAL(triggered()), this, SLOT(find()));
-	connect(menuBar->actions().editFindReplace, SIGNAL(triggered()), this, SLOT(findReplace()));
 	connect(menuBar->actions().editFindNext, SIGNAL(triggered()), this, SLOT(findNext()));
+	connect(menuBar->actions().editReplace, SIGNAL(triggered()), this, SLOT(replace()));
 	connect(menuBar->actions().editGoToLine, SIGNAL(triggered()), this, SLOT(goToLine()));
 	connect(menuBar->actions().buildCompile, SIGNAL(triggered()), this, SLOT(compile()));
 	connect(menuBar->actions().optionsFontEditor, SIGNAL(triggered()), SLOT(selectEditorFont()));
@@ -185,12 +185,6 @@ void MainWindow::find()
 	emit(findNext());
 }
 
-void MainWindow::findReplace()
-{
-	FindReplaceDialog dialog;
-	dialog.exec();
-}
-
 void MainWindow::findNext()
 {
 	if (m_lastFind == 0) {
@@ -221,6 +215,18 @@ void MainWindow::findNext()
 	if (!cursor.isNull()) {
 		m_editor->setTextCursor(cursor);
 	}
+}
+
+void MainWindow::replace()
+{
+	if (m_lastReplace != 0) {
+		delete m_lastReplace;
+	}
+
+	m_lastReplace = new ReplaceDialog;
+	m_lastReplace->exec();
+
+	//emit(replaceNext());
 }
 
 void MainWindow::goToLine()
