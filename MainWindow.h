@@ -41,6 +41,7 @@ private slots:
 	void selectOutputFont();
 	void compile();
 	void setupCompiler();
+	void about();
 	void aboutQt();
 	void compiled(int);
 	void updateWindowTitle();

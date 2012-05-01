@@ -8,6 +8,7 @@
 #include <QRegExp>
 #include <QSettings>
 
+#include "AboutDialog.h"
 #include "Compiler.h"
 #include "CompilerOptionsDialog.h"
 #include "EditorWidget.h"
@@ -49,6 +50,7 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(menuBar->actions().optionsFontEditor, SIGNAL(triggered()), SLOT(selectEditorFont()));
 	connect(menuBar->actions().optionsFontOutput, SIGNAL(triggered()), SLOT(selectOutputFont()));
 	connect(menuBar->actions().optionsCompiler, SIGNAL(triggered()), SLOT(setupCompiler()));
+	connect(menuBar->actions().helpAbout, SIGNAL(triggered()), SLOT(about()));
 	connect(menuBar->actions().helpAboutQt, SIGNAL(triggered()), SLOT(aboutQt()));
 
 	QDockWidget *outputDock = new QDockWidget(tr("Output"), this);
@@ -315,6 +317,12 @@ void MainWindow::setupCompiler()
 		m_compiler->setPath(dialog.getCompilerPath());
 		m_compiler->setOptions(dialog.getCompilerOptions());
 	}
+}
+
+void MainWindow::about()
+{
+	AboutDialog dialog;
+	dialog.exec();
 }
 
 void MainWindow::aboutQt()

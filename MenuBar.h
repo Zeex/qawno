@@ -30,6 +30,7 @@ public:
 		QAction *optionsFontOutput;
 		QAction *optionsCompiler;
 		QAction *buildCompile;
+		QAction *helpAbout;
 		QAction *helpAboutQt;
 	};
 
