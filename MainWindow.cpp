@@ -43,7 +43,7 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(menuBar->actions().editPaste, SIGNAL(triggered()), m_editor, SLOT(paste()));
 	connect(menuBar->actions().editFind, SIGNAL(triggered()), this, SLOT(find()));
 	connect(menuBar->actions().editFindNext, SIGNAL(triggered()), this, SLOT(findNext()));
-	connect(menuBar->actions().editReplace, SIGNAL(triggered()), this, SLOT(replace()));
+	//connect(menuBar->actions().editReplace, SIGNAL(triggered()), this, SLOT(replace()));
 	connect(menuBar->actions().editGoToLine, SIGNAL(triggered()), this, SLOT(goToLine()));
 	connect(menuBar->actions().buildCompile, SIGNAL(triggered()), this, SLOT(compile()));
 	connect(menuBar->actions().optionsFontEditor, SIGNAL(triggered()), SLOT(selectEditorFont()));
