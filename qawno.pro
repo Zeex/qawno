@@ -32,8 +32,8 @@ RC_FILE = qawno.rc
 win32:QMAKE_LFLAGS_RELEASE += -static-libgcc
 
 OTHER_FILES += \
-    qawno.rc \
-    pawn.ico
+    icons\pawn.ico
+    qawno.rc
 
 FORMS += \
     src/CompilerOptionsDialog.ui \
