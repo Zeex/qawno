@@ -403,6 +403,10 @@ void MainWindow::readSettings()
 			}
 		settings.endGroup();
 	settings.endGroup();
+
+	settings.beginGroup("Editor");
+		m_editor->setTabStop(settings.value("TabStop").toInt());
+	settings.endGroup();
 }
 
 void MainWindow::writeSettings()
@@ -417,5 +421,9 @@ void MainWindow::writeSettings()
 				settings.setValue("Pos", pos());
 			}
 		settings.endGroup();
+	settings.endGroup();
+
+	settings.beginGroup("Editor");
+		settings.setValue("TabStop", m_editor->tabStop());
 	settings.endGroup();
 }

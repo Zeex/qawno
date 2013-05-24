@@ -34,6 +34,9 @@ public:
 
 	void setCurrentLine(long line);
 
+    int tabStop() const { return m_tabStop; }
+    void setTabStop(int chars) { m_tabStop = chars; }
+
 protected:
 	void resizeEvent(QResizeEvent *e);
 
@@ -49,6 +52,7 @@ private slots:
 private:
 	LineNumberArea *m_lineNumberArea;
 	SyntaxHighlighter *m_highlighter;
+	int m_tabStop;
 };
 
 #endif // CODEEDIT_H

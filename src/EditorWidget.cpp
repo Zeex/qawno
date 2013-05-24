@@ -24,7 +24,9 @@ void LineNumberArea::paintEvent(QPaintEvent *paintEvent)
 	m_editor->lineNumberAreaPaintEvent(paintEvent);
 }
 
-EditorWidget::EditorWidget(QWidget *parent) : QPlainTextEdit(parent)
+EditorWidget::EditorWidget(QWidget *parent)
+	: QPlainTextEdit(parent)
+	, m_tabStop(4)
 {
 	setLineWrapMode(NoWrap);
 	setUndoRedoEnabled(true);
@@ -54,6 +56,8 @@ EditorWidget::EditorWidget(QWidget *parent) : QPlainTextEdit(parent)
 			settings.beginGroup("Font");
 		settings.endGroup();
 	settings.endGroup();
+
+	setTabStopWidth(fontMetrics().width(' ') * m_tabStop);
 }
 
 EditorWidget::~EditorWidget()
