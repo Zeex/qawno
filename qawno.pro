@@ -1,3 +1,5 @@
+QT += core gui widgets
+
 SOURCES += \
     src/main.cpp \
     src/OutputWidget.cpp \

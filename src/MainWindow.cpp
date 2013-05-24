@@ -67,8 +67,8 @@ MainWindow::MainWindow(QWidget *parent)
 	readSettings();
 
 	// Open file specified at command line, if any
-	if (QApplication::instance()->argc() > 1) {
-		readFile(QApplication::instance()->argv()[1]);
+	if (QApplication::instance()->arguments().size() > 1) {
+		readFile(QApplication::instance()->arguments()[1]);
 	}
 }
 
@@ -385,7 +385,7 @@ void MainWindow::writeFile(QString fileName)
 		return;
 	}
 
-	file.write(m_editor->toPlainText().toAscii());
+	file.write(m_editor->toPlainText().toLatin1());
 	m_editor->document()->setModified(false);
 	updateWindowTitle();
 }
