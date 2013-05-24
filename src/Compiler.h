@@ -7,36 +7,35 @@
 #include <QStringList>
 
 class QProcess;
-class QVariant;
 
-class Compiler : public QObject
-{
-	Q_OBJECT
-public:
-	explicit Compiler(QObject *parent = 0);
-	~Compiler();
+class Compiler: public QObject {
+ Q_OBJECT
 
-	QString path() const;
-	void setPath(const QString &path);
+ public:
+  explicit Compiler(QObject *parent = 0);
+  ~Compiler();
 
-	QStringList options() const;
-	void setOptions(const QString &options);
-	void setOptions(const QStringList &options);
+  QString path() const;
+  void setPath(const QString &path);
 
-	QString getCommandLine(const QString &inputFile) const;
+  QStringList options() const;
+  void setOptions(const QString &options);
+  void setOptions(const QStringList &options);
 
-	bool test() const;
-	void run(const QString &inputFile);
+  QString commandLineFor(const QString &inputFile) const;
 
-	QString getOutput() const;
+  bool test() const;
+  void run(const QString &inputFile);
 
-signals:
-	void finished(int);
+  QString output() const;
 
-private:
-	QString m_path;
-	QStringList m_options;
-	QProcess *m_process;
+ signals:
+  void finished(int);
+
+ private:
+  QString path_;
+  QStringList options_;
+  QProcess *process_;
 };
 
 #endif // COMPILER_H

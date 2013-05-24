@@ -5,26 +5,26 @@
 #include <QString>
 
 namespace Ui {
-	class ReplaceDialog;
+  class ReplaceDialog;
 }
 
-class ReplaceDialog : public QDialog
-{
-	Q_OBJECT
-public:
-	explicit ReplaceDialog(QWidget *parent = 0);
-	~ReplaceDialog();
+class ReplaceDialog: public QDialog {
+ Q_OBJECT
 
-	QString findWhatText() const;
-	QString replaceWithText() const;
+ public:
+  explicit ReplaceDialog(QWidget *parent = 0);
+  ~ReplaceDialog();
 
-	bool matchCase() const;
-	bool matchWholeWords() const;
-	bool searchBackwards() const;
-	bool useRegexp() const;
+  QString findWhatText() const;
+  QString replaceWithText() const;
 
-private:
-	Ui::ReplaceDialog *ui;
+  bool matchCase() const;
+  bool matchWholeWords() const;
+  bool searchBackwards() const;
+  bool useRegexp() const;
+
+ private:
+  Ui::ReplaceDialog *ui_;
 };
 
 #endif // FINDDIALOG_H

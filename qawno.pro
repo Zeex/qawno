@@ -7,7 +7,6 @@ SOURCES += \
     src/MainWindow.cpp \
     src/EditorWidget.cpp \
     src/Compiler.cpp \
-    src/Issue.cpp \
     src/CompilerOptionsDialog.cpp \
     src/SyntaxHighlighter.cpp \
     src/GoToDialog.cpp \
@@ -21,7 +20,6 @@ HEADERS += \
     src/MainWindow.h \
     src/EditorWidget.h \
     src/Compiler.h \
-    src/Issue.h \
     src/CompilerOptionsDialog.h \
     src/SyntaxHighlighter.h \
     src/GoToDialog.h \

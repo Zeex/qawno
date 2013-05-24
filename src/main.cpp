@@ -3,16 +3,15 @@
 
 #include "MainWindow.h"
 
-int main(int argc, char **argv)
-{
-	QCoreApplication::setApplicationName("qawno");
-	QCoreApplication::setApplicationVersion("1.0");
-	QCoreApplication::setOrganizationName("SAMP");
+int main(int argc, char **argv) {
+  QApplication app(argc, argv);
 
-	QApplication app(argc, argv);
+  QCoreApplication::setApplicationName("qawno");
+  QCoreApplication::setApplicationVersion("1.0");
+  QCoreApplication::setOrganizationName("SAMP");
 
-	MainWindow mainWindow;
-	mainWindow.show();
+  MainWindow mainWindow;
+  mainWindow.show();
 
-	return app.exec();
+  return app.exec();
 }

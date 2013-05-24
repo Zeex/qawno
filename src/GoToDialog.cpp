@@ -1,19 +1,17 @@
 #include "GoToDialog.h"
 #include "ui_GoToDialog.h"
 
-GoToDialog::GoToDialog(QWidget *parent) :
-	QDialog(parent),
-	ui(new Ui::GoToDialog)
+GoToDialog::GoToDialog(QWidget *parent)
+  : QDialog(parent),
+    ui_(new Ui::GoToDialog)
 {
-	ui->setupUi(this);
+  ui_->setupUi(this);
 }
 
-GoToDialog::~GoToDialog()
-{
-	delete ui;
+GoToDialog::~GoToDialog() {
+  delete ui_;
 }
 
-long GoToDialog::getEnteredNumber() const
-{
-	return ui->edit->text().toLong();
+int GoToDialog::targetLineNumber() const {
+  return ui_->edit->text().toInt();
 }

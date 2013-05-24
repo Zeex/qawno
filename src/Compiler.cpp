@@ -8,78 +8,71 @@
 #include "Compiler.h"
 
 Compiler::Compiler(QObject *parent)
-	: QObject(parent)
+  : QObject(parent)
 {
-	m_process = new QProcess(this);
-	m_process->setProcessChannelMode(QProcess::MergedChannels);
-	connect(m_process, SIGNAL(finished(int)), SIGNAL(finished(int)));
+  process_ = new QProcess(this);
+  process_->setProcessChannelMode(QProcess::MergedChannels);
+  connect(process_, SIGNAL(finished(int)), SIGNAL(finished(int)));
 
-	QSettings settings;
-	settings.beginGroup("Compiler");
-		m_path = settings.value("Path").toString();
-		if (path().isEmpty()) {
-			m_path = "pawncc"; // Assume compiler is in PATH
-		}
-		m_options = settings.value("Options").toString().split("\\s*");
-	settings.endGroup();
+  QSettings settings;
+  settings.beginGroup("Compiler");
+    path_ = settings.value("Path").toString();
+    if (path_.isEmpty()) {
+      path_ = "pawncc"; // Assume compiler is in PATH
+    }
+    options_ = settings.value("Options").toString().split("\\s*");
+  settings.endGroup();
 }
 
-Compiler::~Compiler()
-{
-	QSettings settings;
-	settings.beginGroup("Compiler");
-		settings.setValue("Path", m_path);
-		settings.setValue("Options", m_options.join(" "));
-	settings.endGroup();
+Compiler::~Compiler() {
+  QSettings settings;
+  settings.beginGroup("Compiler");
+    settings.setValue("Path", path_);
+    settings.setValue("Options", options_.join(" "));
+  settings.endGroup();
 }
 
-QString Compiler::path() const
-{
-	return m_path;
+QString Compiler::path() const {
+  return path_;
 }
 
-void Compiler::setPath(const QString &path)
-{
-	m_path = path;
+void Compiler::setPath(const QString &path) {
+  path_ = path;
 }
 
-QStringList Compiler::options() const
-{
-	return m_options;
+QStringList Compiler::options() const {
+  return options_;
 }
 
-void Compiler::setOptions(const QString &options)
-{
-	m_options = options.split("\\s*");
+void Compiler::setOptions(const QString &options) {
+  options_ = options.split("\\s*");
 }
 
-void Compiler::setOptions(const QStringList &options)
-{
-	m_options = options;
+void Compiler::setOptions(const QStringList &options) {
+  options_ = options;
 }
 
-bool Compiler::test() const
-{
-	QProcess pawncc;
-	pawncc.setProcessChannelMode(QProcess::SeparateChannels);
-	pawncc.start(m_path);
-	pawncc.waitForFinished();
-	return pawncc.error() != QProcess::FailedToStart;
+bool Compiler::test() const {
+  QProcess pawncc;
+  pawncc.setProcessChannelMode(QProcess::SeparateChannels);
+  pawncc.start(path_);
+  pawncc.waitForFinished();
+  return pawncc.error() != QProcess::FailedToStart;
 }
 
-void Compiler::run(const QString &inputFile)
-{
-	m_process->start(getCommandLine(inputFile), QProcess::ReadOnly);
+void Compiler::run(const QString &inputFile) {
+  process_->start(commandLineFor(inputFile), QProcess::ReadOnly);
 }
 
-QString Compiler::getCommandLine(const QString &inputFile) const
-{
-	QFileInfo in(inputFile);
-	QFileInfo out(in.absolutePath() + "/" + in.baseName() + ".amx");
-	return QString("%1 %2 \"%3\" -o\"%4\"").arg(m_path).arg(m_options.join(" ")).arg(inputFile).arg(out.filePath());
+QString Compiler::commandLineFor(const QString &inputFile) const {
+  QFileInfo in(inputFile);
+  QFileInfo out(in.absolutePath() + "/" + in.baseName() + ".amx");
+  return QString("%1 %2 \"%3\" -o\"%4\"").arg(path_)
+                                         .arg(options_.join(" "))
+                                         .arg(inputFile)
+                                         .arg(out.filePath());
 }
 
-QString Compiler::getOutput() const
-{
-	return m_process->readAll();
+QString Compiler::output() const {
+  return process_->readAll();
 }

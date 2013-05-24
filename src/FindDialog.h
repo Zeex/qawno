@@ -5,25 +5,25 @@
 #include <QString>
 
 namespace Ui {
-	class FindDialog;
+  class FindDialog;
 }
 
-class FindDialog : public QDialog
-{
-	Q_OBJECT
-public:
-	explicit FindDialog(QWidget *parent = 0);
-	~FindDialog();
+class FindDialog: public QDialog {
+ Q_OBJECT
 
-	QString findWhatText() const;
+ public:
+  explicit FindDialog(QWidget *parent = 0);
+  ~FindDialog();
 
-	bool matchCase() const;
-	bool matchWholeWords() const;
-	bool searchBackwards() const;
-	bool useRegexp() const;
+  QString findWhatText() const;
 
-private:
-	Ui::FindDialog *ui;
+  bool matchCase() const;
+  bool matchWholeWords() const;
+  bool searchBackwards() const;
+  bool useRegexp() const;
+
+ private:
+  Ui::FindDialog *ui_;
 };
 
 #endif // FINDDIALOG_H

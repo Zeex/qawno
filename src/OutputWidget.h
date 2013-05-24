@@ -3,13 +3,13 @@
 
 #include <QPlainTextEdit>
 
-class OutputWidget : public QPlainTextEdit
-{
-	Q_OBJECT
-public:
-	explicit OutputWidget(QWidget *parent = 0);
+class OutputWidget: public QPlainTextEdit {
+ Q_OBJECT
 
-	virtual void setFont(const QFont &);
+ public:
+  explicit OutputWidget(QWidget *parent = 0);
+
+  virtual void setFont(const QFont &);
 };
 
 #endif // OUTPUTWIDGET_H

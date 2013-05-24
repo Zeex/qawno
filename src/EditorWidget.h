@@ -8,51 +8,50 @@
 class EditorWidget;
 class SyntaxHighlighter;
 
-class LineNumberArea : public QWidget
-{
-	Q_OBJECT
-public:
-	LineNumberArea(EditorWidget *editor);
+class LineNumberArea: public QWidget {
+ Q_OBJECT
 
-	QSize sizeHint() const;
+ public:
+  LineNumberArea(EditorWidget *editor);
+  QSize sizeHint() const;
 
-protected:
-	void paintEvent(QPaintEvent *paintEvent);
+ protected:
+  void paintEvent(QPaintEvent *paintEvent);
 
-private:
-	EditorWidget *m_editor;
+ private:
+  EditorWidget *editorWidget_;
 };
 
-class EditorWidget : public QPlainTextEdit
-{
-	Q_OBJECT
-	friend class LineNumberArea;
+class EditorWidget: public QPlainTextEdit {
+ Q_OBJECT
 
-public:
-	explicit EditorWidget(QWidget *parent = 0);
-	~EditorWidget();
+ friend class LineNumberArea;
 
-	void setCurrentLine(long line);
+ public:
+  explicit EditorWidget(QWidget *parent = 0);
+  ~EditorWidget();
 
-    int tabStop() const { return m_tabStop; }
-    void setTabStop(int chars) { m_tabStop = chars; }
+  void setCurrentLine(long line);
 
-protected:
-	void resizeEvent(QResizeEvent *e);
+  int tabStop() const;
+  void setTabStop(int chars);
 
-private:
-	int lineNumberAreaWidth() const;
-	void lineNumberAreaPaintEvent(QPaintEvent *paintEvent);
+ protected:
+  void resizeEvent(QResizeEvent *e);
 
-private slots:
-	void updateLineNumberArea(const QRect &, int);
-	void updateLineNumberAreaWidth(int blockCount);
-	void highlightCurrentLine();
+ private:
+  int lineNumberAreaWidth() const;
+  void lineNumberAreaPaintEvent(QPaintEvent *paintEvent);
 
-private:
-	LineNumberArea *m_lineNumberArea;
-	SyntaxHighlighter *m_highlighter;
-	int m_tabStop;
+ private slots:
+  void updateLineNumberArea(const QRect &, int);
+  void updateLineNumberAreaWidth(int blockCount);
+  void highlightCurrentLine();
+
+ private:
+  LineNumberArea *lineNumberArea_;
+  SyntaxHighlighter *highlighter_;
+  int tabStop_;
 };
 
 #endif // CODEEDIT_H
