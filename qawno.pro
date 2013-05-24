@@ -1,31 +1,31 @@
 SOURCES += \
-    main.cpp \
-    OutputWidget.cpp \
-    MenuBar.cpp \
-    MainWindow.cpp \
-    EditorWidget.cpp \
-    Compiler.cpp \
-    Issue.cpp \
-    CompilerOptionsDialog.cpp \
-    SyntaxHighlighter.cpp \
-    GoToDialog.cpp \
-    FindDialog.cpp \
-    ReplaceDialog.cpp \
-    AboutDialog.cpp
+    src/main.cpp \
+    src/OutputWidget.cpp \
+    src/MenuBar.cpp \
+    src/MainWindow.cpp \
+    src/EditorWidget.cpp \
+    src/Compiler.cpp \
+    src/Issue.cpp \
+    src/CompilerOptionsDialog.cpp \
+    src/SyntaxHighlighter.cpp \
+    src/GoToDialog.cpp \
+    src/FindDialog.cpp \
+    src/ReplaceDialog.cpp \
+    src/AboutDialog.cpp
 
 HEADERS += \
-    OutputWidget.h \
-    MenuBar.h \
-    MainWindow.h \
-    EditorWidget.h \
-    Compiler.h \
-    Issue.h \
-    CompilerOptionsDialog.h \
-    SyntaxHighlighter.h \
-    GoToDialog.h \
-    FindDialog.h \
-    ReplaceDialog.h \
-    AboutDialog.h
+    src/OutputWidget.h \
+    src/MenuBar.h \
+    src/MainWindow.h \
+    src/EditorWidget.h \
+    src/Compiler.h \
+    src/Issue.h \
+    src/CompilerOptionsDialog.h \
+    src/SyntaxHighlighter.h \
+    src/GoToDialog.h \
+    src/FindDialog.h \
+    src/ReplaceDialog.h \
+    src/AboutDialog.h
 
 RC_FILE = qawno.rc
 
@@ -36,9 +36,9 @@ OTHER_FILES += \
     pawn.ico
 
 FORMS += \
-    CompilerOptionsDialog.ui \
-    GoToDialog.ui \
-    FindDialog.ui \
-    ReplaceDialog.ui \
-    AboutDialog.ui
+    src/CompilerOptionsDialog.ui \
+    src/GoToDialog.ui \
+    src/FindDialog.ui \
+    src/ReplaceDialog.ui \
+    src/AboutDialog.ui
 
