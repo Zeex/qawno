@@ -61,6 +61,7 @@ bool Compiler::test() const {
 }
 
 void Compiler::run(const QString &inputFile) {
+  process_->setWorkingDirectory(QFileInfo(path_).absolutePath());
   process_->start(commandLineFor(inputFile), QProcess::ReadOnly);
 }
 
