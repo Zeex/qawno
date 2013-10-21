@@ -32,7 +32,7 @@ RC_FILE = qawno.rc
 win32:QMAKE_LFLAGS_RELEASE += -static-libgcc
 
 OTHER_FILES += \
-    icons\pawn.ico
+    icons/pawn.ico \
     qawno.rc
 
 FORMS += \
