@@ -60,9 +60,7 @@ MenuBar::MenuBar(QWidget *parent)
 
   QMenu *helpMenu = new QMenu(tr("&Help"), this);
   QString appName = QCoreApplication::applicationName();
-  actions_.helpAbout = helpMenu->addAction(tr("About %1...").arg(appName),
-                                           this, SLOT(aboutQt()));
-  actions_.helpAboutQt = helpMenu->addAction(tr("About Qt.."), this,
-                                             SLOT(aboutQt()));
+  actions_.helpAbout = helpMenu->addAction(tr("About %1...").arg(appName));
+  actions_.helpAboutQt = helpMenu->addAction(tr("About Qt.."));
   addMenu(helpMenu);
 }
