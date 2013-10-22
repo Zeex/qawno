@@ -30,7 +30,9 @@ class MainWindow: public QMainWindow {
   void closed();
 
  protected:
-  void closeEvent(QCloseEvent *closeEvent);
+  void closeEvent(QCloseEvent *event);
+  void dragEnterEvent(QDragEnterEvent *event);
+  void dropEvent(QDropEvent *event);
 
  private slots:
   bool newFile();

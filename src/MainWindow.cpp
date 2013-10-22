@@ -5,10 +5,12 @@
 #include <QFont>
 #include <QFontDialog>
 #include <QIcon>
+#include <QList>
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QRegExp>
 #include <QSettings>
+#include <QUrl>
 
 #include "AboutDialog.h"
 #include "Compiler.h"
@@ -22,15 +24,17 @@
 
 MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent),
+    editorWidget_(new EditorWidget(this)),
     lastFind_(0),
     lastReplace_(0)
 {
   setWindowIcon(QIcon(":icons/pawn.ico"));
 
-  editorWidget_ = new EditorWidget(this);
-
   setCentralWidget(editorWidget_);
   connect(editorWidget_, SIGNAL(textChanged()), SLOT(updateWindowTitle()));
+
+  setAcceptDrops(true);
+  editorWidget_->setAcceptDrops(false);
 
   QMenuBar *menuBar = new QMenuBar(this);
   setMenuBar(menuBar);
@@ -365,12 +369,30 @@ void MainWindow::updateWindowTitle() {
   setWindowTitle(title);
 }
 
-void MainWindow::closeEvent(QCloseEvent *closeEvent) {
+void MainWindow::closeEvent(QCloseEvent *event) {
   if (isSafeToClose()) {
     emit closed();
-    closeEvent->accept();
+    event->accept();
   } else {
-    closeEvent->ignore();
+    event->ignore();
+  }
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent *event) {
+  if (event->mimeData()->hasUrls()) {
+    event->acceptProposedAction();
+  }
+}
+
+void MainWindow::dropEvent(QDropEvent *event) {
+  QList<QUrl> urls = event->mimeData()->urls();
+  foreach (QUrl url, urls) {
+    if (url.isLocalFile()) {
+      if (closeFile()) {
+        readFile(url.toLocalFile());
+      }
+      break;
+    }
   }
 }
 
