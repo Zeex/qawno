@@ -44,35 +44,12 @@ EditorWidget::EditorWidget(QWidget *parent)
   highlighter_ = new SyntaxHighlighter(this);
   highlighter_->setDocument(document());
 
-  QSettings settings;
-  settings.beginGroup("Widgets");
-    settings.beginGroup("Editor");
-      settings.beginGroup("Font");
-        QFont font;
-        font.setFamily(settings.value("Family", "Courier New").toString());
-        font.setPointSize(settings.value("PointSize", 10).toInt());
-        font.setBold(settings.value("Bold", false).toBool());
-        font.setItalic(settings.value("Italic", false).toBool());
-        QPlainTextEdit::setFont(font);
-      settings.endGroup();
-    settings.endGroup();
-  settings.endGroup();
+
 
   setTabStopWidth(fontMetrics().width(' ') * tabStop_);
 }
 
 EditorWidget::~EditorWidget() {
-  QSettings settings;
-  settings.beginGroup("Widgets");
-    settings.beginGroup("Editor");
-      settings.beginGroup("Font");
-        settings.setValue("Family", font().family());
-        settings.setValue("PointSize", font().pointSize());
-        settings.setValue("Bold", font().bold());
-        settings.setValue("Italic", font().italic());
-      settings.endGroup();
-    settings.endGroup();
-  settings.endGroup();
 }
 
 void EditorWidget::setCurrentLine(long line) {
@@ -175,4 +152,30 @@ void EditorWidget::highlightCurrentLine() {
   }
 
   setExtraSelections(extraSelections);
+}
+
+static QFont defaultFont() {
+  #ifdef Q_OS_WINDOWS
+    QFont font("Courier New");
+  #else
+    QFont font("Monospace");
+  #endif
+  font.setStyleHint(QFont::TypeWriter);
+  return font;
+}
+
+void EditorWidget::loadSettings() {
+  QSettings settings;
+  settings.beginGroup("UI");
+    QFont font = defaultFont();
+    font.fromString(settings.value("EditorFont", font).toString());
+    QPlainTextEdit::setFont(font);
+  settings.endGroup();
+}
+
+void EditorWidget::saveSettings() {
+  QSettings settings;
+  settings.beginGroup("UI");
+    settings.setValue("EditorFont", font().toString());
+  settings.endGroup();
 }

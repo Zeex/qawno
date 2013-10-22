@@ -2,29 +2,30 @@
 
 #include "OutputWidget.h"
 
-OutputWidget::OutputWidget(QWidget *parent) : QPlainTextEdit(parent) {
+OutputWidget::OutputWidget(QWidget *parent): QPlainTextEdit(parent) {}
+
+static QFont defaultFont() {
+  #ifdef Q_OS_WINDOWS
+    QFont font("Courier New");
+  #else
+    QFont font("Monospace");
+  #endif
+  font.setStyleHint(QFont::TypeWriter);
+  return font;
+}
+
+void OutputWidget::loadSettings() {
   QSettings settings;
-  settings.beginGroup("Font");
-    QFont font;
-    settings.beginGroup("Output");
-      font.setFamily(settings.value("Family", "Courier New").toString());
-      font.setPointSize(settings.value("PointSize", 10).toInt());
-      font.setBold(settings.value("Bold", false).toBool());
-      font.setItalic(settings.value("Italic", false).toBool());
-      QPlainTextEdit::setFont(font);
-    settings.endGroup();
+  settings.beginGroup("UI");
+    QFont font = defaultFont();
+    font.fromString(settings.value("OutputFont", font).toString());
+    QPlainTextEdit::setFont(font);
   settings.endGroup();
 }
 
-void OutputWidget::setFont(const QFont &font) {
+void OutputWidget::saveSettings() {
   QSettings settings;
-  settings.beginGroup("Font");
-    settings.beginGroup("Output");
-      settings.setValue("Family", font.family());
-      settings.setValue("PointSize", font.pointSize());
-      settings.setValue("Bold", font.bold());
-      settings.setValue("Italic", font.italic());
-    settings.endGroup();
+  settings.beginGroup("UI");
+    settings.setValue("OutputFont", font().toString());
   settings.endGroup();
-  QPlainTextEdit::setFont(font);
 }

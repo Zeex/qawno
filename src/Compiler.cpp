@@ -13,23 +13,10 @@ Compiler::Compiler(QObject *parent)
   process_ = new QProcess(this);
   process_->setProcessChannelMode(QProcess::MergedChannels);
   connect(process_, SIGNAL(finished(int)), SIGNAL(finished(int)));
-
-  QSettings settings;
-  settings.beginGroup("Compiler");
-    path_ = settings.value("Path").toString();
-    if (path_.isEmpty()) {
-      path_ = "pawncc"; // Assume compiler is in PATH
-    }
-    options_ = settings.value("Options").toString().split("\\s*");
-  settings.endGroup();
 }
 
 Compiler::~Compiler() {
-  QSettings settings;
-  settings.beginGroup("Compiler");
-    settings.setValue("Path", path_);
-    settings.setValue("Options", options_.join(" "));
-  settings.endGroup();
+
 }
 
 QString Compiler::path() const {
@@ -75,4 +62,23 @@ QString Compiler::commandLineFor(const QString &inputFile) const {
 
 QString Compiler::output() const {
   return process_->readAll();
+}
+
+void Compiler::loadSettings() {
+  QSettings settings;
+  settings.beginGroup("Compiler");
+    path_ = settings.value("Path").toString();
+    if (path_.isEmpty()) {
+      path_ = "pawncc"; // Assume compiler is in PATH
+    }
+    options_ = settings.value("Options").toString().split("\\s*");
+  settings.endGroup();
+}
+
+void Compiler::saveSettings() {
+  QSettings settings;
+  settings.beginGroup("Compiler");
+    settings.setValue("Path", path_);
+    settings.setValue("Options", options_.join(" "));
+  settings.endGroup();
 }

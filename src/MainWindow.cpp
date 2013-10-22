@@ -85,12 +85,21 @@ MainWindow::MainWindow(QWidget *parent)
   compiler_ = new Compiler(this);
   connect(compiler_, SIGNAL(finished(int)), this, SLOT(compiled(int)));
 
-  readSettings();
+  connect(this, SIGNAL(loaded()), SLOT(loadSettings()));
+  connect(this, SIGNAL(closed()), SLOT(saveSettings()));
+  connect(this, SIGNAL(loaded()), compiler_, SLOT(loadSettings()));
+  connect(this, SIGNAL(loaded()), compiler_, SLOT(saveSettings()));
+  connect(this, SIGNAL(loaded()), editorWidget_, SLOT(loadSettings()));
+  connect(this, SIGNAL(closed()), editorWidget_, SLOT(saveSettings()));
+  connect(this, SIGNAL(loaded()), outputWidget_, SLOT(loadSettings()));
+  connect(this, SIGNAL(closed()), outputWidget_, SLOT(saveSettings()));
 
   // Open the file specified at the command line, if any.
   if (QApplication::instance()->arguments().size() > 1) {
     readFile(QApplication::instance()->arguments()[1]);
   }
+
+  emit loaded();
 }
 
 bool MainWindow::newFile() {
@@ -355,7 +364,7 @@ void MainWindow::updateWindowTitle() {
 
 void MainWindow::closeEvent(QCloseEvent *closeEvent) {
   if (isSafeToClose()) {
-    writeSettings();
+    emit closed();
     closeEvent->accept();
   } else {
     closeEvent->ignore();
@@ -387,25 +396,21 @@ void MainWindow::writeFile(QString fileName) {
       .arg(fileName)
       .arg(file.errorString()),
       QMessageBox::Ok);
-    return;
+  } else {
+    file.write(editorWidget_->toPlainText().toLatin1());
+    editorWidget_->document()->setModified(false);
+    updateWindowTitle();
   }
-
-  file.write(editorWidget_->toPlainText().toLatin1());
-  editorWidget_->document()->setModified(false);
-  updateWindowTitle();
 }
 
-void MainWindow::readSettings() {
+void MainWindow::loadSettings() {
   QSettings settings;
 
-  settings.beginGroup("Widgets");
-    settings.beginGroup("MainWindow");
-      resize(settings.value("Size", QSize(640, 480)).toSize());
-      move(settings.value("Pos").toPoint());
-      if (settings.value("Maximized", false).toBool()) {
-        setWindowState(Qt::WindowMaximized);
-      }
-    settings.endGroup();
+  settings.beginGroup("UI");
+    resize(settings.value("WindowSize", QSize(640, 480)).toSize());
+    if (settings.value("Maximized", false).toBool()) {
+      setWindowState(Qt::WindowMaximized);
+    }
   settings.endGroup();
 
   settings.beginGroup("Editor");
@@ -413,17 +418,14 @@ void MainWindow::readSettings() {
   settings.endGroup();
 }
 
-void MainWindow::writeSettings() {
+void MainWindow::saveSettings() {
   QSettings settings;
 
-  settings.beginGroup("Widgets");
-    settings.beginGroup("MainWindow");
-      settings.setValue("Maximized", isMaximized());
-      if (!isMaximized()) {
-        settings.setValue("Size", size());
-        settings.setValue("Pos", pos());
-      }
-    settings.endGroup();
+  settings.beginGroup("UI");
+    settings.setValue("Maximized", isMaximized());
+    if (!isMaximized()) {
+      settings.setValue("WindowSize", size());
+    }
   settings.endGroup();
 
   settings.beginGroup("Editor");

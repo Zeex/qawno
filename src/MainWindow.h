@@ -21,6 +21,14 @@ class MainWindow: public QMainWindow {
  public:
   explicit MainWindow(QWidget *parent = 0);
 
+ public slots:
+  void loadSettings();
+  void saveSettings();
+
+ signals:
+  void loaded();
+  void closed();
+
  protected:
   void closeEvent(QCloseEvent *closeEvent);
 
@@ -49,9 +57,6 @@ class MainWindow: public QMainWindow {
 
   void readFile(QString fileName);
   void writeFile(QString fileName);
-
-  void readSettings();
-  void writeSettings();
 
  private:
   QString  fileName_; // Currently edited file
