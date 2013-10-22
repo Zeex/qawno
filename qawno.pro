@@ -3,7 +3,6 @@ QT += core gui widgets
 SOURCES += \
     src/main.cpp \
     src/OutputWidget.cpp \
-    src/MenuBar.cpp \
     src/MainWindow.cpp \
     src/EditorWidget.cpp \
     src/Compiler.cpp \
@@ -16,7 +15,6 @@ SOURCES += \
 
 HEADERS += \
     src/OutputWidget.h \
-    src/MenuBar.h \
     src/MainWindow.h \
     src/EditorWidget.h \
     src/Compiler.h \

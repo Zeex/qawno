@@ -3,8 +3,6 @@
 
 #include <QMainWindow>
 
-class QMenu;
-class QMenuBar;
 class QPlainTextEdit;
 class QProcess;
 class QSplitter;

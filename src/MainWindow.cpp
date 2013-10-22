@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QFont>
 #include <QFontDialog>
+#include <QMenuBar>
 #include <QMessageBox>
 #include <QRegExp>
 #include <QSettings>
@@ -15,7 +16,6 @@
 #include "FindDialog.h"
 #include "GoToDialog.h"
 #include "MainWindow.h"
-#include "MenuBar.h"
 #include "OutputWidget.h"
 #include "ReplaceDialog.h"
 
@@ -29,29 +29,51 @@ MainWindow::MainWindow(QWidget *parent)
   setCentralWidget(editorWidget_);
   connect(editorWidget_, SIGNAL(textChanged()), SLOT(updateWindowTitle()));
 
-  MenuBar *menuBar = new MenuBar(this);
+  QMenuBar *menuBar = new QMenuBar(this);
   setMenuBar(menuBar);
-  connect(menuBar->actions().fileNew, SIGNAL(triggered()), this, SLOT(newFile()));
-  connect(menuBar->actions().fileOpen, SIGNAL(triggered()), this, SLOT(openFile()));
-  connect(menuBar->actions().fileClose, SIGNAL(triggered()), this, SLOT(closeFile()));
-  connect(menuBar->actions().fileSave, SIGNAL(triggered()), this, SLOT(saveFile()));
-  connect(menuBar->actions().fileSaveAs, SIGNAL(triggered()), this, SLOT(saveFileAs()));
-  connect(menuBar->actions().fileExit, SIGNAL(triggered()), this, SLOT(exit()));
-  connect(menuBar->actions().editUndo, SIGNAL(triggered()), editorWidget_, SLOT(undo()));
-  connect(menuBar->actions().editRedo, SIGNAL(triggered()), editorWidget_, SLOT(redo()));
-  connect(menuBar->actions().editCut, SIGNAL(triggered()), editorWidget_, SLOT(cut()));
-  connect(menuBar->actions().editCopy, SIGNAL(triggered()), editorWidget_, SLOT(copy()));
-  connect(menuBar->actions().editPaste, SIGNAL(triggered()), editorWidget_, SLOT(paste()));
-  connect(menuBar->actions().editFind, SIGNAL(triggered()), this, SLOT(find()));
-  connect(menuBar->actions().editFindNext, SIGNAL(triggered()), this, SLOT(findNext()));
-  //connect(menuBar->actions().editReplace, SIGNAL(triggered()), this, SLOT(replace()));
-  connect(menuBar->actions().editGoToLine, SIGNAL(triggered()), this, SLOT(goToLine()));
-  connect(menuBar->actions().buildCompile, SIGNAL(triggered()), this, SLOT(compile()));
-  connect(menuBar->actions().optionsFontEditor, SIGNAL(triggered()), SLOT(selectEditorFont()));
-  connect(menuBar->actions().optionsFontOutput, SIGNAL(triggered()), SLOT(selectOutputFont()));
-  connect(menuBar->actions().optionsCompiler, SIGNAL(triggered()), SLOT(setupCompiler()));
-  connect(menuBar->actions().helpAbout, SIGNAL(triggered()), SLOT(about()));
-  connect(menuBar->actions().helpAboutQt, SIGNAL(triggered()), SLOT(aboutQt()));
+
+  QMenu *fileMenu = new QMenu(tr("&File"), this);
+  fileMenu->addAction(tr("New"), this, SLOT(newFile()), QKeySequence("Ctrl+N"));
+  fileMenu->addAction(tr("Open"), this, SLOT(openFile()), QKeySequence("Ctrl+O"));
+  fileMenu->addAction(tr("Close"), this, SLOT(closeFile()), QKeySequence("Ctrl+W"));
+  fileMenu->addSeparator();
+  fileMenu->addAction(tr("Save"), this, SLOT(saveFile()), QKeySequence("Ctrl+S"));
+  fileMenu->addAction(tr("Save as..."), this, SLOT(saveFileAs()), QKeySequence("Ctrl+Shift+S"));
+  fileMenu->addSeparator();
+  fileMenu->addAction(tr("Exit"), this, SLOT(exit()), QKeySequence("Ctrl+Q"));
+  menuBar->addMenu(fileMenu);
+
+  QMenu *editMenu = new QMenu(tr("&Edit"), this);
+  editMenu->addAction(tr("Undo"), editorWidget_, SLOT(undo()), QKeySequence("Ctrl+Z"));
+  editMenu->addAction(tr("Redo"), editorWidget_, SLOT(redo()), QKeySequence("Ctrl+Y"));
+  editMenu->addSeparator();
+  editMenu->addAction(tr("Cut"), editorWidget_, SLOT(cut()), QKeySequence("Ctrl+X"));
+  editMenu->addAction(tr("Copy"), editorWidget_, SLOT(copy()), QKeySequence("Ctrl+C"));
+  editMenu->addAction(tr("Paste"), editorWidget_, SLOT(paste()), QKeySequence("Ctrl+V"));
+  editMenu->addSeparator();
+  editMenu->addAction(tr("Find..."), this, SLOT(find()), QKeySequence("Ctrl+F"));
+  editMenu->addAction(tr("Find next"), this, SLOT(findNext()), QKeySequence("F3"));
+  editMenu->addAction(tr("Replace..."), this, SLOT(replace()), QKeySequence("Ctrl+H"));
+  editMenu->addSeparator();
+  editMenu->addAction(tr("Go to line..."), this, SLOT(goToLine()), QKeySequence("Ctrl+G"));
+  menuBar->addMenu(editMenu);
+
+  QMenu *buildMenu = new QMenu(tr("&Build"), this);
+  buildMenu->addAction(tr("Compile"), this, SLOT(compile()), QKeySequence("F5"));
+  menuBar->addMenu(buildMenu);
+
+  QMenu *optionsMenu = new QMenu(tr("&Options"), this);
+    QMenu *fontMenu = optionsMenu->addMenu(tr("Font"));
+    fontMenu->addAction(tr("Editor"), this, SLOT(selectEditorFont()));
+    fontMenu->addAction(tr("Output"), this, SLOT(selectOutputFont()));
+  optionsMenu->addAction(tr("Compiler"), this, SLOT(setupCompiler()));
+  menuBar->addMenu(optionsMenu);
+
+  QMenu *helpMenu = new QMenu(tr("&Help"), this);
+  QString appName = QCoreApplication::applicationName();
+  helpMenu->addAction(tr("About %1...").arg(appName), this, SLOT(about()));
+  helpMenu->addAction(tr("About Qt.."), this, SLOT(aboutQt()));
+  menuBar->addMenu(helpMenu);
 
   QDockWidget *outputDock = new QDockWidget(tr("Output"), this);
   outputDock->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
@@ -63,10 +85,9 @@ MainWindow::MainWindow(QWidget *parent)
   compiler_ = new Compiler(this);
   connect(compiler_, SIGNAL(finished(int)), this, SLOT(compiled(int)));
 
-  // Restore window state
   readSettings();
 
-  // Open file specified at command line, if any
+  // Open the file specified at the command line, if any.
   if (QApplication::instance()->arguments().size() > 1) {
     readFile(QApplication::instance()->arguments()[1]);
   }
