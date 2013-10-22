@@ -8,9 +8,10 @@
 #include "Compiler.h"
 
 Compiler::Compiler(QObject *parent)
-  : QObject(parent)
+  : QObject(parent),
+    process_(new QProcess(this))
 {
-  process_ = new QProcess(this);
+  options_ << "-;+" << "-(+";
   process_->setProcessChannelMode(QProcess::MergedChannels);
   connect(process_, SIGNAL(finished(int)), SIGNAL(finished(int)));
 }
