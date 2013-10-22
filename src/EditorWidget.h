@@ -29,7 +29,7 @@ class EditorWidget: public QPlainTextEdit {
 
  public:
   explicit EditorWidget(QWidget *parent = 0);
-  ~EditorWidget();
+  virtual ~EditorWidget();
 
   void setCurrentLine(long line);
 

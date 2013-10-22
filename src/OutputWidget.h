@@ -8,6 +8,7 @@ class OutputWidget: public QPlainTextEdit {
 
  public:
   explicit OutputWidget(QWidget *parent = 0);
+  virtual ~OutputWidget();
 
  public slots:
   void loadSettings();

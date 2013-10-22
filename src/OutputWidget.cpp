@@ -14,6 +14,9 @@ static QFont defaultFont() {
   return font;
 }
 
+OutputWidget::~OutputWidget() {
+}
+
 void OutputWidget::loadSettings() {
   QSettings settings;
   settings.beginGroup("UI");

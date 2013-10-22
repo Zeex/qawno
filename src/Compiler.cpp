@@ -16,7 +16,6 @@ Compiler::Compiler(QObject *parent)
 }
 
 Compiler::~Compiler() {
-
 }
 
 QString Compiler::path() const {
