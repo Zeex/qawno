@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QFont>
 #include <QFontDialog>
+#include <QIcon>
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QRegExp>
@@ -24,6 +25,8 @@ MainWindow::MainWindow(QWidget *parent)
     lastFind_(0),
     lastReplace_(0)
 {
+  setWindowIcon(QIcon(":icons/pawn.ico"));
+
   editorWidget_ = new EditorWidget(this);
 
   setCentralWidget(editorWidget_);

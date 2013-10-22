@@ -1,42 +1,37 @@
 QT += core gui widgets
 
 SOURCES += \
-    src/main.cpp \
-    src/OutputWidget.cpp \
-    src/MainWindow.cpp \
-    src/EditorWidget.cpp \
-    src/Compiler.cpp \
-    src/CompilerOptionsDialog.cpp \
-    src/SyntaxHighlighter.cpp \
-    src/GoToDialog.cpp \
-    src/FindDialog.cpp \
-    src/ReplaceDialog.cpp \
-    src/AboutDialog.cpp
+  src/main.cpp \
+  src/AboutDialog.cpp \
+  src/Compiler.cpp \
+  src/CompilerOptionsDialog.cpp \
+  src/EditorWidget.cpp \
+  src/FindDialog.cpp \
+  src/GoToDialog.cpp \
+  src/MainWindow.cpp \
+  src/OutputWidget.cpp \
+  src/ReplaceDialog.cpp \
+  src/SyntaxHighlighter.cpp
 
 HEADERS += \
-    src/OutputWidget.h \
-    src/MainWindow.h \
-    src/EditorWidget.h \
-    src/Compiler.h \
-    src/CompilerOptionsDialog.h \
-    src/SyntaxHighlighter.h \
-    src/GoToDialog.h \
-    src/FindDialog.h \
-    src/ReplaceDialog.h \
-    src/AboutDialog.h
-
-RC_FILE = qawno.rc
-
-win32:QMAKE_LFLAGS_RELEASE += -static-libgcc
-
-OTHER_FILES += \
-    icons/pawn.ico \
-    qawno.rc
+  src/AboutDialog.h \
+  src/Compiler.h \
+  src/CompilerOptionsDialog.h \
+  src/EditorWidget.h \
+  src/FindDialog.h \
+  src/GoToDialog.h \
+  src/MainWindow.h \
+  src/OutputWidget.h \
+  src/ReplaceDialog.h \
+  src/SyntaxHighlighter.h
 
 FORMS += \
-    src/CompilerOptionsDialog.ui \
-    src/GoToDialog.ui \
-    src/FindDialog.ui \
-    src/ReplaceDialog.ui \
-    src/AboutDialog.ui
+  src/AboutDialog.ui \
+  src/CompilerOptionsDialog.ui \
+  src/FindDialog.ui \
+  src/GoToDialog.ui \
+  src/ReplaceDialog.ui
 
+RESOURCES = qawno.qrc
+
+win32:QMAKE_LFLAGS_RELEASE += -static-libgcc
