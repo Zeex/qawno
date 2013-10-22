@@ -13,7 +13,6 @@
 #include <QUrl>
 
 #include "AboutDialog.h"
-#include "Compiler.h"
 #include "CompilerOptionsDialog.h"
 #include "EditorWidget.h"
 #include "FindDialog.h"
@@ -25,6 +24,7 @@
 MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent),
     editorWidget_(new EditorWidget(this)),
+    outputWidget_(new OutputWidget(this)),
     lastFind_(0),
     lastReplace_(0)
 {
@@ -82,20 +82,19 @@ MainWindow::MainWindow(QWidget *parent)
   helpMenu->addAction(tr("About Qt.."), this, SLOT(aboutQt()));
   menuBar->addMenu(helpMenu);
 
+  outputWidget_->setReadOnly(true);
+
   QDockWidget *outputDock = new QDockWidget(tr("Output"), this);
   outputDock->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
-  outputWidget_ = new OutputWidget(this);
-  outputWidget_->setReadOnly(true);
   outputDock->setWidget(outputWidget_);
   addDockWidget(Qt::BottomDockWidgetArea, outputDock);
 
-  compiler_ = new Compiler(this);
-  connect(compiler_, SIGNAL(finished(int)), this, SLOT(compiled(int)));
+  connect(&compiler_, SIGNAL(finished(int)), this, SLOT(compiled(int)));
 
   connect(this, SIGNAL(loaded()), SLOT(loadSettings()));
   connect(this, SIGNAL(closed()), SLOT(saveSettings()));
-  connect(this, SIGNAL(loaded()), compiler_, SLOT(loadSettings()));
-  connect(this, SIGNAL(loaded()), compiler_, SLOT(saveSettings()));
+  connect(this, SIGNAL(loaded()), &compiler_, SLOT(loadSettings()));
+  connect(this, SIGNAL(loaded()), &compiler_, SLOT(saveSettings()));
   connect(this, SIGNAL(loaded()), editorWidget_, SLOT(loadSettings()));
   connect(this, SIGNAL(closed()), editorWidget_, SLOT(saveSettings()));
   connect(this, SIGNAL(loaded()), outputWidget_, SLOT(loadSettings()));
@@ -297,7 +296,7 @@ void MainWindow::selectOutputFont() {
 }
 
 void MainWindow::compile() {
-  if (!compiler_->test()) {
+  if (!compiler_.works()) {
     QString message = tr("Pawn compiler is not set or missing.\n"
                          "Do you want to set compiler path now?");
     int button = QMessageBox::warning(this, QCoreApplication::applicationName(),
@@ -319,31 +318,31 @@ void MainWindow::compile() {
     return;
   }
 
-  compiler_->run(fileName_);
+  compiler_.run(fileName_);
 }
 
 void MainWindow::compiled(int /*exitCode*/) {
   outputWidget_->clear();
 
-  QString command = compiler_->commandLineFor(fileName_);
+  QString command = compiler_.getCommandLine(fileName_);
   outputWidget_->appendPlainText(command);
   outputWidget_->appendPlainText("\n");
 
-  QString output = compiler_->output();
+  QString output = compiler_.output();
   outputWidget_->appendPlainText(output);
 }
 
 void MainWindow::setupCompiler() {
   CompilerOptionsDialog dialog;
 
-  dialog.setCompilerPath(compiler_->path());
-  dialog.setCompilerOptions(compiler_->options().join(" "));
+  dialog.setCompilerPath(compiler_.path());
+  dialog.setCompilerOptions(compiler_.options().join(" "));
 
   dialog.exec();
 
   if (dialog.result() == QDialog::Accepted) {
-    compiler_->setPath(dialog.getCompilerPath());
-    compiler_->setOptions(dialog.getCompilerOptions());
+    compiler_.setPath(dialog.getCompilerPath());
+    compiler_.setOptions(dialog.getCompilerOptions());
   }
 }
 

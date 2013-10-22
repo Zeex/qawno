@@ -22,9 +22,9 @@ class Compiler: public QObject {
   void setOptions(const QString &options);
   void setOptions(const QStringList &options);
 
-  QString commandLineFor(const QString &inputFile) const;
+  QString getCommandLine(const QString &inputFile) const;
 
-  bool test() const;
+  bool works() const;
   void run(const QString &inputFile);
 
   QString output() const;

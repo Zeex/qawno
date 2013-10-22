@@ -2,14 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "Compiler.h"
 
-class QPlainTextEdit;
-class QProcess;
-class QSplitter;
-class QTableWidget;
-class QTextEdit;
-
-class Compiler;
 class EditorWidget;
 class OutputWidget;
 class FindDialog;
@@ -61,13 +55,10 @@ class MainWindow: public QMainWindow {
   void writeFile(QString fileName);
 
  private:
-  QString  fileName_; // Currently edited file
-
-  Compiler *compiler_;
-
+  QString fileName_;
+  Compiler compiler_;
   EditorWidget *editorWidget_;
   OutputWidget *outputWidget_;
-
   FindDialog *lastFind_;
   ReplaceDialog *lastReplace_;
 };

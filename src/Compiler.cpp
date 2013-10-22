@@ -39,7 +39,7 @@ void Compiler::setOptions(const QStringList &options) {
   options_ = options;
 }
 
-bool Compiler::test() const {
+bool Compiler::works() const {
   QProcess pawncc;
   pawncc.setProcessChannelMode(QProcess::SeparateChannels);
   pawncc.start(path_);
@@ -48,10 +48,10 @@ bool Compiler::test() const {
 }
 
 void Compiler::run(const QString &inputFile) {
-  process_->start(commandLineFor(inputFile), QProcess::ReadOnly);
+  process_->start(getCommandLine(inputFile), QProcess::ReadOnly);
 }
 
-QString Compiler::commandLineFor(const QString &inputFile) const {
+QString Compiler::getCommandLine(const QString &inputFile) const {
   QFileInfo in(inputFile);
   QFileInfo out(in.absolutePath() + "/" + in.baseName() + ".amx");
   return QString("%1 %2 \"%3\" -o\"%4\"").arg(path_)
