@@ -156,7 +156,7 @@ static QFont defaultFont() {
   #else
     QFont font("Monospace");
   #endif
-  font.setStyleHint(QFont::TypeWriter);
+  font.setStyleHint(QFont::Monospace);
   return font;
 }
 
