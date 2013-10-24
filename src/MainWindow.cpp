@@ -436,10 +436,6 @@ void MainWindow::loadSettings() {
       setWindowState(Qt::WindowMaximized);
     }
   settings.endGroup();
-
-  settings.beginGroup("Editor");
-    editorWidget_->setTabStop(settings.value("TabStop").toInt());
-  settings.endGroup();
 }
 
 void MainWindow::saveSettings() {
@@ -450,9 +446,5 @@ void MainWindow::saveSettings() {
     if (!isMaximized()) {
       settings.setValue("WindowSize", size());
     }
-  settings.endGroup();
-
-  settings.beginGroup("Editor");
-    settings.setValue("TabStop", editorWidget_->tabStop());
   settings.endGroup();
 }

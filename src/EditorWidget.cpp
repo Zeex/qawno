@@ -24,7 +24,7 @@ void LineNumberArea::paintEvent(QPaintEvent *paintEvent) {
 
 EditorWidget::EditorWidget(QWidget *parent)
   : QPlainTextEdit(parent),
-    tabStop_(4)
+    tabStop_(0)
 {
   setLineWrapMode(NoWrap);
   setUndoRedoEnabled(true);
@@ -43,10 +43,6 @@ EditorWidget::EditorWidget(QWidget *parent)
 
   highlighter_ = new SyntaxHighlighter(this);
   highlighter_->setDocument(document());
-
-
-
-  setTabStopWidth(fontMetrics().width(' ') * tabStop_);
 }
 
 EditorWidget::~EditorWidget() {
@@ -66,7 +62,7 @@ int EditorWidget::tabStop() const {
 }
 
 void EditorWidget::setTabStop(int chars) {
-  tabStop_ = chars;
+  setTabStopWidth(fontMetrics().width(' ') * (tabStop_ = chars));
 }
 
 void EditorWidget::lineNumberAreaPaintEvent(QPaintEvent *paintEvent) {
@@ -166,16 +162,26 @@ static QFont defaultFont() {
 
 void EditorWidget::loadSettings() {
   QSettings settings;
+
   settings.beginGroup("UI");
     QFont font = defaultFont();
     font.fromString(settings.value("EditorFont", font).toString());
     QPlainTextEdit::setFont(font);
   settings.endGroup();
+
+  settings.beginGroup("Editor");
+    setTabStop(settings.value("TabStop", 4).toInt());
+  settings.endGroup();
 }
 
 void EditorWidget::saveSettings() {
   QSettings settings;
+
   settings.beginGroup("UI");
     settings.setValue("EditorFont", font().toString());
+  settings.endGroup();
+
+  settings.beginGroup("Editor");
+    settings.setValue("TabStop", tabStop());
   settings.endGroup();
 }
