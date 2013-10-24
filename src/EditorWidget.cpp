@@ -162,26 +162,14 @@ static QFont defaultFont() {
 
 void EditorWidget::loadSettings() {
   QSettings settings;
-
-  settings.beginGroup("UI");
-    QFont font = defaultFont();
-    font.fromString(settings.value("EditorFont", font).toString());
-    QPlainTextEdit::setFont(font);
-  settings.endGroup();
-
-  settings.beginGroup("Editor");
-    setTabStop(settings.value("TabStop", 4).toInt());
-  settings.endGroup();
+  QFont font = defaultFont();
+  font.fromString(settings.value("Font/Editor", font).toString());
+  QPlainTextEdit::setFont(font);
+  setTabStop(settings.value("Editor/TabStop", 4).toInt());
 }
 
 void EditorWidget::saveSettings() {
   QSettings settings;
-
-  settings.beginGroup("UI");
-    settings.setValue("EditorFont", font().toString());
-  settings.endGroup();
-
-  settings.beginGroup("Editor");
-    settings.setValue("TabStop", tabStop());
-  settings.endGroup();
+  settings.setValue("Font/Editor", font().toString());
+  settings.setValue("Editor/TabStop", tabStop());
 }

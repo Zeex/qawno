@@ -11,7 +11,6 @@ Compiler::Compiler(QObject *parent)
   : QObject(parent),
     process_(new QProcess(this))
 {
-  options_ << "-;+" << "-(+";
   process_->setProcessChannelMode(QProcess::MergedChannels);
   connect(process_, SIGNAL(finished(int)), SIGNAL(finished(int)));
 }
@@ -66,19 +65,12 @@ QString Compiler::output() const {
 
 void Compiler::loadSettings() {
   QSettings settings;
-  settings.beginGroup("Compiler");
-    path_ = settings.value("Path").toString();
-    if (path_.isEmpty()) {
-      path_ = "pawncc"; // Assume compiler is in PATH
-    }
-    options_ = settings.value("Options").toString().split("\\s*");
-  settings.endGroup();
+  path_ = settings.value("Compiler/Path", "pawncc").toString();
+  options_ = settings.value("Compiler/Options", "-;+ -(+").toString().split("\\s*");
 }
 
 void Compiler::saveSettings() {
   QSettings settings;
-  settings.beginGroup("Compiler");
-    settings.setValue("Path", path_);
-    settings.setValue("Options", options_.join(" "));
-  settings.endGroup();
+  settings.setValue("Compiler/Path", path_);
+  settings.setValue("Compiler/Options", options_.join(" "));
 }

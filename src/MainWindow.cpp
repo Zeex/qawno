@@ -69,7 +69,7 @@ MainWindow::MainWindow(QWidget *parent)
   buildMenu->addAction(tr("Compile"), this, SLOT(compile()), QKeySequence("F5"));
   menuBar->addMenu(buildMenu);
 
-  QMenu *optionsMenu = new QMenu(tr("&Options"), this);
+  QMenu *optionsMenu = new QMenu(tr("&Settings"), this);
     QMenu *fontMenu = optionsMenu->addMenu(tr("Font"));
     fontMenu->addAction(tr("Editor"), this, SLOT(selectEditorFont()));
     fontMenu->addAction(tr("Output"), this, SLOT(selectOutputFont()));
@@ -429,22 +429,16 @@ void MainWindow::writeFile(QString fileName) {
 
 void MainWindow::loadSettings() {
   QSettings settings;
-
-  settings.beginGroup("UI");
-    resize(settings.value("WindowSize", QSize(640, 480)).toSize());
-    if (settings.value("Maximized", false).toBool()) {
-      setWindowState(Qt::WindowMaximized);
-    }
-  settings.endGroup();
+  resize(settings.value("Window/Size", QSize(640, 480)).toSize());
+  if (settings.value("Window/Maximized", false).toBool()) {
+    setWindowState(Qt::WindowMaximized);
+  }
 }
 
 void MainWindow::saveSettings() {
   QSettings settings;
-
-  settings.beginGroup("UI");
-    settings.setValue("Maximized", isMaximized());
-    if (!isMaximized()) {
-      settings.setValue("WindowSize", size());
-    }
-  settings.endGroup();
+  settings.setValue("Window/Maximized", isMaximized());
+  if (!isMaximized()) {
+    settings.setValue("Window/Size", size());
+  }
 }

@@ -19,16 +19,12 @@ OutputWidget::~OutputWidget() {
 
 void OutputWidget::loadSettings() {
   QSettings settings;
-  settings.beginGroup("UI");
-    QFont font = defaultFont();
-    font.fromString(settings.value("OutputFont", font).toString());
-    QPlainTextEdit::setFont(font);
-  settings.endGroup();
+  QFont font = defaultFont();
+  font.fromString(settings.value("Font/Output", font).toString());
+  QPlainTextEdit::setFont(font);
 }
 
 void OutputWidget::saveSettings() {
   QSettings settings;
-  settings.beginGroup("UI");
-    settings.setValue("OutputFont", font().toString());
-  settings.endGroup();
+  settings.setValue("Font/Output", font().toString());
 }
