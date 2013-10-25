@@ -48,8 +48,8 @@ EditorWidget::EditorWidget(QWidget *parent)
 EditorWidget::~EditorWidget() {
 }
 
-void EditorWidget::setCurrentLine(long line) {
-  if (line > 0 && line <= document()->blockCount()) {
+void EditorWidget::jumpToLine(long line) {
+  if (line > 0 && line <= blockCount()) {
     QTextCursor cur = this->textCursor();
     int pos = document()->findBlockByLineNumber(line - 1).position();
     cur.setPosition(pos);

@@ -31,7 +31,7 @@ class EditorWidget: public QPlainTextEdit {
   explicit EditorWidget(QWidget *parent = 0);
   virtual ~EditorWidget();
 
-  void setCurrentLine(long line);
+  void jumpToLine(long line);
 
   int tabStop() const;
   void setTabStop(int chars);

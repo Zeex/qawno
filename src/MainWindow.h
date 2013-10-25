@@ -9,6 +9,10 @@ class OutputWidget;
 class FindDialog;
 class ReplaceDialog;
 
+namespace Ui {
+  class MainWindow;
+}
+
 class MainWindow: public QMainWindow {
  Q_OBJECT
 
@@ -55,10 +59,11 @@ class MainWindow: public QMainWindow {
   void writeFile(QString fileName);
 
  private:
+  Ui::MainWindow *ui_;
+
+ private:
   QString fileName_;
   Compiler compiler_;
-  EditorWidget *editorWidget_;
-  OutputWidget *outputWidget_;
   FindDialog *lastFind_;
   ReplaceDialog *lastReplace_;
 };

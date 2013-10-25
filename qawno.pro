@@ -30,6 +30,7 @@ FORMS += \
   src/CompilerOptionsDialog.ui \
   src/FindDialog.ui \
   src/GoToDialog.ui \
+  src/MainWindow.ui \
   src/ReplaceDialog.ui
 
 RESOURCES = qawno.qrc

@@ -12,6 +12,8 @@
 #include <QSettings>
 #include <QUrl>
 
+#include "ui_MainWindow.h"
+
 #include "AboutDialog.h"
 #include "CompilerOptionsDialog.h"
 #include "EditorWidget.h"
@@ -23,71 +25,27 @@
 
 MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent),
-    editorWidget_(new EditorWidget(this)),
-    outputWidget_(new OutputWidget(this)),
+    ui_(new Ui::MainWindow),
     lastFind_(0),
     lastReplace_(0)
 {
-  setWindowIcon(QIcon(":icons/pawn.ico"));
+  ui_->setupUi(this);
 
-  setCentralWidget(editorWidget_);
-  connect(editorWidget_, SIGNAL(textChanged()), SLOT(updateWindowTitle()));
-
-  setAcceptDrops(true);
-  editorWidget_->setAcceptDrops(false);
-
-  QMenuBar *menuBar = new QMenuBar(this);
-  setMenuBar(menuBar);
-
-  QMenu *fileMenu = new QMenu(tr("&File"), this);
-  fileMenu->addAction(tr("New"), this, SLOT(newFile()), QKeySequence("Ctrl+N"));
-  fileMenu->addAction(tr("Open"), this, SLOT(openFile()), QKeySequence("Ctrl+O"));
-  fileMenu->addAction(tr("Close"), this, SLOT(closeFile()), QKeySequence("Ctrl+W"));
-  fileMenu->addSeparator();
-  fileMenu->addAction(tr("Save"), this, SLOT(saveFile()), QKeySequence("Ctrl+S"));
-  fileMenu->addAction(tr("Save as..."), this, SLOT(saveFileAs()), QKeySequence("Ctrl+Shift+S"));
-  fileMenu->addSeparator();
-  fileMenu->addAction(tr("Exit"), this, SLOT(exit()), QKeySequence("Ctrl+Q"));
-  menuBar->addMenu(fileMenu);
-
-  QMenu *editMenu = new QMenu(tr("&Edit"), this);
-  editMenu->addAction(tr("Undo"), editorWidget_, SLOT(undo()), QKeySequence("Ctrl+Z"));
-  editMenu->addAction(tr("Redo"), editorWidget_, SLOT(redo()), QKeySequence("Ctrl+Y"));
-  editMenu->addSeparator();
-  editMenu->addAction(tr("Cut"), editorWidget_, SLOT(cut()), QKeySequence("Ctrl+X"));
-  editMenu->addAction(tr("Copy"), editorWidget_, SLOT(copy()), QKeySequence("Ctrl+C"));
-  editMenu->addAction(tr("Paste"), editorWidget_, SLOT(paste()), QKeySequence("Ctrl+V"));
-  editMenu->addSeparator();
-  editMenu->addAction(tr("Find..."), this, SLOT(find()), QKeySequence("Ctrl+F"));
-  editMenu->addAction(tr("Find next"), this, SLOT(findNext()), QKeySequence("F3"));
-  editMenu->addAction(tr("Replace..."), this, SLOT(replace()), QKeySequence("Ctrl+H"));
-  editMenu->addSeparator();
-  editMenu->addAction(tr("Go to line..."), this, SLOT(goToLine()), QKeySequence("Ctrl+G"));
-  menuBar->addMenu(editMenu);
-
-  QMenu *buildMenu = new QMenu(tr("&Build"), this);
-  buildMenu->addAction(tr("Compile"), this, SLOT(compile()), QKeySequence("F5"));
-  menuBar->addMenu(buildMenu);
-
-  QMenu *optionsMenu = new QMenu(tr("&Settings"), this);
-    QMenu *fontMenu = optionsMenu->addMenu(tr("Font"));
-    fontMenu->addAction(tr("Editor"), this, SLOT(selectEditorFont()));
-    fontMenu->addAction(tr("Output"), this, SLOT(selectOutputFont()));
-  optionsMenu->addAction(tr("Compiler"), this, SLOT(setupCompiler()));
-  menuBar->addMenu(optionsMenu);
-
-  QMenu *helpMenu = new QMenu(tr("&Help"), this);
-  QString appName = QCoreApplication::applicationName();
-  helpMenu->addAction(tr("About %1...").arg(appName), this, SLOT(about()));
-  helpMenu->addAction(tr("About Qt.."), this, SLOT(aboutQt()));
-  menuBar->addMenu(helpMenu);
-
-  outputWidget_->setReadOnly(true);
-
-  QDockWidget *outputDock = new QDockWidget(tr("Output"), this);
-  outputDock->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
-  outputDock->setWidget(outputWidget_);
-  addDockWidget(Qt::BottomDockWidgetArea, outputDock);
+  connect(ui_->actionNew, SIGNAL(triggered()), this, SLOT(newFile()));
+  connect(ui_->actionOpen, SIGNAL(triggered()), this, SLOT(openFile()));
+  connect(ui_->actionClose, SIGNAL(triggered()), this, SLOT(openClose()));
+  connect(ui_->actionSave, SIGNAL(triggered()), this, SLOT(saveFile()));
+  connect(ui_->actionSaveAs, SIGNAL(triggered()), this, SLOT(saveFileAs()));
+  connect(ui_->actionFind, SIGNAL(triggered()), this, SLOT(find()));
+  connect(ui_->actionFindNext, SIGNAL(triggered()), this, SLOT(findNext()));
+  connect(ui_->actionCompile, SIGNAL(triggered()), this, SLOT(compile()));
+  connect(ui_->actionEditorFont, SIGNAL(triggered()), this, SLOT(selectEditorFont()));
+  connect(ui_->actionOutputFont, SIGNAL(triggered()), this, SLOT(selectOutputFont()));
+  connect(ui_->actionCompilerSettings, SIGNAL(triggered()), this, SLOT(setupCompiler()));
+  connect(ui_->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
+  connect(ui_->actionAboutQt, SIGNAL(triggered()), this, SLOT(aboutQt()));
+  connect(ui_->actionGoToLine, SIGNAL(triggered()), this, SLOT(goToLine()));
+  connect(ui_->editor, SIGNAL(textChanged()), SLOT(updateWindowTitle()));
 
   connect(&compiler_, SIGNAL(finished(int)), this, SLOT(compiled(int)));
 
@@ -95,12 +53,11 @@ MainWindow::MainWindow(QWidget *parent)
   connect(this, SIGNAL(closed()), SLOT(saveSettings()));
   connect(this, SIGNAL(loaded()), &compiler_, SLOT(loadSettings()));
   connect(this, SIGNAL(loaded()), &compiler_, SLOT(saveSettings()));
-  connect(this, SIGNAL(loaded()), editorWidget_, SLOT(loadSettings()));
-  connect(this, SIGNAL(closed()), editorWidget_, SLOT(saveSettings()));
-  connect(this, SIGNAL(loaded()), outputWidget_, SLOT(loadSettings()));
-  connect(this, SIGNAL(closed()), outputWidget_, SLOT(saveSettings()));
+  connect(this, SIGNAL(loaded()), ui_->editor, SLOT(loadSettings()));
+  connect(this, SIGNAL(closed()), ui_->editor, SLOT(saveSettings()));
+  connect(this, SIGNAL(loaded()), ui_->output, SLOT(loadSettings()));
+  connect(this, SIGNAL(closed()), ui_->output, SLOT(saveSettings()));
 
-  // Open the file specified at the command line, if any.
   if (QApplication::instance()->arguments().size() > 1) {
     readFile(QApplication::instance()->arguments()[1]);
   }
@@ -124,8 +81,8 @@ bool MainWindow::openFile() {
 }
 
 bool MainWindow::isSafeToClose() {
-  if (editorWidget_->document()->isModified() &&
-      !editorWidget_->document()->isEmpty())
+  if (ui_->editor->document()->isModified() &&
+      !ui_->editor->document()->isEmpty())
   {
     QString message;
 
@@ -144,8 +101,7 @@ bool MainWindow::isSafeToClose() {
     switch (button) {
       case QMessageBox::Yes:
         saveFile();
-        if (editorWidget_->document()->isModified()) {
-          // Save file failed or cancelled
+        if (ui_->editor->document()->isModified()) {
           return false;
         }
         return true;
@@ -161,7 +117,7 @@ bool MainWindow::isSafeToClose() {
 
 bool MainWindow::closeFile() {
   if (isSafeToClose()) {
-    editorWidget_->clear();
+    ui_->editor->clear();
     fileName_.clear();
     return true;
   }
@@ -169,7 +125,7 @@ bool MainWindow::closeFile() {
 }
 
 bool MainWindow::saveFile() {
-  if (editorWidget_->document()->isEmpty()) {
+  if (ui_->editor->document()->isEmpty()) {
     return false;
   }
 
@@ -183,7 +139,7 @@ bool MainWindow::saveFile() {
 }
 
 bool MainWindow::saveFileAs() {
-  if (editorWidget_->document()->isEmpty()) {
+  if (ui_->editor->document()->isEmpty()) {
     return false;
   }
 
@@ -209,7 +165,7 @@ bool MainWindow::exit() {
 
 void MainWindow::find() {
   if (lastFind_ != 0) {
-  delete lastFind_;
+    delete lastFind_;
   }
 
   lastFind_ = new FindDialog;
@@ -239,14 +195,14 @@ void MainWindow::findNext() {
   if (lastFind_->useRegexp()) {
     QRegExp regexp(lastFind_->findWhatText(),
       lastFind_->matchCase() ? Qt::CaseSensitive : Qt::CaseInsensitive);
-    cursor = editorWidget_->document()->find(regexp, editorWidget_->textCursor(), flags);
+    cursor = ui_->editor->document()->find(regexp, ui_->editor->textCursor(), flags);
   } else {
-    cursor = editorWidget_->document()->find(lastFind_->findWhatText(),
-                                        editorWidget_->textCursor(), flags);
+    cursor = ui_->editor->document()->find(lastFind_->findWhatText(),
+                                        ui_->editor->textCursor(), flags);
   }
 
   if (!cursor.isNull()) {
-    editorWidget_->setTextCursor(cursor);
+    ui_->editor->setTextCursor(cursor);
   }
 }
 
@@ -264,22 +220,18 @@ void MainWindow::replace() {
 void MainWindow::goToLine() {
   GoToDialog dialog;
   dialog.exec();
-
-  long line = dialog.targetLineNumber();
-  if (line >= 0 && line < editorWidget_->blockCount()) {
-    editorWidget_->setCurrentLine(line);
-  }
+  ui_->editor->jumpToLine(dialog.targetLineNumber());
 }
 
 void MainWindow::selectEditorFont() {
   QFontDialog fontDialog(this);
 
   bool ok = false;
-  QFont newFont = fontDialog.getFont(&ok, editorWidget_->font(), this,
+  QFont newFont = fontDialog.getFont(&ok, ui_->editor->font(), this,
                                      tr("Select editor font"));
 
   if (ok) {
-    editorWidget_->setFont(newFont);
+    ui_->editor->setFont(newFont);
   }
 }
 
@@ -287,11 +239,11 @@ void MainWindow::selectOutputFont() {
   QFontDialog fontDialog(this);
 
   bool ok = false;
-  QFont newFont = fontDialog.getFont(&ok, outputWidget_->font(), this,
+  QFont newFont = fontDialog.getFont(&ok, ui_->output->font(), this,
   tr("Select output font"));
 
   if (ok) {
-  outputWidget_->setFont(newFont);
+  ui_->output->setFont(newFont);
   }
 }
 
@@ -308,8 +260,8 @@ void MainWindow::compile() {
     return;
   }
 
-  if (editorWidget_->toPlainText().isEmpty()) {
-    outputWidget_->appendPlainText(tr("Nothing to compile!"));
+  if (ui_->editor->toPlainText().isEmpty()) {
+    ui_->output->appendPlainText(tr("Nothing to compile!"));
     return;
   }
 
@@ -322,14 +274,14 @@ void MainWindow::compile() {
 }
 
 void MainWindow::compiled(int /*exitCode*/) {
-  outputWidget_->clear();
+  ui_->output->clear();
 
   QString command = compiler_.getCommandLine(fileName_);
-  outputWidget_->appendPlainText(command);
-  outputWidget_->appendPlainText("\n");
+  ui_->output->appendPlainText(command);
+  ui_->output->appendPlainText("\n");
 
   QString output = compiler_.output();
-  outputWidget_->appendPlainText(output);
+  ui_->output->appendPlainText(output);
 }
 
 void MainWindow::setupCompiler() {
@@ -359,7 +311,7 @@ void MainWindow::updateWindowTitle() {
   QString title;
   if (!fileName_.isEmpty()) {
     title.append(QFileInfo(fileName_).fileName());
-    if (editorWidget_->document()->isModified()) {
+    if (ui_->editor->document()->isModified()) {
       title.append("*");
     }
     title.append(" - ");
@@ -405,8 +357,8 @@ void MainWindow::readFile(QString fileName) {
                             message, QMessageBox::Ok);
     } else {
       fileName_ = fileName;
-      editorWidget_->setPlainText(file.readAll());
-      editorWidget_->document()->setModified(false);
+      ui_->editor->setPlainText(file.readAll());
+      ui_->editor->document()->setModified(false);
       updateWindowTitle();
     }
   }
@@ -421,8 +373,8 @@ void MainWindow::writeFile(QString fileName) {
       .arg(file.errorString()),
       QMessageBox::Ok);
   } else {
-    file.write(editorWidget_->toPlainText().toLatin1());
-    editorWidget_->document()->setModified(false);
+    file.write(ui_->editor->toPlainText().toLatin1());
+    ui_->editor->document()->setModified(false);
     updateWindowTitle();
   }
 }
