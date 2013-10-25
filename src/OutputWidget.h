@@ -9,10 +9,6 @@ class OutputWidget: public QPlainTextEdit {
  public:
   explicit OutputWidget(QWidget *parent = 0);
   virtual ~OutputWidget();
-
- public slots:
-  void loadSettings();
-  void saveSettings();
 };
 
 #endif // OUTPUTWIDGET_H

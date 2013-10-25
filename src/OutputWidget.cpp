@@ -2,8 +2,6 @@
 
 #include "OutputWidget.h"
 
-OutputWidget::OutputWidget(QWidget *parent): QPlainTextEdit(parent) {}
-
 static QFont defaultFont() {
   #ifdef Q_OS_WINDOWS
     QFont font("Courier New");
@@ -14,17 +12,16 @@ static QFont defaultFont() {
   return font;
 }
 
-OutputWidget::~OutputWidget() {
-}
-
-void OutputWidget::loadSettings() {
+OutputWidget::OutputWidget(QWidget *parent):
+  QPlainTextEdit(parent)
+{
   QSettings settings;
   QFont font = defaultFont();
   font.fromString(settings.value("Font/Output", font).toString());
-  QPlainTextEdit::setFont(font);
+  setFont(font);
 }
 
-void OutputWidget::saveSettings() {
+OutputWidget::~OutputWidget() {
   QSettings settings;
   settings.setValue("Font/Output", font().toString());
 }

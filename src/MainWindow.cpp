@@ -25,15 +25,13 @@
 
 MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent),
-    ui_(new Ui::MainWindow),
-    lastFind_(0),
-    lastReplace_(0)
+    ui_(new Ui::MainWindow)
 {
   ui_->setupUi(this);
 
   connect(ui_->actionNew, SIGNAL(triggered()), this, SLOT(newFile()));
   connect(ui_->actionOpen, SIGNAL(triggered()), this, SLOT(openFile()));
-  connect(ui_->actionClose, SIGNAL(triggered()), this, SLOT(openClose()));
+  connect(ui_->actionClose, SIGNAL(triggered()), this, SLOT(closeFile()));
   connect(ui_->actionSave, SIGNAL(triggered()), this, SLOT(saveFile()));
   connect(ui_->actionSaveAs, SIGNAL(triggered()), this, SLOT(saveFileAs()));
   connect(ui_->actionFind, SIGNAL(triggered()), this, SLOT(find()));
@@ -45,24 +43,30 @@ MainWindow::MainWindow(QWidget *parent)
   connect(ui_->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
   connect(ui_->actionAboutQt, SIGNAL(triggered()), this, SLOT(aboutQt()));
   connect(ui_->actionGoToLine, SIGNAL(triggered()), this, SLOT(goToLine()));
-  connect(ui_->editor, SIGNAL(textChanged()), SLOT(updateWindowTitle()));
+  connect(ui_->editor, SIGNAL(textChanged()), SLOT(refreshTitle()));
+  connect(&compiler_, SIGNAL(finished(int)), this, SLOT(postCompile(int)));
 
-  connect(&compiler_, SIGNAL(finished(int)), this, SLOT(compiled(int)));
+  QSettings settings;
 
-  connect(this, SIGNAL(loaded()), SLOT(loadSettings()));
-  connect(this, SIGNAL(closed()), SLOT(saveSettings()));
-  connect(this, SIGNAL(loaded()), &compiler_, SLOT(loadSettings()));
-  connect(this, SIGNAL(loaded()), &compiler_, SLOT(saveSettings()));
-  connect(this, SIGNAL(loaded()), ui_->editor, SLOT(loadSettings()));
-  connect(this, SIGNAL(closed()), ui_->editor, SLOT(saveSettings()));
-  connect(this, SIGNAL(loaded()), ui_->output, SLOT(loadSettings()));
-  connect(this, SIGNAL(closed()), ui_->output, SLOT(saveSettings()));
-
-  if (QApplication::instance()->arguments().size() > 1) {
-    readFile(QApplication::instance()->arguments()[1]);
+  resize(settings.value("Widgets/MainWindow/Size", QSize(640, 480)).toSize());
+  if (settings.value("Widgets/MainWindow/Maximized", false).toBool()) {
+    setWindowState(Qt::WindowMaximized);
   }
 
-  emit loaded();
+  if (QApplication::instance()->arguments().size() > 1) {
+    loadFile(QApplication::instance()->arguments()[1]);
+  }
+}
+
+MainWindow::~MainWindow() {
+  QSettings settings;
+
+  settings.setValue("Widgets/MainWindow/Maximized", isMaximized());
+  if (!isMaximized()) {
+    settings.setValue("Widgets/MainWindow/Size", size());
+  }
+
+  delete ui_;
 }
 
 bool MainWindow::newFile() {
@@ -74,13 +78,15 @@ bool MainWindow::openFile() {
     QFileDialog openDialog(this);
     QString fileName = openDialog.getOpenFileName(this, tr("Open file"), "",
                                               tr("Pawn scripts (*.pwn *.inc)"));
-    readFile(fileName);
+    loadFile(fileName);
     return true;
   }
   return false;
 }
 
-bool MainWindow::isSafeToClose() {
+bool MainWindow::closeFile() {
+  bool canClose = true;
+
   if (ui_->editor->document()->isModified() &&
       !ui_->editor->document()->isEmpty())
   {
@@ -100,121 +106,96 @@ bool MainWindow::isSafeToClose() {
 
     switch (button) {
       case QMessageBox::Yes:
-        saveFile();
-        if (ui_->editor->document()->isModified()) {
-          return false;
-        }
-        return true;
+        canClose = saveFile();
+        break;
       case QMessageBox::No:
+        canClose = true;
         break;
       case QMessageBox::Cancel:
-        return false;
+        canClose = false;
+        break;
     }
   }
 
-  return true;
-}
-
-bool MainWindow::closeFile() {
-  if (isSafeToClose()) {
+  if (canClose) {
     ui_->editor->clear();
     fileName_.clear();
-    return true;
   }
-  return false;
+
+  return canClose;
 }
 
 bool MainWindow::saveFile() {
   if (ui_->editor->document()->isEmpty()) {
     return false;
+  } else {
+    if (fileName_.isEmpty()) {
+      return saveFileAs();
+    } else {
+      QFile file(fileName_);
+      if (!file.open(QIODevice::WriteOnly)) {
+        QMessageBox::critical(this, QCoreApplication::applicationName(),
+          tr("Could not save to %1: %2.")
+          .arg(fileName_)
+          .arg(file.errorString()),
+          QMessageBox::Ok);
+      } else {
+        file.write(ui_->editor->toPlainText().toLatin1());
+        ui_->editor->document()->setModified(false);
+        refreshTitle();
+      }
+    }
   }
-
-  if (fileName_.isEmpty()) {
-    saveFileAs();
-    return false;
-  }
-
-  writeFile(fileName_);
   return true;
 }
 
 bool MainWindow::saveFileAs() {
-  if (ui_->editor->document()->isEmpty()) {
-    return false;
-  }
-
-  QFileDialog saveDialog;
-  QString fileName = saveDialog.getSaveFileName(this,
-  tr("Save file as"), "", tr("Pawn scripts (*.pwn *.inc)"));
-
-  if (!fileName.isEmpty()) {
-    fileName_ = fileName;
-    return saveFile();
-  }
-
-  return false;
-}
-
-bool MainWindow::exit() {
-  if (closeFile()) {
-    QApplication::exit();
-    return true;
+  if (!ui_->editor->document()->isEmpty()) {
+    QFileDialog saveDialog;
+    QString fileName = saveDialog.getSaveFileName(this,
+                      tr("Save file as"), "", tr("Pawn scripts (*.pwn *.inc)"));
+    if (!fileName.isEmpty()) {
+      fileName_ = fileName;
+      return saveFile();
+    }
   }
   return false;
 }
 
 void MainWindow::find() {
-  if (lastFind_ != 0) {
-    delete lastFind_;
-  }
-
-  lastFind_ = new FindDialog;
-  lastFind_->exec();
-
+  findDialog_.exec();
   emit(findNext());
 }
 
 void MainWindow::findNext() {
-  if (lastFind_ == 0) {
-    return;
-  }
-
   QTextDocument::FindFlags flags;
-  if (lastFind_->matchCase()) {
+
+  if (findDialog_.matchCase()) {
     flags |= QTextDocument::FindCaseSensitively;
   }
-  if (lastFind_->matchWholeWords()) {
+  if (findDialog_.matchWholeWords()) {
     flags |= QTextDocument::FindWholeWords;
   }
-  if (lastFind_->searchBackwards()) {
+  if (findDialog_.searchBackwards()) {
     flags |= QTextDocument::FindBackward;
   }
 
   QTextCursor cursor;
 
-  if (lastFind_->useRegexp()) {
-    QRegExp regexp(lastFind_->findWhatText(),
-      lastFind_->matchCase() ? Qt::CaseSensitive : Qt::CaseInsensitive);
-    cursor = ui_->editor->document()->find(regexp, ui_->editor->textCursor(), flags);
+  if (findDialog_.useRegexp()) {
+    QRegExp regexp(findDialog_.findWhatText(), findDialog_.matchCase()
+                                               ? Qt::CaseSensitive
+                                               : Qt::CaseInsensitive);
+    cursor = ui_->editor->document()->find(regexp, ui_->editor->textCursor(),
+                                           flags);
   } else {
-    cursor = ui_->editor->document()->find(lastFind_->findWhatText(),
-                                        ui_->editor->textCursor(), flags);
+    cursor = ui_->editor->document()->find(findDialog_.findWhatText(),
+                                           ui_->editor->textCursor(), flags);
   }
 
   if (!cursor.isNull()) {
     ui_->editor->setTextCursor(cursor);
   }
-}
-
-void MainWindow::replace() {
-  if (lastReplace_ != 0) {
-    delete lastReplace_;
-  }
-
-  lastReplace_ = new ReplaceDialog;
-  lastReplace_->exec();
-
-  //emit(replaceNext());
 }
 
 void MainWindow::goToLine() {
@@ -243,20 +224,13 @@ void MainWindow::selectOutputFont() {
   tr("Select output font"));
 
   if (ok) {
-  ui_->output->setFont(newFont);
+    ui_->output->setFont(newFont);
   }
 }
 
 void MainWindow::compile() {
   if (!compiler_.works()) {
-    QString message = tr("Pawn compiler is not set or missing.\n"
-                         "Do you want to set compiler path now?");
-    int button = QMessageBox::warning(this, QCoreApplication::applicationName(),
-                                      message , QMessageBox::Yes |
-                                                QMessageBox::No);
-    if (button != QMessageBox::No) {
-      setupCompiler();
-    }
+    setupCompiler();
     return;
   }
 
@@ -273,7 +247,7 @@ void MainWindow::compile() {
   compiler_.run(fileName_);
 }
 
-void MainWindow::compiled(int /*exitCode*/) {
+void MainWindow::postCompile(int /*exitCode*/) {
   ui_->output->clear();
 
   QString command = compiler_.getCommandLine(fileName_);
@@ -307,7 +281,7 @@ void MainWindow::aboutQt() {
   QMessageBox::aboutQt(this);
 }
 
-void MainWindow::updateWindowTitle() {
+void MainWindow::refreshTitle() {
   QString title;
   if (!fileName_.isEmpty()) {
     title.append(QFileInfo(fileName_).fileName());
@@ -321,8 +295,7 @@ void MainWindow::updateWindowTitle() {
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
-  if (isSafeToClose()) {
-    emit closed();
+  if (closeFile()) {
     event->accept();
   } else {
     event->ignore();
@@ -340,14 +313,14 @@ void MainWindow::dropEvent(QDropEvent *event) {
   foreach (QUrl url, urls) {
     if (url.isLocalFile()) {
       if (closeFile()) {
-        readFile(url.toLocalFile());
+        loadFile(url.toLocalFile());
       }
       break;
     }
   }
 }
 
-void MainWindow::readFile(QString fileName) {
+bool MainWindow::loadFile(QString fileName) {
   if (!fileName.isEmpty()) {
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly)) {
@@ -355,42 +328,14 @@ void MainWindow::readFile(QString fileName) {
                                                     .arg(file.errorString());
       QMessageBox::critical(this, QCoreApplication::applicationName(),
                             message, QMessageBox::Ok);
+      return false;
     } else {
       fileName_ = fileName;
       ui_->editor->setPlainText(file.readAll());
       ui_->editor->document()->setModified(false);
-      updateWindowTitle();
+      refreshTitle();
+      return true;
     }
   }
-}
-
-void MainWindow::writeFile(QString fileName) {
-  QFile file(fileName);
-  if (!file.open(QIODevice::WriteOnly)) {
-    QMessageBox::critical(this, QCoreApplication::applicationName(),
-      tr("Could not save to %1: %2.")
-      .arg(fileName)
-      .arg(file.errorString()),
-      QMessageBox::Ok);
-  } else {
-    file.write(ui_->editor->toPlainText().toLatin1());
-    ui_->editor->document()->setModified(false);
-    updateWindowTitle();
-  }
-}
-
-void MainWindow::loadSettings() {
-  QSettings settings;
-  resize(settings.value("Window/Size", QSize(640, 480)).toSize());
-  if (settings.value("Window/Maximized", false).toBool()) {
-    setWindowState(Qt::WindowMaximized);
-  }
-}
-
-void MainWindow::saveSettings() {
-  QSettings settings;
-  settings.setValue("Window/Maximized", isMaximized());
-  if (!isMaximized()) {
-    settings.setValue("Window/Size", size());
-  }
+  return false;
 }

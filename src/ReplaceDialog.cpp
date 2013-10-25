@@ -10,7 +10,6 @@ ReplaceDialog::ReplaceDialog(QWidget *parent) :
   ui_->setupUi(this);
   ui_->findWhatEdit->setFocus();
 
-  // Load last state
   QSettings settings;
   settings.beginGroup("Widgets");
     settings.beginGroup("ReplaceDialog");
@@ -30,9 +29,7 @@ ReplaceDialog::ReplaceDialog(QWidget *parent) :
   settings.endGroup();
 }
 
-ReplaceDialog::~ReplaceDialog()
-{
-  // Save current state
+ReplaceDialog::~ReplaceDialog() {
   QSettings settings;
   settings.beginGroup("Widgets");
     settings.beginGroup("ReplaceDialog");
@@ -42,36 +39,29 @@ ReplaceDialog::~ReplaceDialog()
       settings.setValue("UseRegexp", ui_->useRegexp->checkState() == Qt::Checked);
     settings.endGroup();
   settings.endGroup();
-
   delete ui_;
 }
 
-QString ReplaceDialog::findWhatText() const
-{
+QString ReplaceDialog::findWhatText() const {
   return ui_->findWhatEdit->text();
 }
 
-QString ReplaceDialog::replaceWithText() const
-{
+QString ReplaceDialog::replaceWithText() const {
   return ui_->replaceWithEdit->text();
 }
 
-bool ReplaceDialog::matchCase() const
-{
+bool ReplaceDialog::matchCase() const {
   return ui_->matchCase->checkState() == Qt::Checked;
 }
 
-bool ReplaceDialog::matchWholeWords() const
-{
+bool ReplaceDialog::matchWholeWords() const {
   return ui_->matchWholeWords->checkState() == Qt::Checked;
 }
 
-bool ReplaceDialog::searchBackwards() const
-{
+bool ReplaceDialog::searchBackwards() const {
   return ui_->searchBackwards->checkState() == Qt::Checked;
 }
 
-bool ReplaceDialog::useRegexp() const
-{
+bool ReplaceDialog::useRegexp() const {
   return ui_->useRegexp->checkState() == Qt::Checked;
 }

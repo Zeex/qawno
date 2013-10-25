@@ -2,12 +2,13 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+
 #include "Compiler.h"
+#include "FindDialog.h"
+#include "ReplaceDialog.h"
 
 class EditorWidget;
 class OutputWidget;
-class FindDialog;
-class ReplaceDialog;
 
 namespace Ui {
   class MainWindow;
@@ -18,14 +19,7 @@ class MainWindow: public QMainWindow {
 
  public:
   explicit MainWindow(QWidget *parent = 0);
-
- public slots:
-  void loadSettings();
-  void saveSettings();
-
- signals:
-  void loaded();
-  void closed();
+  ~MainWindow();
 
  protected:
   void closeEvent(QCloseEvent *event);
@@ -34,29 +28,29 @@ class MainWindow: public QMainWindow {
 
  private slots:
   bool newFile();
+
   bool openFile();
   bool closeFile();
+
+  bool loadFile(QString fileName);
   bool saveFile();
   bool saveFileAs();
-  bool exit();
+
   void find();
   void findNext();
-  void replace();
   void goToLine();
+
+  void compile();
+  void postCompile(int);
+
+  void setupCompiler();
   void selectEditorFont();
   void selectOutputFont();
-  void compile();
-  void setupCompiler();
+
   void about();
   void aboutQt();
-  void compiled(int);
-  void updateWindowTitle();
 
- private:
-  bool isSafeToClose();
-
-  void readFile(QString fileName);
-  void writeFile(QString fileName);
+  void refreshTitle();
 
  private:
   Ui::MainWindow *ui_;
@@ -64,8 +58,8 @@ class MainWindow: public QMainWindow {
  private:
   QString fileName_;
   Compiler compiler_;
-  FindDialog *lastFind_;
-  ReplaceDialog *lastReplace_;
+  FindDialog findDialog_;
+  ReplaceDialog replaceDialog_;
 };
 
 #endif // MAINWINDOW_H

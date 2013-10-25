@@ -11,11 +11,17 @@ Compiler::Compiler(QObject *parent)
   : QObject(parent),
     process_(new QProcess(this))
 {
+  QSettings settings;
+  path_ = settings.value("Compiler/Path", "pawncc").toString();
+  options_ = settings.value("Compiler/Options", "-;+ -(+").toString().split("\\s*");
   process_->setProcessChannelMode(QProcess::MergedChannels);
   connect(process_, SIGNAL(finished(int)), SIGNAL(finished(int)));
 }
 
 Compiler::~Compiler() {
+  QSettings settings;
+  settings.setValue("Compiler/Path", path_);
+  settings.setValue("Compiler/Options", options_.join(" "));
 }
 
 QString Compiler::path() const {
@@ -61,16 +67,4 @@ QString Compiler::getCommandLine(const QString &inputFile) const {
 
 QString Compiler::output() const {
   return process_->readAll();
-}
-
-void Compiler::loadSettings() {
-  QSettings settings;
-  path_ = settings.value("Compiler/Path", "pawncc").toString();
-  options_ = settings.value("Compiler/Options", "-;+ -(+").toString().split("\\s*");
-}
-
-void Compiler::saveSettings() {
-  QSettings settings;
-  settings.setValue("Compiler/Path", path_);
-  settings.setValue("Compiler/Options", options_.join(" "));
 }

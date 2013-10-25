@@ -29,10 +29,6 @@ class Compiler: public QObject {
 
   QString output() const;
 
- public slots:
-  void loadSettings();
-  void saveSettings();
-
  signals:
   void finished(int);
 

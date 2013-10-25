@@ -22,10 +22,28 @@ void LineNumberArea::paintEvent(QPaintEvent *paintEvent) {
   editorWidget_->lineNumberAreaPaintEvent(paintEvent);
 }
 
+static QFont defaultFont() {
+  #ifdef Q_OS_WINDOWS
+    QFont font("Courier New");
+  #else
+    QFont font("Monospace");
+  #endif
+  font.setStyleHint(QFont::Monospace);
+  return font;
+}
+
 EditorWidget::EditorWidget(QWidget *parent)
   : QPlainTextEdit(parent),
     tabStop_(0)
 {
+  QSettings settings;
+
+  QFont font = defaultFont();
+  font.fromString(settings.value("Font/Editor", font).toString());
+  setFont(font);
+
+  setTabStop(settings.value("Editor/TabStop", 4).toInt());
+
   setLineWrapMode(NoWrap);
   setUndoRedoEnabled(true);
 
@@ -46,6 +64,9 @@ EditorWidget::EditorWidget(QWidget *parent)
 }
 
 EditorWidget::~EditorWidget() {
+  QSettings settings;
+  settings.setValue("Font/Editor", font().toString());
+  settings.setValue("Editor/TabStop", tabStop());
 }
 
 void EditorWidget::jumpToLine(long line) {
@@ -148,28 +169,4 @@ void EditorWidget::highlightCurrentLine() {
   }
 
   setExtraSelections(extraSelections);
-}
-
-static QFont defaultFont() {
-  #ifdef Q_OS_WINDOWS
-    QFont font("Courier New");
-  #else
-    QFont font("Monospace");
-  #endif
-  font.setStyleHint(QFont::Monospace);
-  return font;
-}
-
-void EditorWidget::loadSettings() {
-  QSettings settings;
-  QFont font = defaultFont();
-  font.fromString(settings.value("Font/Editor", font).toString());
-  QPlainTextEdit::setFont(font);
-  setTabStop(settings.value("Editor/TabStop", 4).toInt());
-}
-
-void EditorWidget::saveSettings() {
-  QSettings settings;
-  settings.setValue("Font/Editor", font().toString());
-  settings.setValue("Editor/TabStop", tabStop());
 }

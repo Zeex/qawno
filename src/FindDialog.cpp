@@ -10,7 +10,6 @@ FindDialog::FindDialog(QWidget *parent) :
   ui_->setupUi(this);
   ui_->findWhatEdit->setFocus();
 
-  // Load last state
   QSettings settings;
   settings.beginGroup("Widgets");
     settings.beginGroup("FindDialog");
@@ -31,7 +30,6 @@ FindDialog::FindDialog(QWidget *parent) :
 }
 
 FindDialog::~FindDialog() {
-  // Save current state
   QSettings settings;
   settings.beginGroup("Widgets");
     settings.beginGroup("FindDialog");
@@ -41,7 +39,6 @@ FindDialog::~FindDialog() {
       settings.setValue("UseRegexp", ui_->useRegexp->checkState() == Qt::Checked);
     settings.endGroup();
   settings.endGroup();
-
   delete ui_;
 }
 

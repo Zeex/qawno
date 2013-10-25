@@ -36,10 +36,6 @@ class EditorWidget: public QPlainTextEdit {
   int tabStop() const;
   void setTabStop(int chars);
 
- public slots:
-  void loadSettings();
-  void saveSettings();
-
  protected:
   void resizeEvent(QResizeEvent *e);
 
