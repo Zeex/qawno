@@ -8,6 +8,7 @@
 #include <QList>
 #include <QMenuBar>
 #include <QMessageBox>
+#include <QMimeData>
 #include <QRegExp>
 #include <QSettings>
 #include <QUrl>
