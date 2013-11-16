@@ -8,7 +8,7 @@ ReplaceDialog::ReplaceDialog(QWidget *parent) :
   ui_(new Ui::ReplaceDialog)
 {
   ui_->setupUi(this);
-  ui_->findWhatEdit->setFocus();
+  ui_->replaceWhatEdit->setFocus();
 
   QSettings settings;
   settings.beginGroup("Widgets/ReplaceDialog");
@@ -30,8 +30,8 @@ ReplaceDialog::~ReplaceDialog() {
   delete ui_;
 }
 
-QString ReplaceDialog::findWhatText() const {
-  return ui_->findWhatEdit->text();
+QString ReplaceDialog::replaceWhatText() const {
+  return ui_->replaceWhatEdit->text();
 }
 
 QString ReplaceDialog::replaceWithText() const {

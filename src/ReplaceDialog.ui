@@ -46,14 +46,14 @@
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QLabel" name="findWhatLabel">
+     <widget class="QLabel" name="replaceWhatLabel">
       <property name="text">
-       <string>Find what:</string>
+       <string>Replace what:</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="findWhatEdit"/>
+     <widget class="QLineEdit" name="replaceWhatEdit"/>
     </item>
     <item>
      <widget class="QLabel" name="replaceWithLabel">

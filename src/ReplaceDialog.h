@@ -15,7 +15,7 @@ class ReplaceDialog: public QDialog {
   explicit ReplaceDialog(QWidget *parent = 0);
   ~ReplaceDialog();
 
-  QString findWhatText() const;
+  QString replaceWhatText() const;
   QString replaceWithText() const;
 
   bool matchCase() const;
