@@ -23,7 +23,7 @@ void LineNumberArea::paintEvent(QPaintEvent *paintEvent) {
 }
 
 static QFont defaultFont() {
-  #ifdef Q_OS_WINDOWS
+  #ifdef Q_OS_WIN32
     QFont font("Courier New");
   #else
     QFont font("Monospace");
