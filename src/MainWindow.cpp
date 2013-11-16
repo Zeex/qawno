@@ -216,9 +216,10 @@ void MainWindow::findNext(bool wrapAround) {
     if (wrapAround) {
       findNext(false);
     } else {
-      QString message = tr("The requested text was not found");
-      QMessageBox::warning(this, QCoreApplication::applicationName(), message,
-                           QMessageBox::Ok);
+      QString string = dialog.findWhatText();
+      QString message = tr("No matches were found for \"%1\".").arg(string);
+      QMessageBox::warning(this, QCoreApplication::applicationName(),
+                           message, QMessageBox::Ok);
     }
   }
 }
