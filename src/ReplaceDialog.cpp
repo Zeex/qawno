@@ -11,33 +11,21 @@ ReplaceDialog::ReplaceDialog(QWidget *parent) :
   ui_->findWhatEdit->setFocus();
 
   QSettings settings;
-  settings.beginGroup("Widgets");
-    settings.beginGroup("ReplaceDialog");
-      ui_->matchCase->setCheckState(settings.value("MatchCase").toBool()
-        ? Qt::Checked
-        : Qt::Unchecked);
-      ui_->matchWholeWords->setCheckState(settings.value("MatchWholeWords").toBool()
-        ? Qt::Checked
-        : Qt::Unchecked);
-      ui_->searchBackwards->setCheckState(settings.value("SearchBackwards").toBool()
-        ? Qt::Checked
-        : Qt::Unchecked);
-      ui_->useRegexp->setCheckState(settings.value("UseRegexp").toBool()
-        ? Qt::Checked
-        : Qt::Unchecked);
-    settings.endGroup();
+  settings.beginGroup("Widgets/ReplaceDialog");
+    ui_->matchCase->setChecked(settings.value("MatchCase").toBool());
+    ui_->matchWholeWords->setChecked(settings.value("MatchWholeWords").toBool());
+    ui_->searchBackwards->setChecked(settings.value("SearchBackwards").toBool());
+    ui_->useRegexp->setChecked(settings.value("UseRegexp").toBool());
   settings.endGroup();
 }
 
 ReplaceDialog::~ReplaceDialog() {
   QSettings settings;
-  settings.beginGroup("Widgets");
-    settings.beginGroup("ReplaceDialog");
-      settings.setValue("MatchCase", ui_->matchCase->checkState() == Qt::Checked);
-      settings.setValue("MatchWholeWords", ui_->matchWholeWords->checkState() == Qt::Checked);
-      settings.setValue("SearchBackwards", ui_->searchBackwards->checkState() == Qt::Checked);
-      settings.setValue("UseRegexp", ui_->useRegexp->checkState() == Qt::Checked);
-    settings.endGroup();
+  settings.beginGroup("Widgets/ReplaceDialog");
+    settings.setValue("MatchCase", ui_->matchCase->isChecked());
+    settings.setValue("MatchWholeWords", ui_->matchWholeWords->isChecked());
+    settings.setValue("SearchBackwards", ui_->searchBackwards->isChecked());
+    settings.setValue("UseRegexp", ui_->useRegexp->isChecked());
   settings.endGroup();
   delete ui_;
 }
@@ -51,17 +39,17 @@ QString ReplaceDialog::replaceWithText() const {
 }
 
 bool ReplaceDialog::matchCase() const {
-  return ui_->matchCase->checkState() == Qt::Checked;
+  return ui_->matchCase->isChecked();
 }
 
 bool ReplaceDialog::matchWholeWords() const {
-  return ui_->matchWholeWords->checkState() == Qt::Checked;
+  return ui_->matchWholeWords->isChecked();
 }
 
 bool ReplaceDialog::searchBackwards() const {
-  return ui_->searchBackwards->checkState() == Qt::Checked;
+  return ui_->searchBackwards->isChecked();
 }
 
 bool ReplaceDialog::useRegexp() const {
-  return ui_->useRegexp->checkState() == Qt::Checked;
+  return ui_->useRegexp->isChecked();
 }
