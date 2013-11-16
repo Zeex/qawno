@@ -164,34 +164,36 @@ bool MainWindow::saveFileAs() {
 }
 
 void MainWindow::find() {
-  findDialog_.exec();
+  {
+    FindDialog findDialog;
+    findDialog.exec();
+  }
   emit(findNext());
 }
 
 void MainWindow::findNext() {
-  QTextDocument::FindFlags flags;
+  FindDialog findDialog(this);
 
-  if (findDialog_.matchCase()) {
+  QTextDocument::FindFlags flags;
+  if (findDialog.matchCase()) {
     flags |= QTextDocument::FindCaseSensitively;
   }
-  if (findDialog_.matchWholeWords()) {
+  if (findDialog.matchWholeWords()) {
     flags |= QTextDocument::FindWholeWords;
   }
-  if (findDialog_.searchBackwards()) {
+  if (findDialog.searchBackwards()) {
     flags |= QTextDocument::FindBackward;
   }
 
-  QTextCursor cursor;
-
-  if (findDialog_.useRegexp()) {
-    QRegExp regexp(findDialog_.findWhatText(), findDialog_.matchCase()
-                                               ? Qt::CaseSensitive
-                                               : Qt::CaseInsensitive);
-    cursor = ui_->editor->document()->find(regexp, ui_->editor->textCursor(),
-                                           flags);
+  QTextCursor cursor = ui_->editor->textCursor();
+  if (findDialog.useRegexp()) {
+    Qt::CaseSensitivity caseSens = findDialog.matchCase()? Qt::CaseSensitive:
+                                                           Qt::CaseInsensitive;
+    QRegExp regexp(findDialog.findWhatText(), caseSens);
+    cursor = ui_->editor->document()->find(regexp, cursor, flags);
   } else {
-    cursor = ui_->editor->document()->find(findDialog_.findWhatText(),
-                                           ui_->editor->textCursor(), flags);
+    cursor = ui_->editor->document()->find(findDialog.findWhatText(),
+                                           cursor, flags);
   }
 
   if (!cursor.isNull()) {

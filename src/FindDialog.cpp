@@ -12,6 +12,7 @@ FindDialog::FindDialog(QWidget *parent) :
 
   QSettings settings;
   settings.beginGroup("Widgets/FindDialog");
+    ui_->findWhatEdit->setText(settings.value("FindWhatText").toString());
     ui_->matchCase->setChecked(settings.value("MatchCase").toBool());
     ui_->matchWholeWords->setChecked(settings.value("MatchWholeWords").toBool());
     ui_->searchBackwards->setChecked(settings.value("SearchBackwards").toBool());
@@ -22,6 +23,7 @@ FindDialog::FindDialog(QWidget *parent) :
 FindDialog::~FindDialog() {
   QSettings settings;
   settings.beginGroup("Widgets/FindDialog");
+    settings.setValue("FindWhatText", ui_->findWhatEdit->text());
     settings.setValue("MatchCase", ui_->matchCase->isChecked());
     settings.setValue("MatchWholeWords", ui_->matchWholeWords->isChecked());
     settings.setValue("SearchBackwards", ui_->searchBackwards->isChecked());

@@ -58,8 +58,6 @@ class MainWindow: public QMainWindow {
  private:
   QString fileName_;
   Compiler compiler_;
-  FindDialog findDialog_;
-  ReplaceDialog replaceDialog_;
 };
 
 #endif // MAINWINDOW_H
