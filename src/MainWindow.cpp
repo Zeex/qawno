@@ -284,8 +284,8 @@ void MainWindow::setupCompiler() {
   dialog.exec();
 
   if (dialog.result() == QDialog::Accepted) {
-    compiler.setPath(dialog.getCompilerPath());
-    compiler.setOptions(dialog.getCompilerOptions());
+    compiler.setPath(dialog.compilerPath());
+    compiler.setOptions(dialog.compilerOptions());
   }
 }
 

@@ -14,7 +14,7 @@ CompilerOptionsDialog::~CompilerOptionsDialog() {
   delete ui_;
 }
 
-QString CompilerOptionsDialog::getCompilerPath() const {
+QString CompilerOptionsDialog::compilerPath() const {
   return ui_->compilerExecutableEdit->text();
 }
 
@@ -22,7 +22,7 @@ void CompilerOptionsDialog::setCompilerPath(const QString &path) {
   ui_->compilerExecutableEdit->setText(path);
 }
 
-QString CompilerOptionsDialog::getCompilerOptions() const {
+QString CompilerOptionsDialog::compilerOptions() const {
   return ui_->commandLineEdit->text();
 }
 
@@ -33,10 +33,10 @@ void CompilerOptionsDialog::setCompilerOptions(const QString &options) {
 void CompilerOptionsDialog::on_browseButton_clicked() {
   QString path = QFileDialog::getOpenFileName(this,
   #ifdef Q_WS_WIN
-    tr("Select location of the Pawn compiler"), "pawncc.exe",
-    tr("Executable programs (*.exe)"));
+    tr("Set compiler executable"), "pawncc.exe",
+    tr("Executables (*.exe)"));
   #else
-    tr("Select location of the Pawn compiler"), "pawncc",
+    tr("Set compiler executable"), "pawncc",
     tr("All files (*.*)"));
   #endif
   if (!path.isEmpty()) {

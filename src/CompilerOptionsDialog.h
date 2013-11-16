@@ -15,10 +15,10 @@ class CompilerOptionsDialog: public QDialog {
   explicit CompilerOptionsDialog(QWidget *parent = 0);
   ~CompilerOptionsDialog();
 
-  QString getCompilerPath() const;
+  QString compilerPath() const;
   void setCompilerPath(const QString &path);
 
-  QString getCompilerOptions() const;
+  QString compilerOptions() const;
   void setCompilerOptions(const QString &options);
 
  private slots:
