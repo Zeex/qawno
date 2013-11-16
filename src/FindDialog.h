@@ -19,8 +19,8 @@ class FindDialog: public QDialog {
 
   bool matchCase() const;
   bool matchWholeWords() const;
+  bool useRegExp() const;
   bool searchBackwards() const;
-  bool useRegexp() const;
 
  private:
   Ui::FindDialog *ui_;

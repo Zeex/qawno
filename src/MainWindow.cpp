@@ -159,15 +159,19 @@ bool MainWindow::saveFileAs() {
 }
 
 void MainWindow::find() {
+  bool find = false;
   {
     FindDialog dialog;
     dialog.exec();
+    find = dialog.result() == QDialog::Accepted;
   }
-  emit(findNext(true));
+  if (find) {
+    emit(findNext(true));
+  }
 }
 
 void MainWindow::findNext(bool wrapAround) {
-  FindDialog dialog(this);
+  FindDialog dialog;
   QTextDocument::FindFlags flags;
 
   if (dialog.matchCase()) {
@@ -183,7 +187,7 @@ void MainWindow::findNext(bool wrapAround) {
   QTextCursor current = ui_->editor->textCursor();
   QTextCursor next;
 
-  if (dialog.useRegexp()) {
+  if (dialog.useRegExp()) {
     Qt::CaseSensitivity sens = dialog.matchCase()? Qt::CaseSensitive:
                                                    Qt::CaseInsensitive;
     QRegExp regexp(dialog.findWhatText(), sens);
@@ -249,6 +253,21 @@ void MainWindow::selectOutputFont() {
   }
 }
 
+void MainWindow::setupCompiler() {
+  Compiler compiler;
+  CompilerOptionsDialog dialog;
+
+  dialog.setCompilerPath(compiler.path());
+  dialog.setCompilerOptions(compiler.options().join(" "));
+
+  dialog.exec();
+
+  if (dialog.result() == QDialog::Accepted) {
+    compiler.setPath(dialog.compilerPath());
+    compiler.setOptions(dialog.compilerOptions());
+  }
+}
+
 void MainWindow::compile() {
   Compiler compiler;
 
@@ -272,21 +291,6 @@ void MainWindow::compile() {
 
   QString output = compiler.output();
   ui_->output->appendPlainText(output);
-}
-
-void MainWindow::setupCompiler() {
-  Compiler compiler;
-  CompilerOptionsDialog dialog;
-
-  dialog.setCompilerPath(compiler.path());
-  dialog.setCompilerOptions(compiler.options().join(" "));
-
-  dialog.exec();
-
-  if (dialog.result() == QDialog::Accepted) {
-    compiler.setPath(dialog.compilerPath());
-    compiler.setOptions(dialog.compilerOptions());
-  }
 }
 
 void MainWindow::about() {

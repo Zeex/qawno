@@ -32,7 +32,7 @@ void CompilerOptionsDialog::setCompilerOptions(const QString &options) {
 
 void CompilerOptionsDialog::on_browseButton_clicked() {
   QString path = QFileDialog::getOpenFileName(this,
-  #ifdef Q_WS_WIN
+  #ifdef Q_OS_WIN
     tr("Set compiler executable"), "pawncc.exe",
     tr("Executables (*.exe)"));
   #else

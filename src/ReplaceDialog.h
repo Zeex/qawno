@@ -21,7 +21,7 @@ class ReplaceDialog: public QDialog {
   bool matchCase() const;
   bool matchWholeWords() const;
   bool searchBackwards() const;
-  bool useRegexp() const;
+  bool useRegExp() const;
 
  private:
   Ui::ReplaceDialog *ui_;
