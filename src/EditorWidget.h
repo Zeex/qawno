@@ -3,53 +3,54 @@
 
 #include <QPlainTextEdit>
 
-class EditorWidget;
-class SyntaxHighlighter;
+#include "SyntaxHighlighter.h"
 
-class LineNumberArea: public QWidget {
+class EditorWidget;
+
+class EditorLineNumberArea: public QWidget {
  Q_OBJECT
 
  public:
-  LineNumberArea(EditorWidget *editor);
-  QSize sizeHint() const;
+  EditorLineNumberArea(EditorWidget *editor);
+  virtual ~EditorLineNumberArea();
+
+  EditorWidget *editor() const;
+  virtual QSize sizeHint() const;
+
+ public slots:
+  void update(const QRect &rect, int dy);
+  void updateWidth(int blockCount = 0);
+  void updateGeometry();
 
  protected:
-  void paintEvent(QPaintEvent *paintEvent);
-
- private:
-  EditorWidget *editorWidget_;
+  virtual void paintEvent(QPaintEvent *event);
+  virtual void resizeEvent(QResizeEvent *event);
 };
 
 class EditorWidget: public QPlainTextEdit {
  Q_OBJECT
 
- friend class LineNumberArea;
-
  public:
+  friend class EditorLineNumberArea;
+
   explicit EditorWidget(QWidget *parent = 0);
   virtual ~EditorWidget();
-
-  void jumpToLine(long line);
 
   int tabStop() const;
   void setTabStop(int chars);
 
- protected:
-  void resizeEvent(QResizeEvent *e);
-
- private:
-  int lineNumberAreaWidth() const;
-  void lineNumberAreaPaintEvent(QPaintEvent *paintEvent);
+ public slots:
+  void jumpToLine(long line);
 
  private slots:
-  void updateLineNumberArea(const QRect &, int);
-  void updateLineNumberAreaWidth(int blockCount);
   void highlightCurrentLine();
 
  private:
-  LineNumberArea *lineNumberArea_;
-  SyntaxHighlighter *highlighter_;
   int tabStop_;
+
+ private:
+  EditorLineNumberArea lineNumberArea_;
+  SyntaxHighlighter highlighter_;
 };
 
 #endif // CODEEDIT_H

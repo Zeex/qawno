@@ -1,3 +1,4 @@
+#include <QDebug>
 #include <QPainter>
 #include <QSettings>
 #include <QTextEdit>
@@ -7,19 +8,80 @@
 #include "EditorWidget.h"
 #include "SyntaxHighlighter.h"
 
-LineNumberArea::LineNumberArea(EditorWidget *edit)
-  : QWidget(edit),
-    editorWidget_(edit)
+EditorLineNumberArea::EditorLineNumberArea(EditorWidget *editor)
+  : QWidget(editor)
 {
+  connect(editor, SIGNAL(updateRequest(QRect, int)),
+          this, SLOT(update(QRect, int)));
+  connect(editor, SIGNAL(blockCountChanged(int)),
+          this, SLOT(updateWidth(int)));
+  connect(editor, SIGNAL(blockCountChanged(int)),
+          this, SLOT(updateGeometry()));
 }
 
-QSize LineNumberArea::sizeHint() const {
-  int width = editorWidget_->lineNumberAreaWidth();
+EditorLineNumberArea::~EditorLineNumberArea() {
+  // nothing
+}
+
+EditorWidget *EditorLineNumberArea::editor() const {
+  return static_cast<EditorWidget*>(parent());
+}
+
+QSize EditorLineNumberArea::sizeHint() const {
+  int lineCount = editor()->blockCount();
+  int digitWidth = fontMetrics().width(QLatin1Char('0'));
+  int numDigits = QString::number(lineCount).length();
+  int width =  digitWidth * numDigits * 2;
   return QSize(width, 0);
 }
 
-void LineNumberArea::paintEvent(QPaintEvent *paintEvent) {
-  editorWidget_->lineNumberAreaPaintEvent(paintEvent);
+void EditorLineNumberArea::paintEvent(QPaintEvent *event) {
+  QPainter painter(this);
+  painter.setPen(palette().foreground().color());
+  painter.fillRect(event->rect(), palette().background().color());
+
+  QTextBlock block = editor()->firstVisibleBlock();
+  QPointF contentOffset = editor()->contentOffset();
+  QRectF boundingGeometry = editor()->blockBoundingGeometry(block);
+
+  qreal top = boundingGeometry.translated(contentOffset).top();
+  qreal bottom = top + editor()->blockBoundingRect(block).height();
+
+  do {
+    if (bottom >= event->rect().top()) {
+      QString lineNumber = QString::number(block.blockNumber() + 1);
+      painter.drawText(width() * 0.25, top, width() * 0.5,
+                       fontMetrics().height(), Qt::AlignRight, lineNumber);
+    }
+    block = block.next();
+    top = bottom;
+    bottom = top + editor()->blockBoundingRect(block).height();
+  }
+  while (block.isValid() && block.isVisible() &&
+         top <= event->rect().bottom());
+}
+
+void EditorLineNumberArea::resizeEvent(QResizeEvent *event) {
+  Q_UNUSED(event);
+  updateGeometry();
+}
+
+void EditorLineNumberArea::update(const QRect &rect, int dy) {
+  if (dy != 0) {
+    scroll(0, dy);
+  } else {
+    QWidget::update(0, rect.y(), sizeHint().width(), rect.height());
+  }
+  updateWidth();
+}
+
+void EditorLineNumberArea::updateWidth(int) {
+  editor()->setViewportMargins(sizeHint().width(), 0, 0, 0);
+}
+
+void EditorLineNumberArea::updateGeometry() {
+  QRect cr = editor()->contentsRect();
+  setGeometry(cr.left(), cr.top(), sizeHint().width(), cr.height());
 }
 
 static QFont defaultFont() {
@@ -34,7 +96,9 @@ static QFont defaultFont() {
 
 EditorWidget::EditorWidget(QWidget *parent)
   : QPlainTextEdit(parent),
-    tabStop_(0)
+    tabStop_(0),
+    lineNumberArea_(this),
+    highlighter_(this)
 {
   QSettings settings;
 
@@ -47,20 +111,15 @@ EditorWidget::EditorWidget(QWidget *parent)
   setLineWrapMode(NoWrap);
   setUndoRedoEnabled(true);
 
-  lineNumberArea_ = new LineNumberArea(this);
+  QPalette palette;
+  palette.setColor(lineNumberArea_.backgroundRole(), Qt::lightGray);
+  palette.setColor(lineNumberArea_.foregroundRole(), Qt::black);
+  lineNumberArea_.setPalette(palette);
 
-  connect(this, SIGNAL(blockCountChanged(int)),
-          this, SLOT(updateLineNumberAreaWidth(int)));
-  connect(this, SIGNAL(updateRequest(QRect, int)),
-          this, SLOT(updateLineNumberArea(QRect, int)));
-  connect(this, SIGNAL(cursorPositionChanged()),
-          this, SLOT(highlightCurrentLine()));
+  highlighter_.setDocument(document());
 
+  connect(this, SIGNAL(cursorPositionChanged()), SLOT(highlightCurrentLine()));
   highlightCurrentLine();
-  updateLineNumberAreaWidth(0);
-
-  highlighter_ = new SyntaxHighlighter(this);
-  highlighter_->setDocument(document());
 }
 
 EditorWidget::~EditorWidget() {
@@ -71,10 +130,10 @@ EditorWidget::~EditorWidget() {
 
 void EditorWidget::jumpToLine(long line) {
   if (line > 0 && line <= blockCount()) {
-    QTextCursor cur = this->textCursor();
+    QTextCursor cursor = textCursor();
     int pos = document()->findBlockByLineNumber(line - 1).position();
-    cur.setPosition(pos);
-    setTextCursor(cur);
+    cursor.setPosition(pos);
+    setTextCursor(cursor);
   }
 }
 
@@ -83,90 +142,18 @@ int EditorWidget::tabStop() const {
 }
 
 void EditorWidget::setTabStop(int chars) {
-  setTabStopWidth(fontMetrics().width(' ') * (tabStop_ = chars));
-}
-
-void EditorWidget::lineNumberAreaPaintEvent(QPaintEvent *paintEvent) {
-  QPainter painter(lineNumberArea_);
-  painter.fillRect(paintEvent->rect(), Qt::lightGray);
-
-  QTextBlock block = firstVisibleBlock();
-  int blockNumber = block.blockNumber();
-  int top = (int)blockBoundingGeometry(block).translated(contentOffset()).top();
-  int bottom = top + (int) blockBoundingRect(block).height();
-
-  while (block.isValid() && top <= paintEvent->rect().bottom()) {
-    if (block.isVisible() && bottom >= paintEvent->rect().top()) {
-      QString number = QString::number(blockNumber + 1);
-      painter.setPen(Qt::black);
-      painter.drawText(lineNumberArea_->width() * 0.25,
-      top,  lineNumberArea_->width() * 0.5,
-      fontMetrics().height(), Qt::AlignRight, number);
-    }
-
-    block = block.next();
-    top = bottom;
-    bottom = top + (int) blockBoundingRect(block).height();
-    ++blockNumber;
-  }
-}
-
-int EditorWidget::lineNumberAreaWidth() const {
-  int numDigits = 1;
-  int max = qMax(1, blockCount());
-
-  while (max >= 10) {
-    max /= 10;
-    ++numDigits;
-  }
-
-  int digitWidth = fontMetrics().width(QLatin1Char('9'));
-  int spaceRequired = digitWidth * numDigits;
-
-  // We will leave some space blank for the number's left and right
-  // margins (0.5 of number width for both, see lineNumberAreaPaintEvent)
-  int actualSpace = spaceRequired * 2;
-
-  return actualSpace;
-}
-
-void EditorWidget::resizeEvent(QResizeEvent *resizeEvent) {
-  QPlainTextEdit::resizeEvent(resizeEvent);
-
-  QRect cr = contentsRect();
-  lineNumberArea_->setGeometry(QRect(cr.left(), cr.top(),
-  lineNumberAreaWidth(), cr.height()));
-}
-
-void EditorWidget::updateLineNumberArea(const QRect &rect, int dy) {
-  if (dy) {
-    lineNumberArea_->scroll(0, dy);
-  } else {
-    lineNumberArea_->update(0, rect.y(),
-                            lineNumberArea_->width(), rect.height());
-  }
-
-  if (rect.contains(viewport()->rect())) {
-    updateLineNumberAreaWidth(0);
-  }
-}
-
-void EditorWidget::updateLineNumberAreaWidth(int) {
-  setViewportMargins(lineNumberAreaWidth(), 0, 0, 0);
+  tabStop_ = chars;
+  setTabStopWidth(fontMetrics().width(' ') * chars);
 }
 
 void EditorWidget::highlightCurrentLine() {
-  QList<QTextEdit::ExtraSelection> extraSelections;
-
   if (!isReadOnly()) {
+    QList<QTextEdit::ExtraSelection> extraSelections;
     QTextEdit::ExtraSelection selection;
-    QColor lineColor = QColor(Qt::lightGray).lighter(120);
-    selection.format.setBackground(lineColor);
+    selection.format.setBackground(QColor(Qt::lightGray).lighter(120));
     selection.format.setProperty(QTextFormat::FullWidthSelection, true);
     selection.cursor = textCursor();
     selection.cursor.clearSelection();
-    extraSelections.append(selection);
+    setExtraSelections(extraSelections << selection);
   }
-
-  setExtraSelections(extraSelections);
 }
