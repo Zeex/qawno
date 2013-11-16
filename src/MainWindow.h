@@ -37,7 +37,7 @@ class MainWindow: public QMainWindow {
   bool saveFileAs();
 
   void find();
-  void findNext();
+  void findNext(bool wrapAround = true);
   void goToLine();
 
   void compile();

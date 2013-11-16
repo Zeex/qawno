@@ -165,39 +165,61 @@ bool MainWindow::saveFileAs() {
 
 void MainWindow::find() {
   {
-    FindDialog findDialog;
-    findDialog.exec();
+    FindDialog dialog;
+    dialog.exec();
   }
-  emit(findNext());
+  emit(findNext(true));
 }
 
-void MainWindow::findNext() {
-  FindDialog findDialog(this);
-
+void MainWindow::findNext(bool wrapAround) {
+  FindDialog dialog(this);
   QTextDocument::FindFlags flags;
-  if (findDialog.matchCase()) {
+
+  if (dialog.matchCase()) {
     flags |= QTextDocument::FindCaseSensitively;
   }
-  if (findDialog.matchWholeWords()) {
+  if (dialog.matchWholeWords()) {
     flags |= QTextDocument::FindWholeWords;
   }
-  if (findDialog.searchBackwards()) {
+  if (dialog.searchBackwards()) {
     flags |= QTextDocument::FindBackward;
   }
 
-  QTextCursor cursor = ui_->editor->textCursor();
-  if (findDialog.useRegexp()) {
-    Qt::CaseSensitivity caseSens = findDialog.matchCase()? Qt::CaseSensitive:
-                                                           Qt::CaseInsensitive;
-    QRegExp regexp(findDialog.findWhatText(), caseSens);
-    cursor = ui_->editor->document()->find(regexp, cursor, flags);
+  QTextCursor current = ui_->editor->textCursor();
+  QTextCursor next;
+
+  if (dialog.useRegexp()) {
+    Qt::CaseSensitivity sens = dialog.matchCase()? Qt::CaseSensitive:
+                                                   Qt::CaseInsensitive;
+    QRegExp regexp(dialog.findWhatText(), sens);
+    next = ui_->editor->document()->find(regexp, current, flags);
   } else {
-    cursor = ui_->editor->document()->find(findDialog.findWhatText(),
-                                           cursor, flags);
+    next = ui_->editor->document()->find(dialog.findWhatText(), current, flags);
   }
 
-  if (!cursor.isNull()) {
-    ui_->editor->setTextCursor(cursor);
+  bool found = !next.isNull();
+
+  if (!found && wrapAround) {
+    next = current;
+    if (dialog.searchBackwards()) {
+      next.movePosition(QTextCursor::End);
+    } else {
+      next.movePosition(QTextCursor::Start);
+    }
+  }
+
+  if (found || (!found && wrapAround)) {
+    ui_->editor->setTextCursor(next);
+  }
+
+  if (!found) {
+    if (wrapAround) {
+      findNext(false);
+    } else {
+      QString message = tr("The requested text was not found");
+      QMessageBox::warning(this, QCoreApplication::applicationName(), message,
+                           QMessageBox::Ok);
+    }
   }
 }
 
