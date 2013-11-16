@@ -41,7 +41,6 @@ class MainWindow: public QMainWindow {
   void goToLine();
 
   void compile();
-  void postCompile(int);
 
   void setupCompiler();
   void selectEditorFont();
@@ -56,8 +55,7 @@ class MainWindow: public QMainWindow {
   Ui::MainWindow *ui_;
 
  private:
-  QString fileName_;
-  Compiler compiler_;
+  QString scriptPath_;
 };
 
 #endif // MAINWINDOW_H

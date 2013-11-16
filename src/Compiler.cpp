@@ -1,21 +1,14 @@
 #include <QFileInfo>
-#include <QObject>
-#include <QProcess>
 #include <QSettings>
-#include <QString>
-#include <QStringList>
 
 #include "Compiler.h"
 
 Compiler::Compiler(QObject *parent)
-  : QObject(parent),
-    process_(new QProcess(this))
+  : QObject(parent)
 {
   QSettings settings;
   path_ = settings.value("Compiler/Path", "pawncc").toString();
   options_ = settings.value("Compiler/Options", "-;+ -(+").toString().split("\\s*");
-  process_->setProcessChannelMode(QProcess::MergedChannels);
-  connect(process_, SIGNAL(finished(int)), SIGNAL(finished(int)));
 }
 
 Compiler::~Compiler() {
@@ -44,27 +37,31 @@ void Compiler::setOptions(const QStringList &options) {
   options_ = options;
 }
 
-bool Compiler::works() const {
-  QProcess pawncc;
-  pawncc.setProcessChannelMode(QProcess::SeparateChannels);
-  pawncc.start(path_);
-  pawncc.waitForFinished();
-  return pawncc.error() != QProcess::FailedToStart;
+QString Compiler::output() const {
+  return output_;
+}
+
+QString Compiler::command() const {
+  return QString("%1 %2").arg(path_).arg(options_.join(" "));
+}
+
+QString Compiler::commandFor(const QString &inputFile) const {
+  QFileInfo in(inputFile);
+  QFileInfo out(in.absolutePath() + "/" + in.baseName() + ".amx");
+  return QString("%1 \"%2\" -o\"%3\"").arg(command()).arg(in.filePath())
+                                                     .arg(out.filePath());
 }
 
 void Compiler::run(const QString &inputFile) {
-  process_->start(getCommandLine(inputFile), QProcess::ReadOnly);
-}
+  QProcess process;
+  process.setProcessChannelMode(QProcess::MergedChannels);
 
-QString Compiler::getCommandLine(const QString &inputFile) const {
-  QFileInfo in(inputFile);
-  QFileInfo out(in.absolutePath() + "/" + in.baseName() + ".amx");
-  return QString("%1 %2 \"%3\" -o\"%4\"").arg(path_)
-                                         .arg(options_.join(" "))
-                                         .arg(inputFile)
-                                         .arg(out.filePath());
-}
+  QString command = commandFor(inputFile);
+  process.start(command, QProcess::ReadOnly);
 
-QString Compiler::output() const {
-  return process_->readAll();
+  if (process.waitForFinished()) {
+    output_ = process.readAll();
+  } else {
+    output_ = process.errorString();
+  }
 }

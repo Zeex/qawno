@@ -45,7 +45,6 @@ MainWindow::MainWindow(QWidget *parent)
   connect(ui_->actionAboutQt, SIGNAL(triggered()), this, SLOT(aboutQt()));
   connect(ui_->actionGoToLine, SIGNAL(triggered()), this, SLOT(goToLine()));
   connect(ui_->editor, SIGNAL(textChanged()), SLOT(refreshTitle()));
-  connect(&compiler_, SIGNAL(finished(int)), this, SLOT(postCompile(int)));
 
   QSettings settings;
 
@@ -93,8 +92,8 @@ bool MainWindow::closeFile() {
   {
     QString message;
 
-    if (!fileName_.isEmpty()) {
-      message = tr("Save changes to %1?").arg(fileName_);
+    if (!scriptPath_.isEmpty()) {
+      message = tr("Save changes to %1?").arg(scriptPath_);
     } else {
       message = tr("Save changes to a new file?");
     }
@@ -120,7 +119,7 @@ bool MainWindow::closeFile() {
 
   if (canClose) {
     ui_->editor->clear();
-    fileName_.clear();
+    scriptPath_.clear();
   }
 
   return canClose;
@@ -130,14 +129,14 @@ bool MainWindow::saveFile() {
   if (ui_->editor->document()->isEmpty()) {
     return false;
   } else {
-    if (fileName_.isEmpty()) {
+    if (scriptPath_.isEmpty()) {
       return saveFileAs();
     } else {
-      QFile file(fileName_);
+      QFile file(scriptPath_);
       if (!file.open(QIODevice::WriteOnly)) {
         QMessageBox::critical(this, QCoreApplication::applicationName(),
           tr("Could not save to %1: %2.")
-          .arg(fileName_)
+          .arg(scriptPath_)
           .arg(file.errorString()),
           QMessageBox::Ok);
       } else {
@@ -156,7 +155,7 @@ bool MainWindow::saveFileAs() {
     QString fileName = saveDialog.getSaveFileName(this,
                       tr("Save file as"), "", tr("Pawn scripts (*.pwn *.inc)"));
     if (!fileName.isEmpty()) {
-      fileName_ = fileName;
+      scriptPath_ = fileName;
       return saveFile();
     }
   }
@@ -255,46 +254,42 @@ void MainWindow::selectOutputFont() {
 }
 
 void MainWindow::compile() {
-  if (!compiler_.works()) {
-    setupCompiler();
-    return;
-  }
+  Compiler compiler;
 
   if (ui_->editor->toPlainText().isEmpty()) {
     ui_->output->appendPlainText(tr("Nothing to compile!"));
     return;
   }
 
-  if (fileName_.isEmpty()) {
+  if (scriptPath_.isEmpty()) {
     saveFileAs();
     return;
   }
 
-  compiler_.run(fileName_);
-}
+  compiler.run(scriptPath_);
 
-void MainWindow::postCompile(int /*exitCode*/) {
   ui_->output->clear();
 
-  QString command = compiler_.getCommandLine(fileName_);
+  QString command = compiler.commandFor(scriptPath_);
   ui_->output->appendPlainText(command);
   ui_->output->appendPlainText("\n");
 
-  QString output = compiler_.output();
+  QString output = compiler.output();
   ui_->output->appendPlainText(output);
 }
 
 void MainWindow::setupCompiler() {
+  Compiler compiler;
   CompilerOptionsDialog dialog;
 
-  dialog.setCompilerPath(compiler_.path());
-  dialog.setCompilerOptions(compiler_.options().join(" "));
+  dialog.setCompilerPath(compiler.path());
+  dialog.setCompilerOptions(compiler.options().join(" "));
 
   dialog.exec();
 
   if (dialog.result() == QDialog::Accepted) {
-    compiler_.setPath(dialog.getCompilerPath());
-    compiler_.setOptions(dialog.getCompilerOptions());
+    compiler.setPath(dialog.getCompilerPath());
+    compiler.setOptions(dialog.getCompilerOptions());
   }
 }
 
@@ -309,8 +304,8 @@ void MainWindow::aboutQt() {
 
 void MainWindow::refreshTitle() {
   QString title;
-  if (!fileName_.isEmpty()) {
-    title.append(QFileInfo(fileName_).fileName());
+  if (!scriptPath_.isEmpty()) {
+    title.append(QFileInfo(scriptPath_).fileName());
     if (ui_->editor->document()->isModified()) {
       title.append("*");
     }
@@ -356,7 +351,7 @@ bool MainWindow::loadFile(QString fileName) {
                             message, QMessageBox::Ok);
       return false;
     } else {
-      fileName_ = fileName;
+      scriptPath_ = fileName;
       ui_->editor->setPlainText(file.readAll());
       ui_->editor->document()->setModified(false);
       refreshTitle();

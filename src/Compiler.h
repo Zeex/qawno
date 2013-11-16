@@ -1,12 +1,9 @@
 #ifndef COMPILER_H
 #define COMPILER_H
 
-#include <QList>
-#include <QObject>
+#include <QProcess>
 #include <QString>
 #include <QStringList>
-
-class QProcess;
 
 class Compiler: public QObject {
  Q_OBJECT
@@ -22,20 +19,17 @@ class Compiler: public QObject {
   void setOptions(const QString &options);
   void setOptions(const QStringList &options);
 
-  QString getCommandLine(const QString &inputFile) const;
-
-  bool works() const;
-  void run(const QString &inputFile);
-
   QString output() const;
 
- signals:
-  void finished(int);
+  QString command() const;
+  QString commandFor(const QString &inputFile) const;
+
+  void run(const QString &inputFile);
 
  private:
   QString path_;
   QStringList options_;
-  QProcess *process_;
+  QString output_;
 };
 
 #endif // COMPILER_H
