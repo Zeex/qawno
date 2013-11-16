@@ -2,7 +2,6 @@
 #define COMPILEROPTIONSDIALOG_H
 
 #include <QDialog>
-#include <QObject>
 #include <QString>
 
 namespace Ui {

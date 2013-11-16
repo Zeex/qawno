@@ -1,9 +1,7 @@
 #ifndef CODEEDIT_H
 #define CODEEDIT_H
 
-#include <QObject>
 #include <QPlainTextEdit>
-#include <QWidget>
 
 class EditorWidget;
 class SyntaxHighlighter;

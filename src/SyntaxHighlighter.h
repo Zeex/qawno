@@ -1,11 +1,7 @@
 #ifndef HIGHLIGHTER_H
 #define HIGHLIGHTER_H
 
-#include <QRegExp>
-#include <QTextCharFormat>
-#include <QStack>
 #include <QSyntaxHighlighter>
-#include <QVector>
 
 class SyntaxHighlighter: public QSyntaxHighlighter {
  Q_OBJECT
@@ -31,11 +27,6 @@ class SyntaxHighlighter: public QSyntaxHighlighter {
   void setColorScheme(const ColorScheme &scheme);
 
  private:
-  struct HighlightingRule {
-    QRegExp         regexp;
-    QTextCharFormat format;
-  };
-
   bool isIdentifierFirstChar(QChar c);
   bool isIdentifierChar(QChar c);
   bool isHexDigit(QChar c);

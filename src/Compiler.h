@@ -1,7 +1,6 @@
 #ifndef COMPILER_H
 #define COMPILER_H
 
-#include <QProcess>
 #include <QString>
 #include <QStringList>
 

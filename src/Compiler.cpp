@@ -1,4 +1,5 @@
 #include <QFileInfo>
+#include <QProcess>
 #include <QSettings>
 
 #include "Compiler.h"

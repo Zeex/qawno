@@ -1,19 +1,13 @@
 #include <QApplication>
-#include <QDockWidget>
+#include <QCoreApplication>
 #include <QFile>
 #include <QFileDialog>
 #include <QFont>
 #include <QFontDialog>
-#include <QIcon>
-#include <QList>
-#include <QMenuBar>
 #include <QMessageBox>
 #include <QMimeData>
 #include <QRegExp>
 #include <QSettings>
-#include <QUrl>
-
-#include "ui_MainWindow.h"
 
 #include "AboutDialog.h"
 #include "CompilerOptionsDialog.h"
@@ -23,6 +17,8 @@
 #include "MainWindow.h"
 #include "OutputWidget.h"
 #include "ReplaceDialog.h"
+
+#include "ui_MainWindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent),
