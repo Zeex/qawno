@@ -46,6 +46,9 @@
          <verstretch>3</verstretch>
         </sizepolicy>
        </property>
+       <property name="acceptDrops">
+        <bool>false</bool>
+       </property>
       </widget>
       <widget class="OutputWidget" name="output">
        <property name="sizePolicy">
