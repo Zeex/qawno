@@ -83,24 +83,23 @@ bool MainWindow::openFile() {
 bool MainWindow::closeFile() {
   bool canClose = true;
 
-  if (ui_->editor->document()->isModified() &&
-      !ui_->editor->document()->isEmpty())
-  {
-    QString message;
+  QTextDocument *document = ui_->editor->document();
+  bool isNewFile = scriptPath_.isEmpty();
+  bool hasOnlySpaces = !document->toPlainText().contains(QRegExp("\\S"));
+  bool isEmpty = document->isEmpty() || (isNewFile && hasOnlySpaces);
 
+  if (document->isModified() && !isEmpty) {
+    QString message;
     if (!scriptPath_.isEmpty()) {
       message = tr("Save changes to %1?").arg(scriptPath_);
     } else {
       message = tr("Save changes to a new file?");
     }
-
-    int button = QMessageBox::question(this,
-                                       QCoreApplication::applicationName(),
+    int result = QMessageBox::question(this, QCoreApplication::applicationName(),
                                        message, QMessageBox::Yes |
                                                 QMessageBox::No  |
                                                 QMessageBox::Cancel);
-
-    switch (button) {
+    switch (result) {
       case QMessageBox::Yes:
         canClose = saveFile();
         break;
@@ -130,11 +129,10 @@ bool MainWindow::saveFile() {
     } else {
       QFile file(scriptPath_);
       if (!file.open(QIODevice::WriteOnly)) {
+        QString message = tr("Could not save to %1: %2.").
+                            arg(scriptPath_, file.errorString());
         QMessageBox::critical(this, QCoreApplication::applicationName(),
-          tr("Could not save to %1: %2.")
-          .arg(scriptPath_)
-          .arg(file.errorString()),
-          QMessageBox::Ok);
+                              message, QMessageBox::Ok);
       } else {
         file.write(ui_->editor->toPlainText().toLatin1());
         ui_->editor->document()->setModified(false);
