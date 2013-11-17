@@ -19,7 +19,7 @@ class SyntaxHighlighter: public QSyntaxHighlighter {
     QColor preprocessor;
   };
 
-  explicit SyntaxHighlighter(QObject *parent = 0);
+  explicit SyntaxHighlighter(QObject *parent);
 
   void highlightBlock(const QString &text);
 
