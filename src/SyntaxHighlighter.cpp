@@ -41,6 +41,10 @@ SyntaxHighlighter::SyntaxHighlighter(QObject *parent)
     << "while";
 }
 
+SyntaxHighlighter::~SyntaxHighlighter() {
+  // nothing
+}
+
 const SyntaxHighlighter::ColorScheme &SyntaxHighlighter::colorScheme() const {
   return colorScheme_;
 }

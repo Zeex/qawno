@@ -9,7 +9,7 @@ class Compiler: public QObject {
 
  public:
   explicit Compiler(QObject *parent = 0);
-  ~Compiler();
+  virtual ~Compiler();
 
   QString path() const;
   void setPath(const QString &path);

@@ -20,6 +20,7 @@ class SyntaxHighlighter: public QSyntaxHighlighter {
   };
 
   explicit SyntaxHighlighter(QObject *parent);
+  virtual ~SyntaxHighlighter();
 
   void highlightBlock(const QString &text);
 
