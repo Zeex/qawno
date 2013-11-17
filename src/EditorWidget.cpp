@@ -1,4 +1,3 @@
-#include <QDebug>
 #include <QPainter>
 #include <QSettings>
 #include <QTextEdit>
