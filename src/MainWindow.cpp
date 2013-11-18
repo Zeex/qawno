@@ -10,6 +10,7 @@
 #include <QSettings>
 
 #include "AboutDialog.h"
+#include "Compiler.h"
 #include "CompilerOptionsDialog.h"
 #include "EditorWidget.h"
 #include "FindDialog.h"

@@ -3,13 +3,6 @@
 
 #include <QMainWindow>
 
-#include "Compiler.h"
-#include "FindDialog.h"
-#include "ReplaceDialog.h"
-
-class EditorWidget;
-class OutputWidget;
-
 namespace Ui {
   class MainWindow;
 }
