@@ -35,6 +35,7 @@ set(SOURCES
   src/OutputWidget.cpp
   src/ReplaceDialog.cpp
   src/SyntaxHighlighter.cpp
+  qawno.rc
 )
 
 set(UI_SOURCES
