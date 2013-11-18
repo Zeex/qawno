@@ -71,7 +71,6 @@ void EditorLineNumberArea::update(const QRect &rect, int dy) {
   } else {
     QWidget::update(0, rect.y(), sizeHint().width(), rect.height());
   }
-  updateWidth();
 }
 
 void EditorLineNumberArea::updateWidth(int) {
@@ -134,6 +133,12 @@ void EditorWidget::jumpToLine(long line) {
     cursor.setPosition(pos);
     setTextCursor(cursor);
   }
+}
+
+void EditorWidget::resizeEvent(QResizeEvent *event) {
+  Q_UNUSED(event);
+  // FIXME: This should be done somwhere inside EditorLineNumberArea.
+  lineNumberArea_.updateGeometry();
 }
 
 int EditorWidget::tabStop() const {

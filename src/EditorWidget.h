@@ -42,6 +42,9 @@ class EditorWidget: public QPlainTextEdit {
  public slots:
   void jumpToLine(long line);
 
+ protected:
+  virtual void resizeEvent(QResizeEvent *event);
+
  private slots:
   void highlightCurrentLine();
 
