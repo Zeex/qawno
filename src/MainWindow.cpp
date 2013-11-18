@@ -83,15 +83,10 @@ bool MainWindow::openFile() {
 bool MainWindow::closeFile() {
   bool canClose = true;
 
-  QTextDocument *document = ui_->editor->document();
-  bool isNewFile = scriptPath_.isEmpty();
-  bool hasOnlySpaces = !document->toPlainText().contains(QRegExp("\\S"));
-  bool isEmpty = document->isEmpty() || (isNewFile && hasOnlySpaces);
-
-  if (document->isModified() && !isEmpty) {
+  if (fileIsModified() && !fileIsEmpty()) {
     QString message;
-    if (!scriptPath_.isEmpty()) {
-      message = tr("Save changes to %1?").arg(scriptPath_);
+    if (!editingNewFile()) {
+      message = tr("Save changes to %1?").arg(fileName_);
     } else {
       message = tr("Save changes to a new file?");
     }
@@ -114,7 +109,7 @@ bool MainWindow::closeFile() {
 
   if (canClose) {
     ui_->editor->clear();
-    scriptPath_.clear();
+    fileName_.clear();
   }
 
   return canClose;
@@ -124,13 +119,13 @@ bool MainWindow::saveFile() {
   if (ui_->editor->document()->isEmpty()) {
     return false;
   } else {
-    if (scriptPath_.isEmpty()) {
+    if (editingNewFile()) {
       return saveFileAs();
     } else {
-      QFile file(scriptPath_);
+      QFile file(fileName_);
       if (!file.open(QIODevice::WriteOnly)) {
         QString message = tr("Could not save to %1: %2.").
-                            arg(scriptPath_, file.errorString());
+                            arg(fileName_, file.errorString());
         QMessageBox::critical(this, QCoreApplication::applicationName(),
                               message, QMessageBox::Ok);
       } else {
@@ -149,7 +144,7 @@ bool MainWindow::saveFileAs() {
     QString fileName = saveDialog.getSaveFileName(this,
                       tr("Save file as"), "", tr("Pawn scripts (*.pwn *.inc)"));
     if (!fileName.isEmpty()) {
-      scriptPath_ = fileName;
+      fileName_ = fileName;
       return saveFile();
     }
   }
@@ -267,28 +262,18 @@ void MainWindow::setupCompiler() {
 }
 
 void MainWindow::compile() {
-  Compiler compiler;
-
   if (ui_->editor->toPlainText().isEmpty()) {
     ui_->output->appendPlainText(tr("Nothing to compile!"));
-    return;
-  }
-
-  if (scriptPath_.isEmpty()) {
+  } else if (editingNewFile()) {
     saveFileAs();
-    return;
+  } else {
+    Compiler compiler;
+    ui_->output->clear();
+    compiler.run(fileName_);
+    ui_->output->appendPlainText(compiler.commandFor(fileName_));
+    ui_->output->appendPlainText("\n");
+    ui_->output->appendPlainText(compiler.output());
   }
-
-  compiler.run(scriptPath_);
-
-  ui_->output->clear();
-
-  QString command = compiler.commandFor(scriptPath_);
-  ui_->output->appendPlainText(command);
-  ui_->output->appendPlainText("\n");
-
-  QString output = compiler.output();
-  ui_->output->appendPlainText(output);
 }
 
 void MainWindow::about() {
@@ -302,9 +287,9 @@ void MainWindow::aboutQt() {
 
 void MainWindow::refreshTitle() {
   QString title;
-  if (!scriptPath_.isEmpty()) {
-    title.append(QFileInfo(scriptPath_).fileName());
-    if (ui_->editor->document()->isModified()) {
+  if (!editingNewFile()) {
+    title.append(QFileInfo(fileName_).fileName());
+    if (fileIsModified()) {
       title.append("*");
     }
     title.append(" - ");
@@ -349,7 +334,7 @@ bool MainWindow::loadFile(QString fileName) {
                             message, QMessageBox::Ok);
       return false;
     } else {
-      scriptPath_ = fileName;
+      fileName_ = fileName;
       ui_->editor->setPlainText(file.readAll());
       ui_->editor->document()->setModified(false);
       refreshTitle();
@@ -357,4 +342,22 @@ bool MainWindow::loadFile(QString fileName) {
     }
   }
   return false;
+}
+
+bool MainWindow::editingNewFile() const {
+  return fileName_.isEmpty();
+}
+
+bool MainWindow::fileIsModified() const {
+  return ui_->editor->document()->isModified();
+}
+
+bool MainWindow::fileIsEmpty() const {
+  QTextDocument *document = ui_->editor->document();
+  return document->isEmpty() ||
+         (editingNewFile() && !document->toPlainText().contains(QRegExp("\\S")));
+}
+
+bool MainWindow::fileIsCompletelyEmpty() const {
+  return -ui_->editor->document()->isEmpty() ;
 }

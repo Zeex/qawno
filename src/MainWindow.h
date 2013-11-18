@@ -52,10 +52,16 @@ class MainWindow: public QMainWindow {
   void refreshTitle();
 
  private:
+  bool editingNewFile() const;
+  bool fileIsModified() const;
+  bool fileIsEmpty() const;
+  bool fileIsCompletelyEmpty() const;
+
+ private:
   Ui::MainWindow *ui_;
 
  private:
-  QString scriptPath_;
+  QString fileName_;
 };
 
 #endif // MAINWINDOW_H
