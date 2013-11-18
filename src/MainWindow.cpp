@@ -262,9 +262,7 @@ void MainWindow::setupCompiler() {
 }
 
 void MainWindow::compile() {
-  if (ui_->editor->toPlainText().isEmpty()) {
-    ui_->output->appendPlainText(tr("Nothing to compile!"));
-  } else if (editingNewFile()) {
+  if (editingNewFile()) {
     saveFileAs();
   } else {
     Compiler compiler;
