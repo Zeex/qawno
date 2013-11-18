@@ -267,9 +267,9 @@ void MainWindow::compile() {
   } else {
     Compiler compiler;
     ui_->output->clear();
-    compiler.run(fileName_);
     ui_->output->appendPlainText(compiler.commandFor(fileName_));
     ui_->output->appendPlainText("\n");
+    compiler.run(fileName_);
     ui_->output->appendPlainText(compiler.output());
   }
 }
