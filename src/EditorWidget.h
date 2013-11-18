@@ -1,5 +1,5 @@
-#ifndef CODEEDIT_H
-#define CODEEDIT_H
+#ifndef EDITORWIDGET_h
+#define EDITORWIDGET_h
 
 #include <QPlainTextEdit>
 
@@ -56,4 +56,4 @@ class EditorWidget: public QPlainTextEdit {
   SyntaxHighlighter highlighter_;
 };
 
-#endif // CODEEDIT_H
+#endif // EDITORWIDGET_h
