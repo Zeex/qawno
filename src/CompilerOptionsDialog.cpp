@@ -15,22 +15,22 @@ CompilerOptionsDialog::~CompilerOptionsDialog() {
 }
 
 QString CompilerOptionsDialog::compilerPath() const {
-  return ui_->compilerExecutableEdit->text();
+  return ui_->compilerPath->text();
 }
 
 void CompilerOptionsDialog::setCompilerPath(const QString &path) {
-  ui_->compilerExecutableEdit->setText(path);
+  ui_->compilerPath->setText(path);
 }
 
 QString CompilerOptionsDialog::compilerOptions() const {
-  return ui_->commandLineEdit->text();
+  return ui_->compilerOptions->text();
 }
 
 void CompilerOptionsDialog::setCompilerOptions(const QString &options) {
-  ui_->commandLineEdit->setText(options);
+  ui_->compilerOptions->setText(options);
 }
 
-void CompilerOptionsDialog::on_browseButton_clicked() {
+void CompilerOptionsDialog::on_browse_clicked() {
   QString path = QFileDialog::getOpenFileName(this,
   #ifdef Q_OS_WIN
     tr("Set compiler executable"), "pawncc.exe",
@@ -40,6 +40,6 @@ void CompilerOptionsDialog::on_browseButton_clicked() {
     tr("All files (*.*)"));
   #endif
   if (!path.isEmpty()) {
-    ui_->compilerExecutableEdit->setText(path);
+    ui_->compilerPath->setText(path);
   }
 }

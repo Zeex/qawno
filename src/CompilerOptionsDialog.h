@@ -22,9 +22,9 @@ class CompilerOptionsDialog: public QDialog {
   void setCompilerOptions(const QString &options);
 
  private slots:
-  void on_browseButton_clicked();
+  void on_browse_clicked();
 
- private:
+private:
   Ui::CompilerOptionsDialog *ui_;
 };
 
