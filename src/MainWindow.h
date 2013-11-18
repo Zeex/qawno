@@ -12,12 +12,12 @@ class MainWindow: public QMainWindow {
 
  public:
   explicit MainWindow(QWidget *parent = 0);
-  virtual ~MainWindow();
+  ~MainWindow() override;
 
  protected:
-  virtual void closeEvent(QCloseEvent *event);
-  virtual void dragEnterEvent(QDragEnterEvent *event);
-  virtual void dropEvent(QDropEvent *event);
+  void closeEvent(QCloseEvent *event) override;
+  void dragEnterEvent(QDragEnterEvent *event) override;
+  void dropEvent(QDropEvent *event) override;
 
  private slots:
   bool newFile();

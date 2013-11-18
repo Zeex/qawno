@@ -13,7 +13,7 @@ class CompilerOptionsDialog: public QDialog {
 
  public:
   explicit CompilerOptionsDialog(QWidget *parent = 0);
-  virtual ~CompilerOptionsDialog();
+  ~CompilerOptionsDialog() override;
 
   QString compilerPath() const;
   void setCompilerPath(const QString &path);

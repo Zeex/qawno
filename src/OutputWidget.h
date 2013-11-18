@@ -8,7 +8,7 @@ class OutputWidget: public QPlainTextEdit {
 
  public:
   explicit OutputWidget(QWidget *parent = 0);
-  virtual ~OutputWidget();
+  ~OutputWidget()  override;
 };
 
 #endif // OUTPUTWIDGET_H

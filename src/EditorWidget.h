@@ -12,10 +12,10 @@ class EditorLineNumberArea: public QWidget {
 
  public:
   EditorLineNumberArea(EditorWidget *editor);
-  virtual ~EditorLineNumberArea();
+  ~EditorLineNumberArea()  override;
 
   EditorWidget *editor() const;
-  virtual QSize sizeHint() const;
+  QSize sizeHint() const override;
 
  public slots:
   void update(const QRect &rect, int dy);
@@ -23,8 +23,8 @@ class EditorLineNumberArea: public QWidget {
   void updateGeometry();
 
  protected:
-  virtual void paintEvent(QPaintEvent *event);
-  virtual void resizeEvent(QResizeEvent *event);
+  void paintEvent(QPaintEvent *event) override;
+  void resizeEvent(QResizeEvent *event) override;
 };
 
 class EditorWidget: public QPlainTextEdit {
@@ -34,7 +34,7 @@ class EditorWidget: public QPlainTextEdit {
   friend class EditorLineNumberArea;
 
   explicit EditorWidget(QWidget *parent = 0);
-  virtual ~EditorWidget();
+  ~EditorWidget()  override;
 
   int tabStop() const;
   void setTabStop(int chars);
@@ -43,7 +43,7 @@ class EditorWidget: public QPlainTextEdit {
   void jumpToLine(long line);
 
  protected:
-  virtual void resizeEvent(QResizeEvent *event);
+   void resizeEvent(QResizeEvent *event)  override;
 
  private slots:
   void highlightCurrentLine();

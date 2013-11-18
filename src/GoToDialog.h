@@ -12,7 +12,7 @@ class GoToDialog: public QDialog {
 
  public:
   explicit GoToDialog(QWidget *parent = 0);
-  virtual ~GoToDialog();
+  ~GoToDialog()  override;
 
   int targetLineNumber() const;
 
