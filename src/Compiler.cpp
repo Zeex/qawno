@@ -47,15 +47,14 @@ QString Compiler::command() const {
 }
 
 QString Compiler::commandFor(const QString &inputFile) const {
-  QFileInfo in(inputFile);
-  QFileInfo out(in.absolutePath() + "/" + in.baseName() + ".amx");
-  return QString("%1 \"%2\" -o\"%3\"").arg(command()).arg(in.filePath())
-                                                     .arg(out.filePath());
+  QString fileName = QFileInfo(inputFile).fileName();
+  return QString("%1 -c \"%2\"").arg(command(), fileName);
 }
 
 void Compiler::run(const QString &inputFile) {
   QProcess process;
   process.setProcessChannelMode(QProcess::MergedChannels);
+  process.setWorkingDirectory(QFileInfo(inputFile).absolutePath());
 
   QString command = commandFor(inputFile);
   process.start(command, QProcess::ReadOnly);
