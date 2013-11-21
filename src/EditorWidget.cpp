@@ -63,6 +63,7 @@ void EditorLineNumberArea::paintEvent(QPaintEvent *event) {
 void EditorLineNumberArea::resizeEvent(QResizeEvent *event) {
   Q_UNUSED(event);
   updateGeometry();
+  updateWidth();
 }
 
 void EditorLineNumberArea::update(const QRect &rect, int dy) {
