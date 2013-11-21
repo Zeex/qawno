@@ -4,12 +4,10 @@
 #include <QString>
 #include <QStringList>
 
-class Compiler: public QObject {
- Q_OBJECT
-
+class Compiler {
  public:
-  explicit Compiler(QObject *parent = 0);
-  ~Compiler() override;
+  Compiler();
+  ~Compiler();
 
   QString path() const;
   void setPath(const QString &path);

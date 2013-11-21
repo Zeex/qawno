@@ -4,9 +4,7 @@
 
 #include "Compiler.h"
 
-Compiler::Compiler(QObject *parent)
-  : QObject(parent)
-{
+Compiler::Compiler() {
   QSettings settings;
   path_ = settings.value("Compiler/Path", "pawncc").toString();
   options_ = settings.value("Compiler/Options", "-;+ -(+").toString().split("\\s*");
