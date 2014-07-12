@@ -358,5 +358,5 @@ bool MainWindow::fileIsEmpty() const {
 }
 
 bool MainWindow::fileIsCompletelyEmpty() const {
-  return -ui_->editor->document()->isEmpty() ;
+  return ui_->editor->document()->isEmpty();
 }
