@@ -33,27 +33,45 @@ class EditorWidget: public QPlainTextEdit {
  public:
   friend class EditorLineNumberWidget;
 
+  enum IndentChar {
+    IndentTab,
+    IndentSpace
+  };
+
   explicit EditorWidget(QWidget *parent = 0);
   ~EditorWidget() override;
 
-  int tabStop() const;
-  void setTabStop(int chars);
+  IndentChar indentChar() const { return indentChar_; }
+  void setIndentChar(IndentChar c) { indentChar_ = c; }
+
+  int indentSize() const { return indentSize_; }
+  void setIndentSize(int size) { indentSize_ = size; }
+
+  int tabSize() const { return tabSize_; }
+  void setTabSize(int size) {
+    setTabStopWidth(fontMetrics().width(' ') * (tabSize_ = size));
+  }
 
  public slots:
   void jumpToLine(long line);
 
  protected:
    void resizeEvent(QResizeEvent *event) override;
+   void keyPressEvent(QKeyEvent *event) override;
 
  private slots:
   void highlightCurrentLine();
 
  private:
-  int tabStop_;
+  void indentSelection(QTextCursor curso);
+  void unindentSelection(QTextCursor curso);
 
  private:
   EditorLineNumberWidget lineNumberArea_;
   SyntaxHighlighter highlighter_;
+  IndentChar indentChar_;
+  int indentSize_;
+  int tabSize_;
 };
 
 #endif // EDITORWIDGET_h
