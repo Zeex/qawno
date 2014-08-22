@@ -64,3 +64,13 @@ qt5_add_resources(RESOURCES qawno.qrc)
 
 add_executable(qawno ${HEADERS} ${SOURCES} ${UI_HEADERS} ${RESOURCES})
 qt5_use_modules(qawno Core Widgets)
+
+if(WIN32)
+  if(MSVC)
+    set_property(TARGET qawno APPEND_STRING PROPERTY
+                 LINK_FLAGS " /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+  elseif(MINGW)
+    set_property(TARGET qawno APPEND_STRING PROPERTY
+                 LINK_FLAGS " -Wl,-subsystem,windows")
+  endif()
+endif()
