@@ -42,7 +42,8 @@ class MainWindow: public QMainWindow {
   void about();
   void aboutQt();
 
-  void refreshTitle();
+  void updateTitle();
+  void updateCursorStatus();
 
  private:
   bool editingNewFile() const;

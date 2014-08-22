@@ -18,6 +18,7 @@
 #include "MainWindow.h"
 #include "OutputWidget.h"
 #include "ReplaceDialog.h"
+#include "StatusBar.h"
 
 #include "ui_MainWindow.h"
 
@@ -27,21 +28,24 @@ MainWindow::MainWindow(QWidget *parent)
 {
   ui_->setupUi(this);
 
-  connect(ui_->actionNew, SIGNAL(triggered()), this, SLOT(newFile()));
-  connect(ui_->actionOpen, SIGNAL(triggered()), this, SLOT(openFile()));
-  connect(ui_->actionClose, SIGNAL(triggered()), this, SLOT(closeFile()));
-  connect(ui_->actionSave, SIGNAL(triggered()), this, SLOT(saveFile()));
-  connect(ui_->actionSaveAs, SIGNAL(triggered()), this, SLOT(saveFileAs()));
-  connect(ui_->actionFind, SIGNAL(triggered()), this, SLOT(find()));
-  connect(ui_->actionFindNext, SIGNAL(triggered()), this, SLOT(findNext()));
-  connect(ui_->actionCompile, SIGNAL(triggered()), this, SLOT(compile()));
-  connect(ui_->actionEditorFont, SIGNAL(triggered()), this, SLOT(selectEditorFont()));
-  connect(ui_->actionOutputFont, SIGNAL(triggered()), this, SLOT(selectOutputFont()));
-  connect(ui_->actionCompilerSettings, SIGNAL(triggered()), this, SLOT(setupCompiler()));
-  connect(ui_->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
-  connect(ui_->actionAboutQt, SIGNAL(triggered()), this, SLOT(aboutQt()));
-  connect(ui_->actionGoToLine, SIGNAL(triggered()), this, SLOT(goToLine()));
-  connect(ui_->editor, SIGNAL(textChanged()), SLOT(refreshTitle()));
+  setStatusBar(new StatusBar(this));
+
+  connect(ui_->actionNew, SIGNAL(triggered()), SLOT(newFile()));
+  connect(ui_->actionOpen, SIGNAL(triggered()), SLOT(openFile()));
+  connect(ui_->actionClose, SIGNAL(triggered()), SLOT(closeFile()));
+  connect(ui_->actionSave, SIGNAL(triggered()), SLOT(saveFile()));
+  connect(ui_->actionSaveAs, SIGNAL(triggered()), SLOT(saveFileAs()));
+  connect(ui_->actionFind, SIGNAL(triggered()), SLOT(find()));
+  connect(ui_->actionFindNext, SIGNAL(triggered()), SLOT(findNext()));
+  connect(ui_->actionCompile, SIGNAL(triggered()), SLOT(compile()));
+  connect(ui_->actionEditorFont, SIGNAL(triggered()), SLOT(selectEditorFont()));
+  connect(ui_->actionOutputFont, SIGNAL(triggered()), SLOT(selectOutputFont()));
+  connect(ui_->actionCompilerSettings, SIGNAL(triggered()), SLOT(setupCompiler()));
+  connect(ui_->actionAbout, SIGNAL(triggered()), SLOT(about()));
+  connect(ui_->actionAboutQt, SIGNAL(triggered()), SLOT(aboutQt()));
+  connect(ui_->actionGoToLine, SIGNAL(triggered()), SLOT(goToLine()));
+  connect(ui_->editor, SIGNAL(textChanged()), SLOT(updateTitle()));
+  connect(ui_->editor, SIGNAL(cursorPositionChanged()), SLOT(updateCursorStatus()));
 
   QSettings settings;
 
@@ -131,7 +135,7 @@ bool MainWindow::saveFile() {
       } else {
         file.write(ui_->editor->toPlainText().toLatin1());
         ui_->editor->document()->setModified(false);
-        refreshTitle();
+        updateTitle();
       }
     }
   }
@@ -283,7 +287,7 @@ void MainWindow::aboutQt() {
   QMessageBox::aboutQt(this);
 }
 
-void MainWindow::refreshTitle() {
+void MainWindow::updateTitle() {
   QString title;
   if (!editingNewFile()) {
     title.append(QFileInfo(fileName_).fileName());
@@ -294,6 +298,13 @@ void MainWindow::refreshTitle() {
   }
   title.append(QCoreApplication::applicationName());
   setWindowTitle(title);
+}
+
+void MainWindow::updateCursorStatus() {
+  QTextCursor cursor = ui_->editor->textCursor();
+  int line = cursor.blockNumber() + 1;
+  int column = cursor.columnNumber() + 1;
+  dynamic_cast<StatusBar*>(statusBar())->setCursorPosition(line, column);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
@@ -335,7 +346,7 @@ bool MainWindow::loadFile(QString fileName) {
       fileName_ = fileName;
       ui_->editor->setPlainText(file.readAll());
       ui_->editor->document()->setModified(false);
-      refreshTitle();
+      updateTitle();
       return true;
     }
   }
