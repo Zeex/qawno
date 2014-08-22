@@ -7,7 +7,7 @@
 #include "EditorWidget.h"
 #include "SyntaxHighlighter.h"
 
-EditorLineNumberArea::EditorLineNumberArea(EditorWidget *editor)
+EditorLineNumberWidget::EditorLineNumberWidget(EditorWidget *editor)
   : QWidget(editor)
 {
   connect(editor, SIGNAL(updateRequest(QRect, int)),
@@ -18,23 +18,23 @@ EditorLineNumberArea::EditorLineNumberArea(EditorWidget *editor)
           this, SLOT(updateGeometry()));
 }
 
-EditorLineNumberArea::~EditorLineNumberArea() {
+EditorLineNumberWidget::~EditorLineNumberWidget() {
   // nothing
 }
 
-EditorWidget *EditorLineNumberArea::editor() const {
+EditorWidget *EditorLineNumberWidget::editor() const {
   return static_cast<EditorWidget*>(parent());
 }
 
-QSize EditorLineNumberArea::sizeHint() const {
+QSize EditorLineNumberWidget::sizeHint() const {
   int lineCount = editor()->blockCount();
   int digitWidth = fontMetrics().width(QLatin1Char('0'));
   int numDigits = QString::number(lineCount).length();
-  int width =  digitWidth * numDigits * 2;
+  int width =  digitWidth * (numDigits + 2);
   return QSize(width, 0);
 }
 
-void EditorLineNumberArea::paintEvent(QPaintEvent *event) {
+void EditorLineNumberWidget::paintEvent(QPaintEvent *event) {
   QPainter painter(this);
   painter.setPen(palette().foreground().color());
   painter.fillRect(event->rect(), palette().background().color());
@@ -49,24 +49,26 @@ void EditorLineNumberArea::paintEvent(QPaintEvent *event) {
   do {
     if (bottom >= event->rect().top()) {
       QString lineNumber = QString::number(block.blockNumber() + 1);
-      painter.drawText(width() * 0.25, top, width() * 0.5,
-                       fontMetrics().height(), Qt::AlignRight, lineNumber);
+      int digitWidth = fontMetrics().width(QLatin1Char('0'));
+      int numDigits = lineNumber.length();
+      QRect rect(digitWidth, top, digitWidth * numDigits, bottom);
+      painter.drawText(rect, Qt::AlignRight, lineNumber);
     }
     block = block.next();
     top = bottom;
     bottom = top + editor()->blockBoundingRect(block).height();
   }
-  while (block.isValid() && block.isVisible() &&
-         top <= event->rect().bottom());
+  while (block.isValid() && block.isVisible()
+         && top <= event->rect().bottom());
 }
 
-void EditorLineNumberArea::resizeEvent(QResizeEvent *event) {
+void EditorLineNumberWidget::resizeEvent(QResizeEvent *event) {
   Q_UNUSED(event);
   updateGeometry();
   updateWidth();
 }
 
-void EditorLineNumberArea::update(const QRect &rect, int dy) {
+void EditorLineNumberWidget::update(const QRect &rect, int dy) {
   if (dy != 0) {
     scroll(0, dy);
   } else {
@@ -74,11 +76,11 @@ void EditorLineNumberArea::update(const QRect &rect, int dy) {
   }
 }
 
-void EditorLineNumberArea::updateWidth(int) {
+void EditorLineNumberWidget::updateWidth(int) {
   editor()->setViewportMargins(sizeHint().width(), 0, 0, 0);
 }
 
-void EditorLineNumberArea::updateGeometry() {
+void EditorLineNumberWidget::updateGeometry() {
   QRect cr = editor()->contentsRect();
   setGeometry(cr.left(), cr.top(), sizeHint().width(), cr.height());
 }
@@ -138,7 +140,7 @@ void EditorWidget::jumpToLine(long line) {
 
 void EditorWidget::resizeEvent(QResizeEvent *event) {
   Q_UNUSED(event);
-  // FIXME: This should be done somwhere inside EditorLineNumberArea.
+  // FIXME: This should be done somwhere inside EditorLineNumberWidget.
   lineNumberArea_.updateGeometry();
 }
 

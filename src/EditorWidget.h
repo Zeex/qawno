@@ -7,12 +7,12 @@
 
 class EditorWidget;
 
-class EditorLineNumberArea: public QWidget {
+class EditorLineNumberWidget: public QWidget {
  Q_OBJECT
 
  public:
-  EditorLineNumberArea(EditorWidget *editor);
-  ~EditorLineNumberArea()  override;
+  EditorLineNumberWidget(EditorWidget *editor);
+  ~EditorLineNumberWidget()  override;
 
   EditorWidget *editor() const;
   QSize sizeHint() const override;
@@ -31,10 +31,10 @@ class EditorWidget: public QPlainTextEdit {
  Q_OBJECT
 
  public:
-  friend class EditorLineNumberArea;
+  friend class EditorLineNumberWidget;
 
   explicit EditorWidget(QWidget *parent = 0);
-  ~EditorWidget()  override;
+  ~EditorWidget() override;
 
   int tabStop() const;
   void setTabStop(int chars);
@@ -43,7 +43,7 @@ class EditorWidget: public QPlainTextEdit {
   void jumpToLine(long line);
 
  protected:
-   void resizeEvent(QResizeEvent *event)  override;
+   void resizeEvent(QResizeEvent *event) override;
 
  private slots:
   void highlightCurrentLine();
@@ -52,7 +52,7 @@ class EditorWidget: public QPlainTextEdit {
   int tabStop_;
 
  private:
-  EditorLineNumberArea lineNumberArea_;
+  EditorLineNumberWidget lineNumberArea_;
   SyntaxHighlighter highlighter_;
 };
 
