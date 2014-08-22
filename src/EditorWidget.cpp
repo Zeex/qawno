@@ -113,6 +113,7 @@ EditorWidget::EditorWidget(QWidget *parent)
 
   setLineWrapMode(NoWrap);
   setUndoRedoEnabled(true);
+  setCursorWidth(2);
 
   QPalette palette;
   palette.setColor(lineNumberArea_.backgroundRole(), Qt::lightGray);
