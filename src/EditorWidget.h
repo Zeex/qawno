@@ -1,6 +1,8 @@
 #ifndef EDITORWIDGET_h
 #define EDITORWIDGET_h
 
+#include <functional>
+
 #include <QPlainTextEdit>
 
 #include "SyntaxHighlighter.h"
@@ -38,6 +40,11 @@ class EditorWidget: public QPlainTextEdit {
     IndentSpace
   };
 
+  enum IndentDirection {
+    Indent,
+    Unindent
+  };
+
   explicit EditorWidget(QWidget *parent = 0);
   ~EditorWidget() override;
 
@@ -63,8 +70,11 @@ class EditorWidget: public QPlainTextEdit {
   void highlightCurrentLine();
 
  private:
-  void indentSelection(QTextCursor curso);
-  void unindentSelection(QTextCursor curso);
+  void editSelection(QTextCursor cursor,
+                     std::function<void(QTextCursor cursor)> callback);
+
+  void indentSelection(QTextCursor cursor);
+  void unindentSelection(QTextCursor cursor);
 
  private:
   EditorLineNumberWidget lineNumberArea_;

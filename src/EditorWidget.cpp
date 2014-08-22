@@ -150,16 +150,16 @@ void EditorWidget::resizeEvent(QResizeEvent *event) {
 
 void EditorWidget::keyPressEvent(QKeyEvent *event) {
   QTextCursor cursor = textCursor();
-  if (cursor.hasSelection() && event->key() == Qt::Key_Tab) {
-    if (event->modifiers() == Qt::NoModifier) {
-      indentSelection(cursor);
-      event->accept();
-      return;
-    }
-    if (event->modifiers() & Qt::ShiftModifier) {
-      unindentSelection(cursor);
-      event->accept();
-      return;
+  if (cursor.hasSelection()) {
+    switch (event->key()) {
+      case Qt::Key_Tab:
+        indentSelection(cursor);
+        event->accept();
+        return;
+      case Qt::Key_Backtab:
+        unindentSelection(cursor);
+        event->accept();
+        return;
     }
   }
   QPlainTextEdit::keyPressEvent(event);
@@ -177,7 +177,8 @@ void EditorWidget::highlightCurrentLine() {
   }
 }
 
-void EditorWidget::indentSelection(QTextCursor cursor) {
+void EditorWidget::editSelection(QTextCursor cursor,
+                             std::function<void(QTextCursor cursor)> callback) {
   int start = cursor.selectionStart();
   int end = cursor.selectionEnd();
 
@@ -192,6 +193,15 @@ void EditorWidget::indentSelection(QTextCursor cursor) {
 
   for (int i = 0; i <= endBlock - startBlock; i++) {
     cursor.movePosition(QTextCursor::StartOfBlock);
+    callback(cursor);
+    cursor.movePosition(QTextCursor::NextBlock);
+  }
+
+  cursor.endEditBlock();
+}
+
+void EditorWidget::indentSelection(QTextCursor cursor) {
+  editSelection(cursor, [this](QTextCursor cursor) {
     switch (indentChar_) {
       case IndentTab:
         cursor.insertText("\t");
@@ -202,12 +212,25 @@ void EditorWidget::indentSelection(QTextCursor cursor) {
         }
         break;
     }
-    cursor.movePosition(QTextCursor::NextBlock);
-  }
-
-  cursor.endEditBlock();
+  });
 }
 
 void EditorWidget::unindentSelection(QTextCursor cursor) {
-
+  editSelection(cursor, [this](QTextCursor cursor) {
+    int removedChars = 0;
+    int blockStart = cursor.position();
+    do {
+      cursor.setPosition(blockStart + 1, QTextCursor::KeepAnchor);
+      QString text = cursor.selectedText();
+      if (text == "\t") {
+        cursor.removeSelectedText();
+        removedChars += tabSize_;
+      } else if (text == " ") {
+        cursor.removeSelectedText();
+        removedChars++;
+      } else {
+        break;
+      }
+    } while (removedChars < indentSize_);
+  });
 }
