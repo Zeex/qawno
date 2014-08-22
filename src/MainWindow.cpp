@@ -72,9 +72,9 @@ bool MainWindow::newFile() {
 
 bool MainWindow::openFile() {
   if (closeFile()) {
-    QFileDialog openDialog(this);
-    QString fileName = openDialog.getOpenFileName(this, tr("Open file"), "",
-                                              tr("Pawn scripts (*.pwn *.inc)"));
+    QString caption = tr("Open file");
+    QString filter = tr("Pawn scripts (*.pwn *.inc)");
+    QString fileName = QFileDialog::getOpenFileName(this, caption, "", filter);
     loadFile(fileName);
     return true;
   }
@@ -85,12 +85,9 @@ bool MainWindow::closeFile() {
   bool canClose = true;
 
   if (fileIsModified() && !fileIsEmpty()) {
-    QString message;
-    if (!editingNewFile()) {
-      message = tr("Save changes to %1?").arg(fileName_);
-    } else {
-      message = tr("Save changes to a new file?");
-    }
+    QString message = (!editingNewFile())
+      ? tr("Save changes to %1?").arg(fileName_)
+      : tr("Save changes to a new file?");
     int result = QMessageBox::question(this, QCoreApplication::applicationName(),
                                        message, QMessageBox::Yes |
                                                 QMessageBox::No  |
@@ -125,10 +122,12 @@ bool MainWindow::saveFile() {
     } else {
       QFile file(fileName_);
       if (!file.open(QIODevice::WriteOnly)) {
-        QString message = tr("Could not save to %1: %2.").
-                            arg(fileName_, file.errorString());
-        QMessageBox::critical(this, QCoreApplication::applicationName(),
-                              message, QMessageBox::Ok);
+        QString message =
+          tr("Could not save to %1: %2.").arg(fileName_, file.errorString());
+        QMessageBox::critical(this,
+                              QCoreApplication::applicationName(),
+                              message,
+                              QMessageBox::Ok);
       } else {
         file.write(ui_->editor->toPlainText().toLatin1());
         ui_->editor->document()->setModified(false);
@@ -141,9 +140,9 @@ bool MainWindow::saveFile() {
 
 bool MainWindow::saveFileAs() {
   if (!ui_->editor->document()->isEmpty()) {
-    QFileDialog saveDialog;
-    QString fileName = saveDialog.getSaveFileName(this,
-                      tr("Save file as"), "", tr("Pawn scripts (*.pwn *.inc)"));
+    QString caption = tr("Save file as");
+    QString filter = tr("Pawn scripts (*.pwn *.inc)");
+    QString fileName = QFileDialog::getSaveFileName(this, caption, "", filter);
     if (!fileName.isEmpty()) {
       fileName_ = fileName;
       return saveFile();
