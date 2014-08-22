@@ -13,7 +13,7 @@ class FindDialog: public QDialog {
 
  public:
   explicit FindDialog(QWidget *parent = 0);
-  ~FindDialog()  override;
+  ~FindDialog() override;
 
   QString findWhatText() const;
 

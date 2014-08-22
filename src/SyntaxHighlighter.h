@@ -20,9 +20,9 @@ class SyntaxHighlighter: public QSyntaxHighlighter {
   };
 
   explicit SyntaxHighlighter(QObject *parent);
-  ~SyntaxHighlighter()  override;
+  ~SyntaxHighlighter() override;
 
-  void highlightBlock(const QString &text)  override;
+  void highlightBlock(const QString &text) override;
 
   const ColorScheme &colorScheme() const;
   void setColorScheme(const ColorScheme &scheme);

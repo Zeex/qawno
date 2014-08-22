@@ -13,7 +13,7 @@ class ReplaceDialog: public QDialog {
 
  public:
   explicit ReplaceDialog(QWidget *parent = 0);
-  ~ReplaceDialog()  override;
+  ~ReplaceDialog() override;
 
   QString replaceWhatText() const;
   QString replaceWithText() const;
