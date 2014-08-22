@@ -1,5 +1,3 @@
-// TODO: more robust parser
-
 #include "SyntaxHighlighter.h"
 
 static SyntaxHighlighter::ColorScheme defaultColorScheme = {
@@ -78,7 +76,6 @@ bool SyntaxHighlighter::isKeyword(const QString &s) {
   return false;
 }
 
-// Simple hand-written highlighter (with no regexps!)
 void SyntaxHighlighter::highlightBlock(const QString &text) {
   setFormat(0, text.length(), defaultColorScheme.defaultColor);
 
