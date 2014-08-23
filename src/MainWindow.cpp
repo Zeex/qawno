@@ -49,7 +49,7 @@ MainWindow::MainWindow(QWidget *parent)
 
   QSettings settings;
 
-  resize(settings.value("WindowSize", QSize(640, 480)).toSize());
+  resize(settings.value("WindowSize", QSize(800, 600)).toSize());
   if (settings.value("Maximized", false).toBool()) {
     setWindowState(Qt::WindowMaximized);
   }
