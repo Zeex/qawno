@@ -103,13 +103,13 @@ EditorWidget::EditorWidget(QWidget *parent)
   QSettings settings;
 
   QFont font = defaultFont();
-  font.fromString(settings.value("Font/Editor", font).toString());
+  font.fromString(settings.value("EditorFont", font).toString());
   setFont(font);
 
-  int indentChar = settings.value("Editor/IndentChar", IndentTab).toInt();
+  int indentChar = settings.value("IndentChar", IndentTab).toInt();
   setIndentChar(static_cast<IndentChar>(indentChar));
-  setIndentSize(settings.value("Editor/IndentSize", 4).toInt());
-  setTabSize(settings.value("Editor/TabSize", 4).toInt());
+  setIndentSize(settings.value("IndentSize", 4).toInt());
+  setTabSize(settings.value("TabSize", 4).toInt());
 
   setLineWrapMode(NoWrap);
   setUndoRedoEnabled(true);
@@ -128,10 +128,10 @@ EditorWidget::EditorWidget(QWidget *parent)
 
 EditorWidget::~EditorWidget() {
   QSettings settings;
-  settings.setValue("Font/Editor", font().toString());
-  settings.setValue("Editor/IndentChar", indentChar());
-  settings.setValue("Editor/IndentSize", indentSize());
-  settings.setValue("Editor/TabSize", tabSize());
+  settings.setValue("EditorFont", font().toString());
+  settings.setValue("IndentChar", indentChar());
+  settings.setValue("IndentSize", indentSize());
+  settings.setValue("TabSize", tabSize());
 }
 
 void EditorWidget::jumpToLine(long line) {

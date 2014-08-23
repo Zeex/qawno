@@ -17,11 +17,11 @@ OutputWidget::OutputWidget(QWidget *parent):
 {
   QSettings settings;
   QFont font = defaultFont();
-  font.fromString(settings.value("Font/Output", font).toString());
+  font.fromString(settings.value("OutputFont", font).toString());
   setFont(font);
 }
 
 OutputWidget::~OutputWidget() {
   QSettings settings;
-  settings.setValue("Font/Output", font().toString());
+  settings.setValue("OutputFont", font().toString());
 }

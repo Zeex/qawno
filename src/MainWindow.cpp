@@ -49,8 +49,8 @@ MainWindow::MainWindow(QWidget *parent)
 
   QSettings settings;
 
-  resize(settings.value("Widgets/MainWindow/Size", QSize(640, 480)).toSize());
-  if (settings.value("Widgets/MainWindow/Maximized", false).toBool()) {
+  resize(settings.value("WindowSize", QSize(640, 480)).toSize());
+  if (settings.value("Maximized", false).toBool()) {
     setWindowState(Qt::WindowMaximized);
   }
 
@@ -62,9 +62,9 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow() {
   QSettings settings;
 
-  settings.setValue("Widgets/MainWindow/Maximized", isMaximized());
+  settings.setValue("Maximized", isMaximized());
   if (!isMaximized()) {
-    settings.setValue("Widgets/MainWindow/Size", size());
+    settings.setValue("WindowSize", size());
   }
 
   delete ui_;

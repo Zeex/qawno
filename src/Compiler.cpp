@@ -6,14 +6,14 @@
 
 Compiler::Compiler() {
   QSettings settings;
-  path_ = settings.value("Compiler/Path", "pawncc").toString();
-  options_ = settings.value("Compiler/Options", "-;+ -(+").toString().split("\\s*");
+  path_ = settings.value("CompilerPath", "pawncc").toString();
+  options_ = settings.value("CompilerOptions", "-;+ -(+").toString().split("\\s*");
 }
 
 Compiler::~Compiler() {
   QSettings settings;
-  settings.setValue("Compiler/Path", path_);
-  settings.setValue("Compiler/Options", options_.join(" "));
+  settings.setValue("CompilerPath", path_);
+  settings.setValue("CompilerOptions", options_.join(" "));
 }
 
 QString Compiler::path() const {

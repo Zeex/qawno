@@ -11,22 +11,18 @@ ReplaceDialog::ReplaceDialog(QWidget *parent) :
   ui_->replaceWhatEdit->setFocus();
 
   QSettings settings;
-  settings.beginGroup("Widgets/ReplaceDialog");
-    ui_->matchCase->setChecked(settings.value("MatchCase").toBool());
-    ui_->matchWholeWords->setChecked(settings.value("MatchWholeWords").toBool());
-    ui_->searchBackwards->setChecked(settings.value("SearchBackwards").toBool());
-    ui_->useRegExp->setChecked(settings.value("UseRegexp").toBool());
-  settings.endGroup();
+  ui_->matchCase->setChecked(settings.value("ReplaceMatchCase").toBool());
+  ui_->matchWholeWords->setChecked(settings.value("ReplaceMatchWholeWords").toBool());
+  ui_->searchBackwards->setChecked(settings.value("ReplaceSearchBackwards").toBool());
+  ui_->useRegExp->setChecked(settings.value("ReplaceUseRegexp").toBool());
 }
 
 ReplaceDialog::~ReplaceDialog() {
   QSettings settings;
-  settings.beginGroup("Widgets/ReplaceDialog");
-    settings.setValue("MatchCase", ui_->matchCase->isChecked());
-    settings.setValue("MatchWholeWords", ui_->matchWholeWords->isChecked());
-    settings.setValue("SearchBackwards", ui_->searchBackwards->isChecked());
-    settings.setValue("UseRegexp", ui_->useRegExp->isChecked());
-  settings.endGroup();
+  settings.setValue("ReplaceMatchCase", ui_->matchCase->isChecked());
+  settings.setValue("ReplaceMatchWholeWords", ui_->matchWholeWords->isChecked());
+  settings.setValue("ReplaceSearchBackwards", ui_->searchBackwards->isChecked());
+  settings.setValue("ReplaceUseRegexp", ui_->useRegExp->isChecked());
   delete ui_;
 }
 

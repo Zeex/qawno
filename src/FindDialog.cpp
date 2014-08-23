@@ -11,24 +11,20 @@ FindDialog::FindDialog(QWidget *parent) :
   ui_->findWhatEdit->setFocus();
 
   QSettings settings;
-  settings.beginGroup("Widgets/FindDialog");
-    ui_->findWhatEdit->setText(settings.value("FindWhatText").toString());
-    ui_->matchCase->setChecked(settings.value("MatchCase").toBool());
-    ui_->matchWholeWords->setChecked(settings.value("MatchWholeWords").toBool());
-    ui_->searchBackwards->setChecked(settings.value("SearchBackwards").toBool());
-    ui_->useRegExp->setChecked(settings.value("UseRegexp").toBool());
-  settings.endGroup();
+  ui_->findWhatEdit->setText(settings.value("FindText").toString());
+  ui_->matchCase->setChecked(settings.value("FindMatchCase").toBool());
+  ui_->matchWholeWords->setChecked(settings.value("FindMatchWholeWords").toBool());
+  ui_->searchBackwards->setChecked(settings.value("FindSearchBackwards").toBool());
+  ui_->useRegExp->setChecked(settings.value("FindUseRegexp").toBool());
 }
 
 FindDialog::~FindDialog() {
   QSettings settings;
-  settings.beginGroup("Widgets/FindDialog");
-    settings.setValue("FindWhatText", ui_->findWhatEdit->text());
-    settings.setValue("MatchCase", ui_->matchCase->isChecked());
-    settings.setValue("MatchWholeWords", ui_->matchWholeWords->isChecked());
-    settings.setValue("SearchBackwards", ui_->searchBackwards->isChecked());
-    settings.setValue("UseRegexp", ui_->useRegExp->isChecked());
-  settings.endGroup();
+  settings.setValue("FindText", ui_->findWhatEdit->text());
+  settings.setValue("FindMatchCase", ui_->matchCase->isChecked());
+  settings.setValue("FindMatchWholeWords", ui_->matchWholeWords->isChecked());
+  settings.setValue("FindSearchBackwards", ui_->searchBackwards->isChecked());
+  settings.setValue("FindUseRegexp", ui_->useRegExp->isChecked());
   delete ui_;
 }
 
