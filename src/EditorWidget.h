@@ -35,53 +35,47 @@ class EditorWidget: public QPlainTextEdit {
  public:
   friend class EditorLineNumberWidget;
 
-  enum IndentChar {
-    IndentTab,
-    IndentSpace
-  };
-
-  enum IndentDirection {
-    Indent,
-    Unindent
+  enum IndentPolicy {
+    IndentWithTabs,
+    IndentWithSpaces
   };
 
   explicit EditorWidget(QWidget *parent = 0);
   ~EditorWidget() override;
 
-  IndentChar indentChar() const { return indentChar_; }
-  void setIndentChar(IndentChar c) { indentChar_ = c; }
+  int tabWidth() const;
+  void setTabWidth(int width);
 
-  int indentSize() const { return indentSize_; }
-  void setIndentSize(int size) { indentSize_ = size; }
+  int indentWidth() const;
+  void setIndentWidth(int width);
 
-  int tabSize() const { return tabSize_; }
-  void setTabSize(int size) {
-    setTabStopWidth(fontMetrics().width(' ') * (tabSize_ = size));
-  }
+  IndentPolicy indentPolicy() const;
+  void setIndentPolicy(IndentPolicy policy);
 
  public slots:
   void jumpToLine(long line);
 
  protected:
-   void resizeEvent(QResizeEvent *event) override;
-   void keyPressEvent(QKeyEvent *event) override;
+  void resizeEvent(QResizeEvent *event) override;
+  void keyPressEvent(QKeyEvent *event) override;
 
  private slots:
   void highlightCurrentLine();
 
  private:
-  void editSelection(QTextCursor cursor,
-                     std::function<void(QTextCursor cursor)> callback);
+  void editSelectedText(QTextCursor cursor,
+                        std::function<void(QTextCursor cursor)> callback);
 
-  void indentSelection(QTextCursor cursor);
-  void unindentSelection(QTextCursor cursor);
+  void indentBlock(QTextCursor cursor);
+  void indentSelectedText(QTextCursor cursor);
+  void unindentSelectedText(QTextCursor cursor);
 
  private:
   EditorLineNumberWidget lineNumberArea_;
   SyntaxHighlighter highlighter_;
-  IndentChar indentChar_;
-  int indentSize_;
-  int tabSize_;
+  int tabWidth_;
+  int indentWidth_;
+  IndentPolicy indentPolicy_;
 };
 
 #endif // EDITORWIDGET_h

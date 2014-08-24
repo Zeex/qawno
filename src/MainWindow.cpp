@@ -1,3 +1,4 @@
+#include <QAction>
 #include <QApplication>
 #include <QCoreApplication>
 #include <QFile>
@@ -30,6 +31,20 @@ MainWindow::MainWindow(QWidget *parent)
 
   setStatusBar(new StatusBar(this));
 
+  bool useTabs = (ui_->editor->indentPolicy() == EditorWidget::IndentWithTabs);
+  ui_->actionUseTabs->setChecked(useTabs);
+  ui_->actionUseSpaces->setChecked(!useTabs);
+
+  int tabWidth = ui_->editor->tabWidth();
+  ui_->actionTabWidth2->setChecked(tabWidth == 2);
+  ui_->actionTabWidth4->setChecked(tabWidth == 4);
+  ui_->actionTabWidth8->setChecked(tabWidth == 8);
+
+  int indentWidth = ui_->editor->indentWidth();
+  ui_->actionIndentWidth2->setChecked(indentWidth == 2);
+  ui_->actionIndentWidth4->setChecked(indentWidth == 4);
+  ui_->actionIndentWidth8->setChecked(indentWidth == 8);
+
   connect(ui_->actionNew, SIGNAL(triggered()), SLOT(newFile()));
   connect(ui_->actionOpen, SIGNAL(triggered()), SLOT(openFile()));
   connect(ui_->actionClose, SIGNAL(triggered()), SLOT(closeFile()));
@@ -38,9 +53,17 @@ MainWindow::MainWindow(QWidget *parent)
   connect(ui_->actionFind, SIGNAL(triggered()), SLOT(find()));
   connect(ui_->actionFindNext, SIGNAL(triggered()), SLOT(findNext()));
   connect(ui_->actionCompile, SIGNAL(triggered()), SLOT(compile()));
+  connect(ui_->actionUseTabs, SIGNAL(triggered()), SLOT(useTabs()));
+  connect(ui_->actionUseSpaces, SIGNAL(triggered()), SLOT(useSpaces()));
+  connect(ui_->actionTabWidth2, SIGNAL(triggered()), SLOT(tabWidth2()));
+  connect(ui_->actionTabWidth4, SIGNAL(triggered()), SLOT(tabWidth4()));
+  connect(ui_->actionTabWidth8, SIGNAL(triggered()), SLOT(tabWidth8()));
+  connect(ui_->actionIndentWidth2, SIGNAL(triggered()), SLOT(indentWidth2()));
+  connect(ui_->actionIndentWidth4, SIGNAL(triggered()), SLOT(indentWidth4()));
+  connect(ui_->actionIndentWidth8, SIGNAL(triggered()), SLOT(indentWidth8()));
   connect(ui_->actionEditorFont, SIGNAL(triggered()), SLOT(selectEditorFont()));
   connect(ui_->actionOutputFont, SIGNAL(triggered()), SLOT(selectOutputFont()));
-  connect(ui_->actionCompilerSettings, SIGNAL(triggered()), SLOT(setupCompiler()));
+  connect(ui_->actionCompiler, SIGNAL(triggered()), SLOT(setupCompiler()));
   connect(ui_->actionAbout, SIGNAL(triggered()), SLOT(about()));
   connect(ui_->actionAboutQt, SIGNAL(triggered()), SLOT(aboutQt()));
   connect(ui_->actionGoToLine, SIGNAL(triggered()), SLOT(goToLine()));
@@ -224,6 +247,60 @@ void MainWindow::goToLine() {
   GoToDialog dialog;
   dialog.exec();
   ui_->editor->jumpToLine(dialog.targetLineNumber());
+}
+
+void MainWindow::useTabs() {
+  ui_->editor->setIndentPolicy(EditorWidget::IndentWithTabs);
+  ui_->actionUseTabs->setChecked(true);
+  ui_->actionUseSpaces->setChecked(false);
+}
+
+void MainWindow::useSpaces() {
+  ui_->editor->setIndentPolicy(EditorWidget::IndentWithSpaces);
+  ui_->actionUseTabs->setChecked(false);
+  ui_->actionUseSpaces->setChecked(true);
+}
+
+void MainWindow::indentWidth2() {
+  ui_->editor->setIndentWidth(2);
+  ui_->actionIndentWidth2->setChecked(true);
+  ui_->actionIndentWidth4->setChecked(false);
+  ui_->actionIndentWidth8->setChecked(false);
+}
+
+void MainWindow::indentWidth4() {
+  ui_->editor->setIndentWidth(4);
+  ui_->actionIndentWidth2->setChecked(false);
+  ui_->actionIndentWidth4->setChecked(true);
+  ui_->actionIndentWidth8->setChecked(false);
+}
+
+void MainWindow::indentWidth8() {
+  ui_->editor->setIndentWidth(8);
+  ui_->actionIndentWidth2->setChecked(false);
+  ui_->actionIndentWidth4->setChecked(false);
+  ui_->actionIndentWidth8->setChecked(true);
+}
+
+void MainWindow::tabWidth2() {
+  ui_->editor->setTabWidth(2);
+  ui_->actionTabWidth2->setChecked(true);
+  ui_->actionTabWidth4->setChecked(false);
+  ui_->actionTabWidth8->setChecked(false);
+}
+
+void MainWindow::tabWidth4() {
+  ui_->editor->setTabWidth(4);
+  ui_->actionTabWidth2->setChecked(false);
+  ui_->actionTabWidth4->setChecked(true);
+  ui_->actionTabWidth8->setChecked(false);
+}
+
+void MainWindow::tabWidth8() {
+  ui_->editor->setTabWidth(8);
+  ui_->actionTabWidth2->setChecked(false);
+  ui_->actionTabWidth4->setChecked(false);
+  ui_->actionTabWidth8->setChecked(true);
 }
 
 void MainWindow::selectEditorFont() {

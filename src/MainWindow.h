@@ -35,9 +35,19 @@ class MainWindow: public QMainWindow {
 
   void compile();
 
-  void setupCompiler();
+  void useTabs();
+  void useSpaces();
+  void tabWidth2();
+  void tabWidth4();
+  void tabWidth8();
+  void indentWidth2();
+  void indentWidth4();
+  void indentWidth8();
+
   void selectEditorFont();
   void selectOutputFont();
+
+  void setupCompiler();
 
   void about();
   void aboutQt();
@@ -45,7 +55,7 @@ class MainWindow: public QMainWindow {
   void updateTitle();
   void updateCursorStatus();
 
- private:
+private:
   bool editingNewFile() const;
   bool fileIsModified() const;
   bool fileIsEmpty() const;

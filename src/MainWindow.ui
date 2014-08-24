@@ -135,8 +135,25 @@
      <addaction name="actionEditorFont"/>
      <addaction name="actionOutputFont"/>
     </widget>
+    <widget class="QMenu" name="menuIndentation">
+     <property name="title">
+      <string>&amp;Indentation</string>
+     </property>
+     <addaction name="actionUseTabs"/>
+     <addaction name="actionUseSpaces"/>
+     <addaction name="separator"/>
+     <addaction name="actionTabWidth2"/>
+     <addaction name="actionTabWidth4"/>
+     <addaction name="actionTabWidth8"/>
+     <addaction name="separator"/>
+     <addaction name="actionIndentWidth2"/>
+     <addaction name="actionIndentWidth4"/>
+     <addaction name="actionIndentWidth8"/>
+    </widget>
     <addaction name="menuFont"/>
-    <addaction name="actionCompilerSettings"/>
+    <addaction name="menuIndentation"/>
+    <addaction name="separator"/>
+    <addaction name="actionCompiler"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -186,7 +203,7 @@
   </action>
   <action name="actionSaveAs">
    <property name="text">
-    <string>Save as...</string>
+    <string>Save As...</string>
    </property>
    <property name="toolTip">
     <string>Save changes to a different file</string>
@@ -280,7 +297,7 @@
     <string>About &amp;Qt</string>
    </property>
   </action>
-  <action name="actionCompilerSettings">
+  <action name="actionCompiler">
    <property name="text">
     <string>&amp;Compiler</string>
    </property>
@@ -317,13 +334,86 @@
   </action>
   <action name="actionGoToLine">
    <property name="text">
-    <string>&amp;Go to line...</string>
+    <string>Go To Line...</string>
    </property>
    <property name="toolTip">
     <string>Jump to the specified line</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+G</string>
+   </property>
+  </action>
+  <action name="actionUseTabs">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Use &amp;Tabs</string>
+   </property>
+  </action>
+  <action name="actionUseSpaces">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Use &amp;Spaces</string>
+   </property>
+  </action>
+  <action name="actionIndentWidth2">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Indent Width: 2</string>
+   </property>
+  </action>
+  <action name="actionIndentWidth4">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Indent Width: 4</string>
+   </property>
+  </action>
+  <action name="actionIndentWidth8">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Indent Width: 8</string>
+   </property>
+   <property name="toolTip">
+    <string>Indent Width: 8</string>
+   </property>
+  </action>
+  <action name="actionTabWidth2">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Tab Width: 2</string>
+   </property>
+  </action>
+  <action name="actionTabWidth4">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Tab Width: 4</string>
+   </property>
+  </action>
+  <action name="actionTabWidth8">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Tab Width: 8</string>
    </property>
   </action>
  </widget>
