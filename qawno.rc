@@ -1,1 +1,33 @@
+#include <windows.h>
+#include <qawno.h>
+
 IDI_ICON1 ICON DISCARDABLE "icons/pawn.ico"
+
+#define QAWNO_VERSION_RC QAWNO_VERSION_MAJOR, \
+                         QAWNO_VERSION_MINOR, \
+                         QAWNO_VERSION_PATCH, \
+                         0
+
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+
+1 VERSIONINFO
+	FILEVERSION    QAWNO_VERSION_RC
+	PRODUCTVERSION QAWNO_VERSION_RC
+	FILEOS         VOS_NT_WINDOWS32
+	FILETYPE       VFT_DLL
+{
+	BLOCK "StringFileInfo"
+	{
+		BLOCK "04090025"
+		{
+			VALUE "ProductName",     "qawno"
+			VALUE "FileDescription", "qawno - A simple Pawn editor"
+			VALUE "FileVersion",     QAWNO_VERSION_STRING
+			VALUE "ProductVersion",  QAWNO_VERSION_STRING
+		}
+	}
+	BLOCK "VarFileInfo"
+	{
+		VALUE "Translation", 1033, 37
+	}
+}

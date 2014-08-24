@@ -1,14 +1,7 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0)
+cmake_policy(SET CMP0043 OLD)
 
-if(POLICY CMP0020)
-  cmake_policy(SET CMP0020 NEW)
-endif()
-
-if(POLICY CMP0043)
-  cmake_policy(SET CMP0043 OLD)
-endif()
-
-project(qawno)
+project(qawno VERSION 0.1.0)
 
 set(CMAKE_AUTOMOC ON)
 
@@ -21,6 +14,8 @@ include_directories(${PROJECT_BINARY_DIR})
 if(CMAKE_COMPILER_IS_GNUCXX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
+
+configure_file(qawno.h.in qawno.h @ONLY)
 
 set(HEADERS
   src/AboutDialog.h
