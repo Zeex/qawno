@@ -103,7 +103,7 @@ bool MainWindow::openFile() {
   }
 
   QSettings settings;
-  QString dir = settings.value("LastOpenDirectory", "").toString();
+  QString dir = settings.value("LastOpenDir", "").toString();
 
   QString caption = tr("Open file");
   QString filter = tr("Pawn scripts (*.pwn *.inc)");
@@ -114,7 +114,7 @@ bool MainWindow::openFile() {
   }
 
   dir = QFileInfo(fileName).dir().path();
-  settings.setValue("LastOpenDirectory", dir);
+  settings.setValue("LastOpenDir", dir);
 
   return true;
 }
@@ -177,16 +177,26 @@ bool MainWindow::saveFile() {
 }
 
 bool MainWindow::saveFileAs() {
-  if (!ui_->editor->document()->isEmpty()) {
-    QString caption = tr("Save file as");
-    QString filter = tr("Pawn scripts (*.pwn *.inc)");
-    QString fileName = QFileDialog::getSaveFileName(this, caption, "", filter);
-    if (!fileName.isEmpty()) {
-      fileName_ = fileName;
-      return saveFile();
-    }
+  if (ui_->editor->document()->isEmpty()) {
+    return false;
   }
-  return false;
+
+  QSettings settings;
+  QString dir = settings.value("LastSaveDir").toString();
+
+  QString caption = tr("Save file as");
+  QString filter = tr("Pawn scripts (*.pwn *.inc)");
+  QString fileName = QFileDialog::getSaveFileName(this, caption, dir, filter);
+
+  if (fileName.isEmpty()) {
+    return false;
+  }
+
+  dir = QFileInfo(fileName).dir().path();
+  settings.setValue("LastSaveDir", dir);
+
+  fileName_ = fileName;
+  return saveFile();
 }
 
 void MainWindow::find() {
