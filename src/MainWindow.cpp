@@ -98,14 +98,25 @@ bool MainWindow::newFile() {
 }
 
 bool MainWindow::openFile() {
-  if (closeFile()) {
-    QString caption = tr("Open file");
-    QString filter = tr("Pawn scripts (*.pwn *.inc)");
-    QString fileName = QFileDialog::getOpenFileName(this, caption, "", filter);
-    loadFile(fileName);
-    return true;
+  if (!closeFile()) {
+    return false;
   }
-  return false;
+
+  QSettings settings;
+  QString dir = settings.value("LastOpenDirectory", "").toString();
+
+  QString caption = tr("Open file");
+  QString filter = tr("Pawn scripts (*.pwn *.inc)");
+  QString fileName = QFileDialog::getOpenFileName(this, caption, dir, filter);
+
+  if (!loadFile(fileName)) {
+    return false;
+  }
+
+  dir = QFileInfo(fileName).dir().path();
+  settings.setValue("LastOpenDirectory", dir);
+
+  return true;
 }
 
 bool MainWindow::closeFile() {
@@ -411,23 +422,25 @@ void MainWindow::dropEvent(QDropEvent *event) {
 }
 
 bool MainWindow::loadFile(QString fileName) {
-  if (!fileName.isEmpty()) {
-    QFile file(fileName);
-    if (!file.open(QIODevice::ReadOnly)) {
-      QString message = tr("Could not open %1: %2.").arg(fileName)
-                                                    .arg(file.errorString());
-      QMessageBox::critical(this, QCoreApplication::applicationName(),
-                            message, QMessageBox::Ok);
-      return false;
-    } else {
-      fileName_ = fileName;
-      ui_->editor->setPlainText(file.readAll());
-      ui_->editor->document()->setModified(false);
-      updateTitle();
-      return true;
-    }
+  if (fileName.isEmpty()) {
+    return false;
   }
-  return false;
+
+  QFile file(fileName);
+  if (!file.open(QIODevice::ReadOnly)) {
+    QString message = tr("Could not open %1: %2.").arg(fileName)
+                                                  .arg(file.errorString());
+    QMessageBox::critical(this, QCoreApplication::applicationName(),
+                          message, QMessageBox::Ok);
+    return false;
+  }
+
+  fileName_ = fileName;
+  ui_->editor->setPlainText(file.readAll());
+  ui_->editor->document()->setModified(false);
+  updateTitle();
+
+  return true;
 }
 
 bool MainWindow::editingNewFile() const {
