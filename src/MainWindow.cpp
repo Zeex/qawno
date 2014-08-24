@@ -175,11 +175,13 @@ void MainWindow::on_actionFind_triggered() {
     found = dialog.result() == QDialog::Accepted;
   }
   if (found) {
-    on_actionFindNext_triggered(true);
+    findStart_ = ui_->editor->textCursor().position();
+    findRound_ = 0;
+    on_actionFindNext_triggered();
   }
 }
 
-void MainWindow::on_actionFindNext_triggered(bool wrapAround) {
+void MainWindow::on_actionFindNext_triggered() {
   FindDialog dialog;
   QTextDocument::FindFlags flags;
 
@@ -205,9 +207,22 @@ void MainWindow::on_actionFindNext_triggered(bool wrapAround) {
     next = ui_->editor->document()->find(dialog.findWhatText(), current, flags);
   }
 
-  bool found = !next.isNull();
+  bool found = !next.isNull() &&
+    (findRound_ == 0 || next.position() < findStart_);
 
-  if (!found && wrapAround) {
+  if (!found && findRound_ > 0) {
+    QString string = dialog.findWhatText();
+    QString message = tr("No matching text found for \"%1\".").arg(string);
+    QMessageBox::information(this,
+                              QCoreApplication::applicationName(),
+                              message,
+                              QMessageBox::Ok);
+    findStart_ = next.position();
+    findRound_ = 0;
+    return;
+  }
+
+  if (!found && findRound_ == 0) {
     next = current;
     if (dialog.searchBackwards()) {
       next.movePosition(QTextCursor::End);
@@ -216,21 +231,11 @@ void MainWindow::on_actionFindNext_triggered(bool wrapAround) {
     }
   }
 
-  if (found || (!found && wrapAround)) {
-    ui_->editor->setTextCursor(next);
-  }
+  ui_->editor->setTextCursor(next);
 
-  if (!found) {
-    if (wrapAround) {
-      on_actionFindNext_triggered(false);
-    } else {
-      QString string = dialog.findWhatText();
-      QString message = tr("No matching text found for \"%1\".").arg(string);
-      QMessageBox::information(this,
-                               QCoreApplication::applicationName(),
-                               message,
-                               QMessageBox::Ok);
-    }
+  if (!found && findRound_ == 0) {
+    findRound_++;
+    on_actionFindNext_triggered();
   }
 }
 

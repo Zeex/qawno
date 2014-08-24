@@ -27,7 +27,7 @@ class MainWindow: public QMainWindow {
   void on_actionSaveAs_triggered();
 
   void on_actionFind_triggered();
-  void on_actionFindNext_triggered(bool wrapAround = true);
+  void on_actionFindNext_triggered();
   void on_actionGoToLine_triggered();
 
   void on_actionCompile_triggered();
@@ -63,6 +63,8 @@ class MainWindow: public QMainWindow {
 
  private:
   QString fileName_;
+  int findStart_ = 0;
+  int findRound_ = 0;
 };
 
 #endif // MAINWINDOW_H
