@@ -31,9 +31,9 @@ MainWindow::MainWindow(QWidget *parent)
 
   setStatusBar(new StatusBar(this));
 
-  bool useTabs = (ui_->editor->indentPolicy() == EditorWidget::IndentWithTabs);
-  ui_->actionUseTabs->setChecked(useTabs);
-  ui_->actionUseSpaces->setChecked(!useTabs);
+  bool on_actionUseTabs_triggered = (ui_->editor->indentPolicy() == EditorWidget::IndentWithTabs);
+  ui_->actionUseTabs->setChecked(on_actionUseTabs_triggered);
+  ui_->actionUseSpaces->setChecked(!on_actionUseTabs_triggered);
 
   int tabWidth = ui_->editor->tabWidth();
   ui_->actionTabWidth2->setChecked(tabWidth == 2);
@@ -44,31 +44,6 @@ MainWindow::MainWindow(QWidget *parent)
   ui_->actionIndentWidth2->setChecked(indentWidth == 2);
   ui_->actionIndentWidth4->setChecked(indentWidth == 4);
   ui_->actionIndentWidth8->setChecked(indentWidth == 8);
-
-  connect(ui_->actionNew, SIGNAL(triggered()), SLOT(newFile()));
-  connect(ui_->actionOpen, SIGNAL(triggered()), SLOT(openFile()));
-  connect(ui_->actionClose, SIGNAL(triggered()), SLOT(closeFile()));
-  connect(ui_->actionSave, SIGNAL(triggered()), SLOT(saveFile()));
-  connect(ui_->actionSaveAs, SIGNAL(triggered()), SLOT(saveFileAs()));
-  connect(ui_->actionFind, SIGNAL(triggered()), SLOT(find()));
-  connect(ui_->actionFindNext, SIGNAL(triggered()), SLOT(findNext()));
-  connect(ui_->actionCompile, SIGNAL(triggered()), SLOT(compile()));
-  connect(ui_->actionUseTabs, SIGNAL(triggered()), SLOT(useTabs()));
-  connect(ui_->actionUseSpaces, SIGNAL(triggered()), SLOT(useSpaces()));
-  connect(ui_->actionTabWidth2, SIGNAL(triggered()), SLOT(tabWidth2()));
-  connect(ui_->actionTabWidth4, SIGNAL(triggered()), SLOT(tabWidth4()));
-  connect(ui_->actionTabWidth8, SIGNAL(triggered()), SLOT(tabWidth8()));
-  connect(ui_->actionIndentWidth2, SIGNAL(triggered()), SLOT(indentWidth2()));
-  connect(ui_->actionIndentWidth4, SIGNAL(triggered()), SLOT(indentWidth4()));
-  connect(ui_->actionIndentWidth8, SIGNAL(triggered()), SLOT(indentWidth8()));
-  connect(ui_->actionEditorFont, SIGNAL(triggered()), SLOT(selectEditorFont()));
-  connect(ui_->actionOutputFont, SIGNAL(triggered()), SLOT(selectOutputFont()));
-  connect(ui_->actionCompiler, SIGNAL(triggered()), SLOT(setupCompiler()));
-  connect(ui_->actionAbout, SIGNAL(triggered()), SLOT(about()));
-  connect(ui_->actionAboutQt, SIGNAL(triggered()), SLOT(aboutQt()));
-  connect(ui_->actionGoToLine, SIGNAL(triggered()), SLOT(goToLine()));
-  connect(ui_->editor, SIGNAL(textChanged()), SLOT(updateTitle()));
-  connect(ui_->editor, SIGNAL(cursorPositionChanged()), SLOT(updateCursorStatus()));
 
   QSettings settings;
 
@@ -93,13 +68,15 @@ MainWindow::~MainWindow() {
   delete ui_;
 }
 
-bool MainWindow::newFile() {
-  return closeFile();
+void MainWindow::on_actionNew_triggered() {
+  emit on_actionClose_triggered();
 }
 
-bool MainWindow::openFile() {
-  if (!closeFile()) {
-    return false;
+void MainWindow::on_actionOpen_triggered() {
+  on_actionClose_triggered(); 
+
+  if (!isFileEmpty()) {
+    return;
   }
 
   QSettings settings;
@@ -110,29 +87,29 @@ bool MainWindow::openFile() {
   QString fileName = QFileDialog::getOpenFileName(this, caption, dir, filter);
 
   if (!loadFile(fileName)) {
-    return false;
+    return;
   }
 
   dir = QFileInfo(fileName).dir().path();
   settings.setValue("LastOpenDir", dir);
-
-  return true;
 }
 
-bool MainWindow::closeFile() {
+void MainWindow::on_actionClose_triggered() {
   bool canClose = true;
 
-  if (fileIsModified() && !fileIsEmpty()) {
-    QString message = (!editingNewFile())
+  if (isFileModified() && !isFileEmpty()) {
+    QString message = (!isNewFile())
       ? tr("Save changes to %1?").arg(fileName_)
       : tr("Save changes to a new file?");
-    int result = QMessageBox::question(this, QCoreApplication::applicationName(),
-                                       message, QMessageBox::Yes |
-                                                QMessageBox::No  |
-                                                QMessageBox::Cancel);
+    int result = QMessageBox::question(this,
+                                       QCoreApplication::applicationName(),
+                                       message,
+                                       QMessageBox::Yes | QMessageBox::No
+                                                        | QMessageBox::Cancel);
     switch (result) {
       case QMessageBox::Yes:
-        canClose = saveFile();
+        on_actionSave_triggered();
+        canClose = !isFileModified();
         break;
       case QMessageBox::No:
         canClose = true;
@@ -147,40 +124,31 @@ bool MainWindow::closeFile() {
     ui_->editor->clear();
     fileName_.clear();
   }
-
-  return canClose;
 }
 
-bool MainWindow::saveFile() {
-  if (ui_->editor->document()->isEmpty()) {
-    return false;
-  } else {
-    if (editingNewFile()) {
-      return saveFileAs();
-    } else {
-      QFile file(fileName_);
-      if (!file.open(QIODevice::WriteOnly)) {
-        QString message =
-          tr("Could not save to %1: %2.").arg(fileName_, file.errorString());
-        QMessageBox::critical(this,
-                              QCoreApplication::applicationName(),
-                              message,
-                              QMessageBox::Ok);
-      } else {
-        file.write(ui_->editor->toPlainText().toLatin1());
-        ui_->editor->document()->setModified(false);
-        updateTitle();
-      }
-    }
+void MainWindow::on_actionSave_triggered() {
+  if (isNewFile()) {
+    on_actionSaveAs_triggered();
+    return;
   }
-  return true;
+
+  QFile file(fileName_);
+  if (!file.open(QIODevice::WriteOnly)) {
+    QString message =
+      tr("Could not save to %1: %2.").arg(fileName_, file.errorString());
+    QMessageBox::critical(this,
+                          QCoreApplication::applicationName(),
+                          message,
+                          QMessageBox::Ok);
+    return;
+  }
+
+  file.write(ui_->editor->toPlainText().toLatin1());
+  ui_->editor->textChanged();
+  ui_->editor->document()->setModified(false);
 }
 
-bool MainWindow::saveFileAs() {
-  if (ui_->editor->document()->isEmpty()) {
-    return false;
-  }
-
+void MainWindow::on_actionSaveAs_triggered() {
   QSettings settings;
   QString dir = settings.value("LastSaveDir").toString();
 
@@ -189,29 +157,29 @@ bool MainWindow::saveFileAs() {
   QString fileName = QFileDialog::getSaveFileName(this, caption, dir, filter);
 
   if (fileName.isEmpty()) {
-    return false;
+    return;
   }
 
   dir = QFileInfo(fileName).dir().path();
   settings.setValue("LastSaveDir", dir);
 
   fileName_ = fileName;
-  return saveFile();
+  return on_actionSave_triggered();
 }
 
-void MainWindow::find() {
-  bool find = false;
+void MainWindow::on_actionFind_triggered() {
+  bool found = false;
   {
     FindDialog dialog;
     dialog.exec();
-    find = dialog.result() == QDialog::Accepted;
+    found = dialog.result() == QDialog::Accepted;
   }
-  if (find) {
-    emit(findNext(true));
+  if (found) {
+    on_actionFindNext_triggered(true);
   }
 }
 
-void MainWindow::findNext(bool wrapAround) {
+void MainWindow::on_actionFindNext_triggered(bool wrapAround) {
   FindDialog dialog;
   QTextDocument::FindFlags flags;
 
@@ -254,77 +222,79 @@ void MainWindow::findNext(bool wrapAround) {
 
   if (!found) {
     if (wrapAround) {
-      findNext(false);
+      on_actionFindNext_triggered(false);
     } else {
       QString string = dialog.findWhatText();
-      QString message = tr("No matches were found for \"%1\".").arg(string);
-      QMessageBox::warning(this, QCoreApplication::applicationName(),
-                           message, QMessageBox::Ok);
+      QString message = tr("No matching text found for \"%1\".").arg(string);
+      QMessageBox::information(this,
+                               QCoreApplication::applicationName(),
+                               message,
+                               QMessageBox::Ok);
     }
   }
 }
 
-void MainWindow::goToLine() {
+void MainWindow::on_actionGoToLine_triggered() {
   GoToDialog dialog;
   dialog.exec();
   ui_->editor->jumpToLine(dialog.targetLineNumber());
 }
 
-void MainWindow::useTabs() {
+void MainWindow::on_actionUseTabs_triggered() {
   ui_->editor->setIndentPolicy(EditorWidget::IndentWithTabs);
   ui_->actionUseTabs->setChecked(true);
   ui_->actionUseSpaces->setChecked(false);
 }
 
-void MainWindow::useSpaces() {
+void MainWindow::on_actionUseSpaces_triggered() {
   ui_->editor->setIndentPolicy(EditorWidget::IndentWithSpaces);
   ui_->actionUseTabs->setChecked(false);
   ui_->actionUseSpaces->setChecked(true);
 }
 
-void MainWindow::indentWidth2() {
+void MainWindow::on_actionIndentWidth2_triggered() {
   ui_->editor->setIndentWidth(2);
   ui_->actionIndentWidth2->setChecked(true);
   ui_->actionIndentWidth4->setChecked(false);
   ui_->actionIndentWidth8->setChecked(false);
 }
 
-void MainWindow::indentWidth4() {
+void MainWindow::on_actionIndentWidth4_triggered() {
   ui_->editor->setIndentWidth(4);
   ui_->actionIndentWidth2->setChecked(false);
   ui_->actionIndentWidth4->setChecked(true);
   ui_->actionIndentWidth8->setChecked(false);
 }
 
-void MainWindow::indentWidth8() {
+void MainWindow::on_actionIndentWidth8_triggered() {
   ui_->editor->setIndentWidth(8);
   ui_->actionIndentWidth2->setChecked(false);
   ui_->actionIndentWidth4->setChecked(false);
   ui_->actionIndentWidth8->setChecked(true);
 }
 
-void MainWindow::tabWidth2() {
+void MainWindow::on_actionIndentTab2_triggered() {
   ui_->editor->setTabWidth(2);
   ui_->actionTabWidth2->setChecked(true);
   ui_->actionTabWidth4->setChecked(false);
   ui_->actionTabWidth8->setChecked(false);
 }
 
-void MainWindow::tabWidth4() {
+void MainWindow::on_actionIndentTab4_triggered() {
   ui_->editor->setTabWidth(4);
   ui_->actionTabWidth2->setChecked(false);
   ui_->actionTabWidth4->setChecked(true);
   ui_->actionTabWidth8->setChecked(false);
 }
 
-void MainWindow::tabWidth8() {
+void MainWindow::on_actionIndentTab8_triggered() {
   ui_->editor->setTabWidth(8);
   ui_->actionTabWidth2->setChecked(false);
   ui_->actionTabWidth4->setChecked(false);
   ui_->actionTabWidth8->setChecked(true);
 }
 
-void MainWindow::selectEditorFont() {
+void MainWindow::on_actionEditorFont_triggered() {
   QFontDialog fontDialog(this);
 
   bool ok = false;
@@ -336,7 +306,7 @@ void MainWindow::selectEditorFont() {
   }
 }
 
-void MainWindow::selectOutputFont() {
+void MainWindow::on_actionOutputFont_triggered() {
   QFontDialog fontDialog(this);
 
   bool ok = false;
@@ -348,7 +318,7 @@ void MainWindow::selectOutputFont() {
   }
 }
 
-void MainWindow::setupCompiler() {
+void MainWindow::on_actionCompiler_triggered() {
   Compiler compiler;
   CompilerOptionsDialog dialog;
 
@@ -363,9 +333,9 @@ void MainWindow::setupCompiler() {
   }
 }
 
-void MainWindow::compile() {
-  if (editingNewFile()) {
-    saveFileAs();
+void MainWindow::on_actionCompile_triggered() {
+  if (isNewFile()) {
+    on_actionSaveAs_triggered();
   } else {
     Compiler compiler;
     ui_->output->clear();
@@ -376,29 +346,34 @@ void MainWindow::compile() {
   }
 }
 
-void MainWindow::about() {
+void MainWindow::on_actionAbout_triggered() {
   AboutDialog dialog;
   dialog.exec();
 }
 
-void MainWindow::aboutQt() {
+void MainWindow::on_actionAboutQt_triggered() {
   QMessageBox::aboutQt(this);
 }
 
-void MainWindow::updateTitle() {
+void MainWindow::on_editor_textChanged() {
   QString title;
-  if (!editingNewFile()) {
-    title.append(QFileInfo(fileName_).fileName());
-    if (fileIsModified()) {
+
+  if (isNewFile()) {
+    title = "New File";
+  } else {
+    title = QFileInfo(fileName_).fileName();
+    if (isFileModified()) {
       title.append("*");
     }
-    title.append(" - ");
   }
+
+  title.append(" - ");
   title.append(QCoreApplication::applicationName());
+
   setWindowTitle(title);
 }
 
-void MainWindow::updateCursorStatus() {
+void MainWindow::on_editor_cursorPositionChanged() {
   QTextCursor cursor = ui_->editor->textCursor();
   int line = cursor.blockNumber() + 1;
   int column = cursor.columnNumber() + 1;
@@ -406,7 +381,8 @@ void MainWindow::updateCursorStatus() {
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
-  if (closeFile()) {
+  on_actionClose_triggered();
+  if (isFileEmpty()) {
     event->accept();
   } else {
     event->ignore();
@@ -423,7 +399,8 @@ void MainWindow::dropEvent(QDropEvent *event) {
   QList<QUrl> urls = event->mimeData()->urls();
   foreach (QUrl url, urls) {
     if (url.isLocalFile()) {
-      if (closeFile()) {
+      on_actionClose_triggered();
+      if (isFileEmpty()) {
         loadFile(url.toLocalFile());
       }
       break;
@@ -431,7 +408,7 @@ void MainWindow::dropEvent(QDropEvent *event) {
   }
 }
 
-bool MainWindow::loadFile(QString fileName) {
+bool MainWindow::loadFile(const QString &fileName) {
   if (fileName.isEmpty()) {
     return false;
   }
@@ -440,33 +417,30 @@ bool MainWindow::loadFile(QString fileName) {
   if (!file.open(QIODevice::ReadOnly)) {
     QString message = tr("Could not open %1: %2.").arg(fileName)
                                                   .arg(file.errorString());
-    QMessageBox::critical(this, QCoreApplication::applicationName(),
-                          message, QMessageBox::Ok);
+    QMessageBox::critical(this,
+                          QCoreApplication::applicationName(),
+                          message,
+                          QMessageBox::Ok);
     return false;
   }
 
   fileName_ = fileName;
   ui_->editor->setPlainText(file.readAll());
   ui_->editor->document()->setModified(false);
-  updateTitle();
-
   return true;
 }
 
-bool MainWindow::editingNewFile() const {
+bool MainWindow::isNewFile() const {
   return fileName_.isEmpty();
 }
 
-bool MainWindow::fileIsModified() const {
+bool MainWindow::isFileModified() const {
   return ui_->editor->document()->isModified();
 }
 
-bool MainWindow::fileIsEmpty() const {
+bool MainWindow::isFileEmpty() const {
   QTextDocument *document = ui_->editor->document();
-  return document->isEmpty() ||
-         (editingNewFile() && !document->toPlainText().contains(QRegExp("\\S")));
-}
-
-bool MainWindow::fileIsCompletelyEmpty() const {
-  return ui_->editor->document()->isEmpty();
+  return document->isEmpty()
+    || ui_->editor->document()->isEmpty()
+    || (isNewFile() && !document->toPlainText().contains(QRegExp("\\S")));
 }

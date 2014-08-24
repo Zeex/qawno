@@ -20,46 +20,43 @@ class MainWindow: public QMainWindow {
   void dropEvent(QDropEvent *event) override;
 
  private slots:
-  bool newFile();
+  void on_actionNew_triggered();
+  void on_actionOpen_triggered();
+  void on_actionClose_triggered();
+  void on_actionSave_triggered();
+  void on_actionSaveAs_triggered();
 
-  bool openFile();
-  bool closeFile();
+  void on_actionFind_triggered();
+  void on_actionFindNext_triggered(bool wrapAround = true);
+  void on_actionGoToLine_triggered();
 
-  bool loadFile(QString fileName);
-  bool saveFile();
-  bool saveFileAs();
+  void on_actionCompile_triggered();
 
-  void find();
-  void findNext(bool wrapAround = true);
-  void goToLine();
+  void on_actionUseTabs_triggered();
+  void on_actionUseSpaces_triggered();
+  void on_actionIndentTab2_triggered();
+  void on_actionIndentTab4_triggered();
+  void on_actionIndentTab8_triggered();
+  void on_actionIndentWidth2_triggered();
+  void on_actionIndentWidth4_triggered();
+  void on_actionIndentWidth8_triggered();
 
-  void compile();
+  void on_actionEditorFont_triggered();
+  void on_actionOutputFont_triggered();
 
-  void useTabs();
-  void useSpaces();
-  void tabWidth2();
-  void tabWidth4();
-  void tabWidth8();
-  void indentWidth2();
-  void indentWidth4();
-  void indentWidth8();
+  void on_actionCompiler_triggered();
 
-  void selectEditorFont();
-  void selectOutputFont();
+  void on_actionAbout_triggered();
+  void on_actionAboutQt_triggered();
 
-  void setupCompiler();
+  void on_editor_textChanged();
+  void on_editor_cursorPositionChanged();
 
-  void about();
-  void aboutQt();
-
-  void updateTitle();
-  void updateCursorStatus();
-
-private:
-  bool editingNewFile() const;
-  bool fileIsModified() const;
-  bool fileIsEmpty() const;
-  bool fileIsCompletelyEmpty() const;
+ private:
+  bool loadFile(const QString& fileName);
+  bool isNewFile() const;
+  bool isFileModified() const;
+  bool isFileEmpty() const;
 
  private:
   Ui::MainWindow *ui_;
