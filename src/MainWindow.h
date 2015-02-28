@@ -67,7 +67,7 @@ class MainWindow: public QMainWindow {
   void on_editor_textChanged();
   void on_editor_cursorPositionChanged();
 
-private:
+ private:
   bool loadFile(const QString& fileName);
   bool isNewFile() const;
   bool isFileModified() const;
