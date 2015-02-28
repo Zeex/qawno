@@ -49,9 +49,9 @@ class MainWindow: public QMainWindow {
 
   void on_actionUseTabs_triggered();
   void on_actionUseSpaces_triggered();
-  void on_actionIndentTab2_triggered();
-  void on_actionIndentTab4_triggered();
-  void on_actionIndentTab8_triggered();
+  void on_actionTabWidth2_triggered();
+  void on_actionTabWidth4_triggered();
+  void on_actionTabWidth8_triggered();
   void on_actionIndentWidth2_triggered();
   void on_actionIndentWidth4_triggered();
   void on_actionIndentWidth8_triggered();
@@ -67,7 +67,7 @@ class MainWindow: public QMainWindow {
   void on_editor_textChanged();
   void on_editor_cursorPositionChanged();
 
- private:
+private:
   bool loadFile(const QString& fileName);
   bool isNewFile() const;
   bool isFileModified() const;
