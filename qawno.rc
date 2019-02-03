@@ -7,16 +7,16 @@
 //
 // qawno is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with qawno.  If not, see <http://www.gnu.org/licenses/>.
+// along with qawno. If not, see <http://www.gnu.org/licenses/>.
 
 #include <windows.h>
 #include <qawno.h>
 
-IDI_ICON1 ICON DISCARDABLE "icons/pawn.ico"
+IDI_ICON1 ICON DISCARDABLE "assets/images/qawno.ico"
 
 #define QAWNO_VERSION_RC QAWNO_VERSION_MAJOR, \
                          QAWNO_VERSION_MINOR, \

@@ -1,6 +1,6 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
   <qresource>
-      <file>icons/pawn.ico</file>
+      <file>assets/images/qawno.ico</file>
   </qresource>
 </RCC>

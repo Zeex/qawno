@@ -7,11 +7,11 @@
 //
 // qawno is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with qawno.  If not, see <http://www.gnu.org/licenses/>.
+// along with qawno. If not, see <http://www.gnu.org/licenses/>.
 
 #include <QAction>
 #include <QApplication>
@@ -139,6 +139,8 @@ void MainWindow::on_actionClose_triggered() {
     ui_->editor->clear();
     fileName_.clear();
   }
+
+  updateTitle();
 }
 
 void MainWindow::on_actionSave_triggered() {
@@ -160,7 +162,7 @@ void MainWindow::on_actionSave_triggered() {
 
   file.write(ui_->editor->toPlainText().toLatin1());
   ui_->editor->textChanged();
-  ui_->editor->document()->setModified(false);
+  setFileModified(false);
 }
 
 void MainWindow::on_actionSaveAs_triggered() {
@@ -376,21 +378,7 @@ void MainWindow::on_actionAboutQt_triggered() {
 }
 
 void MainWindow::on_editor_textChanged() {
-  QString title;
-
-  if (isNewFile()) {
-    title = "New File";
-  } else {
-    title = QFileInfo(fileName_).fileName();
-    if (isFileModified()) {
-      title.append("*");
-    }
-  }
-
-  title.append(" - ");
-  title.append(QCoreApplication::applicationName());
-
-  setWindowTitle(title);
+  updateTitle();
 }
 
 void MainWindow::on_editor_cursorPositionChanged() {
@@ -428,6 +416,23 @@ void MainWindow::dropEvent(QDropEvent *event) {
   }
 }
 
+void MainWindow::updateTitle() {
+  QString title;
+
+  if (isNewFile()) {
+    title = "Untitled File";
+  } else {
+    title = QFileInfo(fileName_).fileName();
+    if (isFileModified()) {
+      title.append("*");
+    }
+  }
+  title.append(" - ");
+  title.append(QCoreApplication::applicationName());
+
+  setWindowTitle(title);
+}
+
 bool MainWindow::loadFile(const QString &fileName) {
   if (fileName.isEmpty()) {
     return false;
@@ -446,7 +451,8 @@ bool MainWindow::loadFile(const QString &fileName) {
 
   fileName_ = fileName;
   ui_->editor->setPlainText(file.readAll());
-  ui_->editor->document()->setModified(false);
+  setFileModified(false);
+
   return true;
 }
 
@@ -456,6 +462,11 @@ bool MainWindow::isNewFile() const {
 
 bool MainWindow::isFileModified() const {
   return ui_->editor->document()->isModified();
+}
+
+void MainWindow::setFileModified(bool isModified) {
+  ui_->editor->document()->setModified(isModified);
+  updateTitle();
 }
 
 bool MainWindow::isFileEmpty() const {

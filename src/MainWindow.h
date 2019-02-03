@@ -7,11 +7,11 @@
 //
 // qawno is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with qawno.  If not, see <http://www.gnu.org/licenses/>.
+// along with qawno. If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
@@ -68,9 +68,11 @@ class MainWindow: public QMainWindow {
   void on_editor_cursorPositionChanged();
 
  private:
+  void updateTitle();
   bool loadFile(const QString& fileName);
   bool isNewFile() const;
   bool isFileModified() const;
+  void setFileModified(bool isModified);
   bool isFileEmpty() const;
 
  private:

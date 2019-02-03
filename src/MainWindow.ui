@@ -18,7 +18,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../qawno.qrc">
-    <normaloff>:/icons/pawn.ico</normaloff>:/icons/pawn.ico</iconset>
+    <normaloff>:/assets/images/qawno.ico</normaloff>:/assets/images/qawno.ico</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <property name="sizePolicy">
