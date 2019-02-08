@@ -15,37 +15,37 @@
 
 #include <QFileDialog>
 
-#include "ui_CompilerOptionsDialog.h"
-#include "CompilerOptionsDialog.h"
+#include "ui_CompilerSettingsDialog.h"
+#include "CompilerSettingsDialog.h"
 
-CompilerOptionsDialog::CompilerOptionsDialog(QWidget *parent)
+CompilerSettingsDialog::CompilerSettingsDialog(QWidget *parent)
   : QDialog(parent),
-    ui_(new Ui::CompilerOptionsDialog)
+    ui_(new Ui::CompilerSettingsDialog)
 {
   ui_->setupUi(this);
 }
 
-CompilerOptionsDialog::~CompilerOptionsDialog() {
+CompilerSettingsDialog::~CompilerSettingsDialog() {
   delete ui_;
 }
 
-QString CompilerOptionsDialog::compilerPath() const {
+QString CompilerSettingsDialog::compilerPath() const {
   return ui_->compilerPath->text();
 }
 
-void CompilerOptionsDialog::setCompilerPath(const QString &path) {
+void CompilerSettingsDialog::setCompilerPath(const QString &path) {
   ui_->compilerPath->setText(path);
 }
 
-QString CompilerOptionsDialog::compilerOptions() const {
+QString CompilerSettingsDialog::compilerOptions() const {
   return ui_->compilerOptions->text();
 }
 
-void CompilerOptionsDialog::setCompilerOptions(const QString &options) {
+void CompilerSettingsDialog::setCompilerOptions(const QString &options) {
   ui_->compilerOptions->setText(options);
 }
 
-void CompilerOptionsDialog::on_browse_clicked() {
+void CompilerSettingsDialog::on_browse_clicked() {
   QString path = QFileDialog::getOpenFileName(this,
   #ifdef Q_OS_WIN
     tr("Set compiler executable"), "pawncc.exe",

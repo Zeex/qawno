@@ -40,7 +40,7 @@ configure_file(qawno.h.in qawno.h @ONLY)
 set(HEADERS
   src/AboutDialog.h
   src/Compiler.h
-  src/CompilerOptionsDialog.h
+  src/CompilerSettingsDialog.h
   src/EditorWidget.h
   src/FindDialog.h
   src/GoToDialog.h
@@ -54,7 +54,7 @@ set(HEADERS
 set(SOURCES
   src/AboutDialog.cpp
   src/Compiler.cpp
-  src/CompilerOptionsDialog.cpp
+  src/CompilerSettingsDialog.cpp
   src/EditorWidget.cpp
   src/FindDialog.cpp
   src/GoToDialog.cpp
@@ -69,7 +69,7 @@ set(SOURCES
 
 set(UI_SOURCES
   src/AboutDialog.ui
-  src/CompilerOptionsDialog.ui
+  src/CompilerSettingsDialog.ui
   src/FindDialog.ui
   src/GoToDialog.ui
   src/MainWindow.ui

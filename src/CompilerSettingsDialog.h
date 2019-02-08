@@ -13,22 +13,22 @@
 // You should have received a copy of the GNU General Public License
 // along with qawno. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef COMPILEROPTIONSDIALOG_H
-#define COMPILEROPTIONSDIALOG_H
+#ifndef CompilerSettingsDialog_H
+#define CompilerSettingsDialog_H
 
 #include <QDialog>
 #include <QString>
 
 namespace Ui {
-  class CompilerOptionsDialog;
+  class CompilerSettingsDialog;
 }
 
-class CompilerOptionsDialog: public QDialog {
+class CompilerSettingsDialog: public QDialog {
  Q_OBJECT
 
  public:
-  explicit CompilerOptionsDialog(QWidget *parent = 0);
-  ~CompilerOptionsDialog() override;
+  explicit CompilerSettingsDialog(QWidget *parent = 0);
+  ~CompilerSettingsDialog() override;
 
   QString compilerPath() const;
   void setCompilerPath(const QString &path);
@@ -40,7 +40,7 @@ class CompilerOptionsDialog: public QDialog {
   void on_browse_clicked();
 
 private:
-  Ui::CompilerOptionsDialog *ui_;
+  Ui::CompilerSettingsDialog *ui_;
 };
 
-#endif // COMPILEROPTIONSDIALOG_H
+#endif // CompilerSettingsDialog_H

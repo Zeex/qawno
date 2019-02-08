@@ -27,7 +27,7 @@
 
 #include "AboutDialog.h"
 #include "Compiler.h"
-#include "CompilerOptionsDialog.h"
+#include "CompilerSettingsDialog.h"
 #include "EditorWidget.h"
 #include "FindDialog.h"
 #include "GoToDialog.h"
@@ -97,7 +97,7 @@ void MainWindow::on_actionOpen_triggered() {
   QSettings settings;
   QString dir = settings.value("LastOpenDir", "").toString();
 
-  QString caption = tr("Open file");
+  QString caption = tr("Open File");
   QString filter = tr("Pawn scripts (*.pwn *.inc)");
   QString fileName = QFileDialog::getOpenFileName(this, caption, dir, filter);
 
@@ -169,7 +169,7 @@ void MainWindow::on_actionSaveAs_triggered() {
   QSettings settings;
   QString dir = settings.value("LastSaveDir").toString();
 
-  QString caption = tr("Save file as");
+  QString caption = tr("Save File As");
   QString filter = tr("Pawn scripts (*.pwn *.inc)");
   QString fileName = QFileDialog::getSaveFileName(this, caption, dir, filter);
 
@@ -321,7 +321,7 @@ void MainWindow::on_actionEditorFont_triggered() {
 
   bool ok = false;
   QFont newFont = fontDialog.getFont(&ok, ui_->editor->font(), this,
-                                     tr("Select editor font"));
+                                     tr("Editor Font"));
 
   if (ok) {
     ui_->editor->setFont(newFont);
@@ -333,7 +333,7 @@ void MainWindow::on_actionOutputFont_triggered() {
 
   bool ok = false;
   QFont newFont = fontDialog.getFont(&ok, ui_->output->font(), this,
-  tr("Select output font"));
+  tr("Output Font"));
 
   if (ok) {
     ui_->output->setFont(newFont);
@@ -342,7 +342,7 @@ void MainWindow::on_actionOutputFont_triggered() {
 
 void MainWindow::on_actionCompiler_triggered() {
   Compiler compiler;
-  CompilerOptionsDialog dialog;
+  CompilerSettingsDialog dialog;
 
   dialog.setCompilerPath(compiler.path());
   dialog.setCompilerOptions(compiler.options().join(" "));
