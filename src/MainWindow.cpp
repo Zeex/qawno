@@ -69,6 +69,11 @@ MainWindow::MainWindow(QWidget *parent)
 
   if (QApplication::instance()->arguments().size() > 1) {
     loadFile(QApplication::instance()->arguments()[1]);
+  } else {
+    QString lastOpenedFileName = settings.value("LastFile").toString();
+    if (!lastOpenedFileName.isEmpty()) {
+      loadFile(lastOpenedFileName);
+    }
   }
 }
 
@@ -95,7 +100,7 @@ void MainWindow::on_actionOpen_triggered() {
   }
 
   QSettings settings;
-  QString dir = settings.value("LastOpenDir", "").toString();
+  QString dir = settings.value("LastOpenDir").toString();
 
   QString caption = tr("Open File");
   QString filter = tr("Pawn scripts (*.pwn *.inc)");
@@ -107,6 +112,7 @@ void MainWindow::on_actionOpen_triggered() {
 
   dir = QFileInfo(fileName).dir().path();
   settings.setValue("LastOpenDir", dir);
+  settings.setValue("LastFile", fileName);
 }
 
 void MainWindow::on_actionClose_triggered() {
@@ -179,6 +185,7 @@ void MainWindow::on_actionSaveAs_triggered() {
 
   dir = QFileInfo(fileName).dir().path();
   settings.setValue("LastSaveDir", dir);
+  settings.setValue("LastFile", fileName);
 
   fileName_ = fileName;
   return on_actionSave_triggered();
