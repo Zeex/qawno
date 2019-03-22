@@ -13,8 +13,8 @@
 // You should have received a copy of the GNU General Public License
 // along with qawno. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef CompilerSettingsDialog_H
-#define CompilerSettingsDialog_H
+#ifndef COMPILERSETTINGSDIALOG_H
+#define COMPILERSETTINGSDIALOG_H
 
 #include <QDialog>
 #include <QString>
@@ -43,4 +43,4 @@ private:
   Ui::CompilerSettingsDialog *ui_;
 };
 
-#endif // CompilerSettingsDialog_H
+#endif // COMPILERSETTINGSDIALOG_H

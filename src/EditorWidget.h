@@ -13,8 +13,8 @@
 // You should have received a copy of the GNU General Public License
 // along with qawno. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef EDITORWIDGET_h
-#define EDITORWIDGET_h
+#ifndef EDITORWIDGET_H
+#define EDITORWIDGET_H
 
 #include <functional>
 
@@ -93,4 +93,4 @@ class EditorWidget: public QPlainTextEdit {
   IndentPolicy indentPolicy_;
 };
 
-#endif // EDITORWIDGET_h
+#endif // EDITORWIDGET_H

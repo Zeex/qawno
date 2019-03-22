@@ -13,8 +13,8 @@
 // You should have received a copy of the GNU General Public License
 // along with qawno. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef FINDREPLACEDIALOG_H
-#define FINDREPLACEDIALOG_H
+#ifndef REPLACEDIALOG_H
+#define REPLACEDIALOG_H
 
 #include <QDialog>
 #include <QString>
@@ -42,4 +42,4 @@ class ReplaceDialog: public QDialog {
   Ui::ReplaceDialog *ui_;
 };
 
-#endif // FINDDIALOG_H
+#endif // REPLACEDIALOG_H

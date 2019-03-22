@@ -13,8 +13,8 @@
 // You should have received a copy of the GNU General Public License
 // along with qawno. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef HIGHLIGHTER_H
-#define HIGHLIGHTER_H
+#ifndef SYNTAXHIGHLIGHTER_H
+#define SYNTAXHIGHLIGHTER_H
 
 #include <QSyntaxHighlighter>
 
@@ -53,4 +53,4 @@ class SyntaxHighlighter: public QSyntaxHighlighter {
   ColorScheme colorScheme_;
 };
 
-#endif // HIGHLIGHTER_H
+#endif // SYNTAXHIGHLIGHTER_H

@@ -13,6 +13,9 @@
 // You should have received a copy of the GNU General Public License
 // along with qawno. If not, see <http://www.gnu.org/licenses/>.
 
+#ifndef STATUSBAR_H
+#define STATUSBAR_H
+
 #include <QStatusBar>
 
 class StatusBar: public QStatusBar {
@@ -23,3 +26,5 @@ class StatusBar: public QStatusBar {
 
   void setCursorPosition(int line, int column);
 };
+
+#endif // STATUSBAR_H
