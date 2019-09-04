@@ -40,7 +40,7 @@ EditorWidget *EditorLineNumberWidget::editor() const {
 
 QSize EditorLineNumberWidget::sizeHint() const {
   int lineCount = editor()->blockCount();
-  int digitWidth = fontMetrics().width(QLatin1Char('0'));
+  int digitWidth = fontMetrics().horizontalAdvance(QLatin1Char('0'));
   int numDigits = QString::number(lineCount).length();
   int width =  digitWidth * (numDigits + 2);
   return QSize(width, 0);
@@ -48,8 +48,8 @@ QSize EditorLineNumberWidget::sizeHint() const {
 
 void EditorLineNumberWidget::paintEvent(QPaintEvent *event) {
   QPainter painter(this);
-  painter.setPen(palette().foreground().color());
-  painter.fillRect(event->rect(), palette().background().color());
+  painter.setPen(palette().windowText().color());
+  painter.fillRect(event->rect(), palette().window().color());
 
   QTextBlock block = editor()->firstVisibleBlock();
   QPointF contentOffset = editor()->contentOffset();
@@ -61,9 +61,9 @@ void EditorLineNumberWidget::paintEvent(QPaintEvent *event) {
   do {
     if (bottom >= event->rect().top()) {
       QString lineNumber = QString::number(block.blockNumber() + 1);
-      int digitWidth = fontMetrics().width(QLatin1Char('0'));
+      int digitWidth = fontMetrics().horizontalAdvance(QLatin1Char('0'));
       int numDigits = lineNumber.length();
-      QRect rect(digitWidth, top, digitWidth * numDigits, bottom);
+      QRect rect(digitWidth, static_cast<int>(top), digitWidth * numDigits, static_cast<int>(bottom));
       painter.drawText(rect, Qt::AlignRight, lineNumber);
     }
     block = block.next();
@@ -152,7 +152,7 @@ int EditorWidget::tabWidth() const {
 
 void EditorWidget::setTabWidth(int width) {
   tabWidth_ = width;
-  setTabStopWidth(fontMetrics().width(' ') * width);
+  setTabStopDistance(fontMetrics().horizontalAdvance(' ') * width);
 }
 
 int EditorWidget::indentWidth() const {
