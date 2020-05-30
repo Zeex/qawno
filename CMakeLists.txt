@@ -18,6 +18,8 @@ cmake_policy(SET CMP0048 NEW)
 
 project(Qawno VERSION 1.0.0 LANGUAGES CXX)
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 list(APPEND
      CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
