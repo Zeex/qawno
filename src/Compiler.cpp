@@ -70,7 +70,7 @@ void Compiler::run(const QString &inputFile) {
   process.setWorkingDirectory(QFileInfo(inputFile).absolutePath());
 
   QString command = commandFor(inputFile);
-  process.start(command, QProcess::ReadOnly);
+  process.start(command, QStringList(), QProcess::ReadOnly);
 
   if (process.waitForFinished()) {
     output_ = process.readAll();
