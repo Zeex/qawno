@@ -44,7 +44,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
   ui_->setupUi(this);
 
-  setWindowTitle(QCoreApplication::applicationName());
   setStatusBar(new StatusBar(this));
 
   bool useTabs = (ui_->editor->indentPolicy() == EditorWidget::IndentWithTabs);
@@ -76,6 +75,8 @@ MainWindow::MainWindow(QWidget *parent)
       loadFile(lastOpenedFileName);
     }
   }
+
+  updateTitle();
 }
 
 MainWindow::~MainWindow() {
